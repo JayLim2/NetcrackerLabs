@@ -2,11 +2,11 @@ package main;
 
 //Модель
 class Book {
-    private String title;
+    private String title = "default title";
     private Author author;
-    private int publishYear;
-    private String publisher;
-    private String brief;
+    private int publishYear = 1900;
+    private String publisher = "default publisher";
+    private String brief = "description goes here";
 
     public String getTitle() {
         return title;
