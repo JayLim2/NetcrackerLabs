@@ -1,4 +1,7 @@
 ### Intellij+all ###
+# Idea modules
+*.iml
+
 # CMake
 cmake-build-debug/
 
