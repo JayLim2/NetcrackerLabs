@@ -49,15 +49,5 @@ public class Book {
             this.brief = brief;
         }
 
-    interface ModelLayer {
-        Book getBook();
-    }
-
-    class DatabaseLayer implements ModelLayer {
-        @Override
-        public Book getBook() {
-            return new Book();
-        }
-    }
 }
 
