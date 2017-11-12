@@ -1,10 +1,19 @@
-//Модель
 class Book {
     private String title = "default title";
     private Author author;
     private int publishYear = 1900;
     private String publisher = "default publisher";
     private String brief = "description goes here";
+    
+    public Book(String title, Author author, int publishYear, String publisher, String brief){
+        setTitle(title);
+        setAuthor(author);
+        setPublishYear(publishYear);
+        setPublisher(publisher);
+        setBrief(brief);
+    }
+
+    Book(){}
 
     public String getTitle() {
         return title;
@@ -52,13 +61,6 @@ interface ModelLayer {
     Book getBook();
 }
 
-class DatabaseLayer implements ModelLayer {
-    @Override
-    public Book getBook() {
-        return new Book();
-    }
-}
-
 //Представление (View)
 interface View {
     void printBook(Book book);
@@ -68,17 +70,28 @@ class ConsoleView implements View {
     @Override
     public void printBook(Book book) {
         System.out.println("Title: " + book.getTitle());
-        System.out.println("Author: " + book.getAuthor());
+        System.out.println("Author: " + book.getAuthor().getName());
+        System.out.flush();
     }
 }
 
 //Контроллер
 public class BookController {
-    private ModelLayer modelLayer = new DatabaseLayer();
-    private View consoleView = new ConsoleView();
+    private View consoleView;
+    private Book bookModel;
 
+    public BookController(Book bookModel, View view){
+        this.bookModel = bookModel;
+        consoleView = view;
+    }
+    
+    public void updateView(){
+        consoleView.printBook(bookModel);
+    }
+    
     public void execute() {
-        Book book = modelLayer.getBook();
+        Book book = new Book();
         consoleView.printBook(book);
     }
 }
+

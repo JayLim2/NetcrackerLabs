@@ -1,8 +1,14 @@
+import java.util.ArrayList;
 import java.util.List;
 
 class Author {
     private String name;
     private List<Book> books;
+    
+    public Author(String name){
+        setName(name);
+        books = new ArrayList<Book>();
+    }
 
     public String getName() {
         return name;
@@ -21,17 +27,6 @@ class Author {
     }
 }
 
-interface AuthorModelLayer {
-    Author getAuthor();
-}
-
-class DatabaseAuthorLayer implements AuthorModelLayer {
-    @Override
-    public Author getAuthor() {
-        return new Author();
-    }
-}
-
 interface AuthorView {
     void printAuthor(Author author);
 }
@@ -44,12 +39,30 @@ class ConsoleAuthorView implements AuthorView {
 }
 
 public class AuthorController {
-    AuthorModelLayer layer = new DatabaseAuthorLayer();
-    AuthorView view = new ConsoleAuthorView();
+    AuthorView view;
+    Author model;
 
+    public AuthorController(Author model, AuthorView view){
+        this.model = model;
+        this.view = view;
+    }
+    
+    public void updateView(){
+        view.printAuthor(model);
+    }
+    
+    public Author getAuthor(){
+        return model;
+    }
+    
     public void execute() {
-        Author author = layer.getAuthor();
+        Author author = new Author("def name");
         view.printAuthor(author);
     }
+
+    public void addBook(Book book) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
+
 
