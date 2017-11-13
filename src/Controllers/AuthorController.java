@@ -1,46 +1,27 @@
 package Controllers;
 
 import Models.Author;
+import Models.AuthorsContainer;
 import Models.Book;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-
 public class AuthorController {
-    //список со всеми авторами
-    private List<Author> authors;
+    private AuthorsContainer authorsContainer;
+    private BookController bookController;
 
-    public List<Author> getAuthors(){
-        return authors;
-    }
+    public AuthorController() {
+        authorsContainer = new AuthorsContainer();
+        bookController = new BookController();
 
-    public void setAuthors(List<Author> authors){
-        this.authors = authors;
     }
 
     public void addAuthor(Author author){
-        getAuthors().add(author);
+        authorsContainer.addAuthor(author);
     }
 
-    public void addAuthor(String name){
-        Author author = new Author();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-
-        try{
-            System.out.println("Введите Ф.И.О. автора");
-            name = reader.readLine();
-            author.setName(name);
-        }
-        catch (IOException e) {
-            System.out.println("Вы не ввели данных автора");
-        }
-        getAuthors().add(author);
-
+    public void addBook(Book book, int id){
+        bookController.setAuthor(authorsContainer.getAuthor(id));
+        bookController.addBook(book);
     }
-
 }
 
 
