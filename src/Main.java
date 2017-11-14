@@ -21,8 +21,5 @@ public class Main {
         System.out.println();
         AuthorController ac = new AuthorController();
         ac.addAuthor(a1);
-
     }
-
-
 }

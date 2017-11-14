@@ -9,6 +9,7 @@ public class BookController  {
     public BookController(Author author) {
         this.author = author;
     }
+  
     public BookController() {    }
 
     public void setAuthor(Author author) {
@@ -19,4 +20,3 @@ public class BookController  {
         author.addBook(book);
     }
 }
-

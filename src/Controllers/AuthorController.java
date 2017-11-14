@@ -11,7 +11,6 @@ public class AuthorController {
     public AuthorController() {
         authorsContainer = new AuthorsContainer();
         bookController = new BookController();
-
     }
 
     public void addAuthor(Author author){
@@ -23,5 +22,3 @@ public class AuthorController {
         bookController.addBook(book);
     }
 }
-
-

@@ -7,9 +7,9 @@ public class AuthorsContainer {
     private List<Author> authors;
 
     public AuthorsContainer() {
-        authors =new LinkedList<Author>();
+        authors = new LinkedList<Author>();
     }
-
+  
     public List<Author> getAuthors(){
         return authors;
     }
@@ -31,4 +31,5 @@ public class AuthorsContainer {
     public Author getAuthor(int id){
         return authors.get(id);
     }
+
 }
