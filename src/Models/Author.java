@@ -7,8 +7,8 @@ import java.util.UUID;
 public class Author {
     private String name;
     private List<Book> books;
-    public static int id = 0;
 
+    public static int id = 0;
 
     public Author() {
         books = new LinkedList<>();
@@ -30,12 +30,9 @@ public class Author {
         this.books = books;
     }
 
-
     public void addBook(Book book){
         book.id = books.size();
         books.add(book);
     }
-
-
 
 }

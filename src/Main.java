@@ -1,5 +1,6 @@
 //import Controllers.AuthorController;
 //import Controllers.BookController;
+import Controllers.AuthorController;
 import Models.Author;
 import Models.Book;
 
@@ -18,7 +19,7 @@ public class Main {
         a1.addBook(new Book("Voina i mir", a1, 12, "a","b"));
         a1.addBook(new Book("ololo", a1, 12, "a","b"));
         System.out.println();
+        AuthorController ac = new AuthorController();
+        ac.addAuthor(a1);
     }
-
-
 }
