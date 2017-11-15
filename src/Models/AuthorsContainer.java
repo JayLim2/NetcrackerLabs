@@ -7,7 +7,7 @@ public class AuthorsContainer {
     private List<Author> authors;
 
     public AuthorsContainer() {
-        authors = new LinkedList<>();
+        authors = new LinkedList<Author>();
     }
   
     public List<Author> getAuthors(){
@@ -22,11 +22,18 @@ public class AuthorsContainer {
         return authors.get(id);
     }
 
-    public void addAuthor(Author author) {
+    public void addAuthor(Author author){
+        author.id=authors.size();
         authors.add(author);
+        sort();
     }
 
     public void addAuthor(int index, Author author) {
         authors.add(index, author);
     }
+
+    private void sort(){
+        authors.sort(new AuthorComparator());
+    }
+
 }
