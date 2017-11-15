@@ -7,7 +7,7 @@ public class AuthorsContainer {
     private List<Author> authors;
 
     public AuthorsContainer() {
-        authors = new LinkedList<Author>();
+        authors = new LinkedList<>();
     }
   
     public List<Author> getAuthors(){
@@ -22,4 +22,11 @@ public class AuthorsContainer {
         return authors.get(id);
     }
 
+    public void addAuthor(Author author) {
+        authors.add(author);
+    }
+
+    public void addAuthor(int index, Author author) {
+        authors.add(index, author);
+    }
 }
