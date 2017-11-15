@@ -10,7 +10,8 @@ public class Author {
 
     public static int id = 0;
 
-    public Author() {
+    public Author(String name) {
+        this.name = name;
         books = new LinkedList<Book>();
     }
 

@@ -18,16 +18,6 @@ public class AuthorsContainer {
         this.authors = authors;
     }
 
-    public void addAuthor(Author author){
-        author.id=authors.size();
-        authors.add(author);
-        sort();
-    }
-
-    private void sort(){
-        authors.sort(new AuthorComparator());
-    }
-
     public Author getAuthor(int id){
         return authors.get(id);
     }
