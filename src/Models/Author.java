@@ -2,7 +2,7 @@ package Models;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
+
 
 public class Author {
     private String name;
@@ -11,7 +11,7 @@ public class Author {
     public static int id = 0;
 
     public Author() {
-        books = new LinkedList<>();
+        books = new LinkedList<Book>();
     }
 
     public String getName() {
