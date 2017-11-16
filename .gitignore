@@ -29,7 +29,7 @@ crashlytics-build.properties
 fabric.properties
 
 ### Intellij+all Patch ###
-.idea/
+.idea
 
 ### Java ###
 # Compiled class file
