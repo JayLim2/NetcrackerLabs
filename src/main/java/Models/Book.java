@@ -1,7 +1,9 @@
 package Models;
 
+import javax.xml.bind.annotation.*;
 
 
+@XmlRootElement
 public class Book {
     private String title;
     private Author author;
@@ -21,6 +23,7 @@ public class Book {
         this.brief = brief;
     }
 
+    @XmlElement
     public String getTitle() {
         return title;
     }
@@ -29,6 +32,7 @@ public class Book {
             this.title = title;
     }
 
+    @XmlTransient
     public Author getAuthor() {
             return author;
     }
@@ -37,6 +41,7 @@ public class Book {
             this.author = author;
     }
 
+    @XmlElement
     public int getPublishYear() {
             return publishYear;
     }
@@ -45,6 +50,7 @@ public class Book {
             this.publishYear = publishYear;
     }
 
+    @XmlElement
     public String getPublisher() {
             return publisher;
     }
@@ -53,6 +59,7 @@ public class Book {
             this.publisher = publisher;
     }
 
+    @XmlElement
     public String getBrief() {
             return brief;
     }

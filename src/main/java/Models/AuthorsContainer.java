@@ -2,7 +2,10 @@ package Models;
 
 import java.util.LinkedList;
 import java.util.List;
+import javax.xml.bind.annotation.*;
 
+@XmlRootElement
+@XmlSeeAlso(Author.class)
 public class AuthorsContainer {
     private List<Author> authors;
 
@@ -10,6 +13,7 @@ public class AuthorsContainer {
         authors = new LinkedList<Author>();
     }
   
+    @XmlElement(name = "authorList")
     public List<Author> getAuthors(){
         return authors;
     }

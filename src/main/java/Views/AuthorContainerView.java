@@ -80,7 +80,7 @@ public class AuthorContainerView {
     }
 
     private void viewBooks() {
-        System.out.printf("%45s%n", "=============== Список книг ===============");
+        System.out.printf("%45s%n", "=============== Book list ===============");
         int id = 0;
         for (int j = 0; j < aCC.getAuthorsContainer().getAuthors().size(); j++) {
             List<Book> tempB = aCC.getAuthorsContainer().getAuthors().get(j).getBooks();
@@ -92,7 +92,7 @@ public class AuthorContainerView {
     }
 
     private void viewAuthors() {
-        System.out.printf("%20s%n", "=============== Список авторов ===============");
+        System.out.printf("%20s%n", "=============== Author list ===============");
         List<Author> tempA = aCC.getAuthorsContainer().getAuthors();
         for (int i = 0; i < tempA.size(); i++) {
             System.out.printf("%5d %15s\n", i, tempA.get(i).getName());
@@ -102,31 +102,31 @@ public class AuthorContainerView {
     private void viewMenu(boolean menustate) {
         //menustate = true - MAIN MENU, else - AUTHOR EDIT MENU
         if(menustate) {
-            System.out.println("Главное меню\n================");
-            System.out.println("1. Список книг");
-            System.out.println("2. Список авторов");
-            System.out.println("3. Добавить книгу");
-            System.out.println("4. Удалить книгу");
-            System.out.println("5. Изменить книгу");
-            System.out.println("q. Завершить работу программы");
+            System.out.println("Main menu\n================");
+            System.out.println("1. Book list");
+            System.out.println("2. Author list");
+            System.out.println("3. Add book");
+            System.out.println("4. Remove book");
+            System.out.println("5. Change book");
+            System.out.println("q. Quit");
         } else {
-            System.out.println("Управление авторами\n================");
-            System.out.println("1. Список книг");
-            System.out.println("2. Список авторов");
-            System.out.println("3. Добавить автора");
-            System.out.println("4. Удалить автора");
-            System.out.println("5. Изменить автора");
-            System.out.println("q. Завершить работу программы");
+            System.out.println("Author mode\n================");
+            System.out.println("1. Book list");
+            System.out.println("2. Author list");
+            System.out.println("3. Add author");
+            System.out.println("4. Remove author");
+            System.out.println("5. Change auhtor");
+            System.out.println("q. Quit");
         }
         System.out.println();
-        System.out.print("Введите пункт меню: ");
+        System.out.print("Input menu command id: ");
     }
 
     private void addBook(Scanner in) {
-        System.out.print("Введите название книги: ");
+        System.out.print("Input book's title: ");
         String name = in.nextLine();
         viewAuthors();
-        System.out.printf("%5d %15s\n", aCC.getAuthorsContainer().getAuthors().size(), "Добавить автора");
+        System.out.printf("%5d %15s\n", aCC.getAuthorsContainer().getAuthors().size(), "Add author");
         int id = new Integer(in.nextLine());
         Book tempB;
         if (id < aCC.getAuthorsContainer().getAuthors().size()) {
@@ -140,7 +140,7 @@ public class AuthorContainerView {
     }
 
     private void addAuthor(Scanner in) {
-        System.out.print("Введите имя автора: ");
+        System.out.print("Input author's name: ");
         String name = in.nextLine();
         aCC.addAuthor(new Author(name));
     }

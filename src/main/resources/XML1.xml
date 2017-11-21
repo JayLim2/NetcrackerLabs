@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<authorsContainer>
+    <authorList>
+        <booksList>
+            <brief>default</brief>
+            <publishYear>1832</publishYear>
+            <publisher>default</publisher>
+            <title>Евгений Онегин</title>
+        </booksList>
+        <booksList>
+            <brief>default</brief>
+            <publishYear>1841</publishYear>
+            <publisher>default</publisher>
+            <title>Дубровский</title>
+        </booksList>
+        <name>Пушкин А.С.</name>
+    </authorList>
+    <authorList>
+        <booksList>
+            <brief>default</brief>
+            <publishYear>1867</publishYear>
+            <publisher>default</publisher>
+            <title>Война и мир</title>
+        </booksList>
+        <booksList>
+            <brief>default</brief>
+            <publishYear>1852</publishYear>
+            <publisher>default</publisher>
+            <title>Детсво.Отрочество.Юность</title>
+        </booksList>
+        <name>Толстой Л.Н.</name>
+    </authorList>
+</authorsContainer>
