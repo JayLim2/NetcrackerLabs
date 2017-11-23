@@ -27,7 +27,7 @@ public class AuthorsContainer {
     }
 
     public void addAuthor(Author author){
-        author.id=authors.size();
+        Author.id =authors.size();
         authors.add(author);
         sort();
     }
@@ -35,6 +35,7 @@ public class AuthorsContainer {
     public void addAuthor(int index, Author author) {
         authors.add(index, author);
     }
+
 
     private void sort(){
         authors.sort(new AuthorComparator());

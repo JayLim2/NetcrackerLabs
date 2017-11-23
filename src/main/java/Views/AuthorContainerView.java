@@ -7,6 +7,8 @@ package Views;
 
 import Controllers.AuthorContainerController;
 import Models.*;
+import com.sun.org.apache.xpath.internal.SourceTree;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -142,22 +144,33 @@ public class AuthorContainerView {
     }
     
     private void viewBooks() {
-        System.out.printf("%45s%n", "=============== Book list ===============");
-        int id = 0;
-        for (int j = 0; j < aCC.getAuthorsContainer().getAuthors().size(); j++) {
-            List<Book> tempB = aCC.getAuthorsContainer().getAuthors().get(j).getBooks();
-            for (int i = 0; i < tempB.size(); i++) {
-                System.out.printf("%5d %25s %15s\n", id++, tempB.get(i).getTitle(), tempB.get(i).getAuthor().getName());
+        if (aCC.checkBooksInAuthor())
+        {
+            System.out.printf("%45s%n", "=============== Book list ===============");
+            int id = 0;
+            for (int j = 0; j < aCC.getAuthorsContainer().getAuthors().size(); j++) {
+                List<Book> tempB = aCC.getAuthorsContainer().getAuthors().get(j).getBooks();
+                for (int i = 0; i < tempB.size(); i++) {
+                    System.out.printf("%5d %25s %15s\n", id++, tempB.get(i).getTitle(), tempB.get(i).getAuthor().getName());
+                }
             }
         }
+        else
+            System.out.println("Book list is empty\n");
+
         System.out.println();
     }
 
     private void viewAuthors() {
-        System.out.printf("%20s%n", "=============== Author list ===============");
-        List<Author> tempA = aCC.getAuthorsContainer().getAuthors();
-        for (int i = 0; i < tempA.size(); i++) {
-            System.out.printf("%5d %15s\n", i, tempA.get(i).getName());
+        if (!aCC.getAuthorsContainer().getAuthors().isEmpty()) {
+            System.out.printf("%20s%n", "=============== Author list ===============");
+            List<Author> tempA = aCC.getAuthorsContainer().getAuthors();
+            for (int i = 0; i < tempA.size(); i++) {
+                System.out.printf("%5d %15s\n", i, tempA.get(i).getName());
+            }
+        }
+        else{
+            System.out.println("Author list is empty\n");
         }
     }
 
@@ -219,107 +232,122 @@ public class AuthorContainerView {
     }
 
     private void deleteAuthor(Scanner in) {
-        viewAuthors();
-        System.out.print(("Input auhtor's id: "));
-        try{
-            int id = new Integer(in.nextLine());
-            System.out.print(("Warning! deleting an author will remove all his books as well. Procced? Y/N: "));
-            String str = in.nextLine();
-            if (str.toUpperCase().equals("Y")) {
-                aCC.removeAuthor(id);
-                System.out.println("Deletion succsessful.");
+        if (!aCC.getAuthorsContainer().getAuthors().isEmpty()) {
+            viewAuthors();
+            System.out.print(("Input auhtor's id: "));
+            try {
+                int id = new Integer(in.nextLine());
+                System.out.print(("Warning! deleting an author will remove all his books as well. Procced? Y/N: "));
+                String str = in.nextLine();
+                if (str.toUpperCase().equals("Y")) {
+                    aCC.removeAuthor(id);
+                    System.out.println("Deletion succsessful.");
+                } else if (str.toUpperCase().equals("N")) System.out.println("Ok. Deletion canceled.");
+                else System.out.println("No such option. Deletion canceled.");
+            } catch (NumberFormatException ex) {
+                System.out.println("Id must be a number. Deletion canceled.");
+            } catch (IndexOutOfBoundsException ex) {
+                System.out.println("Index out of range. Deletion canceled.");
             }
-            else if (str.toUpperCase().equals("N"))  System.out.println("Ok. Deletion canceled.");
-            else  System.out.println("No such option. Deletion canceled.");
-        }catch (NumberFormatException ex){
-            System.out.println("Id must be a number. Deletion canceled.");
         }
-        catch (IndexOutOfBoundsException ex){
-            System.out.println("Index out of range. Deletion canceled.");
+        else{
+            System.out.println("Author list is empty\n");
         }
+
     }
 
     private void editAuthor(Scanner in) {
-        viewAuthors();
-        System.out.print(("Input auhtor's id: "));
-        try{
-            int id = new Integer(in.nextLine());
-            Author cauthor = aCC.getAuthor(id);
-            System.out.println(cauthor.getName());
-            System.out.print(("Input auhtor's new name: "));
-            String str = in.nextLine();
-            cauthor.setName(str);
-        }catch (NumberFormatException ex){
-            System.out.println("Id must be a number. Edition canceled.");
+        if (!aCC.getAuthorsContainer().getAuthors().isEmpty()) {
+            viewAuthors();
+            System.out.print(("Input auhtor's id: "));
+            try {
+                int id = new Integer(in.nextLine());
+                Author cauthor = aCC.getAuthor(id);
+                System.out.println(cauthor.getName());
+                System.out.print(("Input auhtor's new name: "));
+                String str = in.nextLine();
+                cauthor.setName(str);
+            } catch (NumberFormatException ex) {
+                System.out.println("Id must be a number. Edition canceled.");
+            } catch (IndexOutOfBoundsException ex) {
+                System.out.println("Index out of range. Edition canceled.");
+            }
         }
-        catch (IndexOutOfBoundsException ex){
-            System.out.println("Index out of range. Edition canceled.");
+        else{
+            System.out.println("Author list is empty\n");
         }
+
     }
 
     private void editBook(Scanner in) {
-        viewBooks();
-        System.out.print(("Input book's id: "));
-        try{
-            int id = new Integer(in.nextLine());
-            Book cbook = aCC.getBook(id);
-            System.out.printf("%25s %15s\n", cbook.getTitle(), cbook.getAuthor().getName());
-            System.out.print("Edit book's title Y/N?: ");
-            String str = in.nextLine();
-            if (str.toUpperCase().equals("Y")) {
-                System.out.print("Input book's new title: ");
+        if (aCC.checkBooksInAuthor()) {
+            viewBooks();
+            System.out.print(("Input book's id: "));
+            try {
+                int id = new Integer(in.nextLine());
+                Book cbook = aCC.getBook(id);
+                System.out.printf("%25s %15s\n", cbook.getTitle(), cbook.getAuthor().getName());
+                System.out.print("Edit book's title Y/N?: ");
+                String str = in.nextLine();
+                if (str.toUpperCase().equals("Y")) {
+                    System.out.print("Input book's new title: ");
+                    str = in.nextLine();
+                    cbook.setTitle(str);
+                } else if (str.toUpperCase().equals("N")) {
+                } else System.out.println("Unknow command: " + str);
+                System.out.print("Edit book's author Y/N?: ");
                 str = in.nextLine();
-                cbook.setTitle(str);
-            }else if (str.toUpperCase().equals("N")){
-            }else System.out.println("Unknow command: " + str);
-            System.out.print("Edit book's author Y/N?: ");
-            str = in.nextLine();
-            if (str.toUpperCase().equals("Y")) {
-                viewAuthors();
-                System.out.printf("%5d %15s\n", aCC.getAuthorsContainer().getAuthors().size(), "Add author");
-                System.out.print("Input book's new auhtor's id: ");
-                try{
-                    int id2 = new Integer(in.nextLine());
-                    Book tempB;
-                    if ((id2 < aCC.getAuthorsContainer().getAuthors().size())&&(id2 >= 0)) {
-                        aCC.removeBook(id);
-                        cbook.setAuthor(aCC.getAuthor(id2));
-                        aCC.addBook(cbook, id2);
-                    } else if (id2 == aCC.getAuthorsContainer().getAuthors().size()) {
-                        addAuthor(in);
-                        aCC.removeBook(id);
-                        cbook.setAuthor(aCC.getAuthor(id2));
-                        aCC.addBook(cbook, id2);
+                if (str.toUpperCase().equals("Y")) {
+                    viewAuthors();
+                    System.out.printf("%5d %15s\n", aCC.getAuthorsContainer().getAuthors().size(), "Add author");
+                    System.out.print("Input book's new auhtor's id: ");
+                    try {
+                        int id2 = new Integer(in.nextLine());
+                        Book tempB;
+                        if ((id2 < aCC.getAuthorsContainer().getAuthors().size()) && (id2 >= 0)) {
+                            aCC.removeBook(id);
+                            cbook.setAuthor(aCC.getAuthor(id2));
+                            aCC.addBook(cbook, id2);
+                        } else if (id2 == aCC.getAuthorsContainer().getAuthors().size()) {
+                            addAuthor(in);
+                            aCC.removeBook(id);
+                            cbook.setAuthor(aCC.getAuthor(id2));
+                            aCC.addBook(cbook, id2);
+                        } else throw new IndexOutOfBoundsException();
+                    } catch (NumberFormatException ex) {
+                        System.out.println("Id must be a number. Author Field Edition canceled.");
+                    } catch (IndexOutOfBoundsException ex) {
+                        System.out.println("Index out of range. Author Field Edition canceled.");
                     }
-                    else throw new IndexOutOfBoundsException();
-                }catch (NumberFormatException ex){
-                    System.out.println("Id must be a number. Author Field Edition canceled.");
-                }
-                catch (IndexOutOfBoundsException ex){
-                    System.out.println("Index out of range. Author Field Edition canceled.");
-                }
-            }else if (str.toUpperCase().equals("N")){
-            }else System.out.println("Unknow command: " + str);
-        }catch (NumberFormatException ex){
-            System.out.println("Id must be a number. Edition canceled.");
+                } else if (str.toUpperCase().equals("N")) {
+                } else System.out.println("Unknow command: " + str);
+            } catch (NumberFormatException ex) {
+                System.out.println("Id must be a number. Edition canceled.");
+            } catch (IndexOutOfBoundsException ex) {
+                System.out.println("Index out of range. Edition canceled.");
+            }
         }
-        catch (IndexOutOfBoundsException ex){
-            System.out.println("Index out of range. Edition canceled.");
-        }
+        else
+            System.out.println("Book list is empty\n");
     }
 
     private void deleteBook(Scanner in) {
-        viewBooks();
-        try{
-            System.out.print(("Input book's id: "));
-            int id = new Integer(in.nextLine());
-            aCC.removeBook(id);
-            System.out.println("Deletion successdful");
-        }catch (NumberFormatException ex){
-            System.out.println("Id must be a number. Deletion canceled.");
+        if (aCC.checkBooksInAuthor()) {
+            viewBooks();
+            try{
+                System.out.print(("Input book's id: "));
+                int id = new Integer(in.nextLine());
+                aCC.removeBook(id);
+                System.out.println("Deletion successdful");
+            }
+            catch (NumberFormatException ex){
+                System.out.println("Id must be a number. Deletion canceled.");
+            }
+            catch (IndexOutOfBoundsException ex){
+                System.out.println("Index out of range. Deletion canceled.");
+            }
         }
-        catch (IndexOutOfBoundsException ex){
-            System.out.println("Index out of range. Deletion canceled.");
-        }
+        else
+            System.out.println("Book list is empty\n");
     }
 }
