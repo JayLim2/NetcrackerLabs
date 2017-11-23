@@ -146,18 +146,59 @@ public class AuthorContainerView {
     }
 
     private void deleteAuthor(Scanner in) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.print(("Input auhtor's id: "));
+        int id = new Integer(in.nextLine());
+        System.out.print(("Warning! deleting an author will remove all his books as well. Procced? Y/N"));
+        String str = in.nextLine();
+        if (str.equals("Y")) aCC.removeAuthor(id);
     }
 
     private void editAuthor(Scanner in) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.print(("Input auhtor's id: "));
+        int id = new Integer(in.nextLine());
+        Author cauthor = aCC.getAuthor(id);
+        System.out.println(cauthor.getName());
+        System.out.print(("Input auhtor's new name: "));
+        String str = in.nextLine();
+        cauthor.setName(str);
     }
 
     private void editBook(Scanner in) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.print(("Input book's id: "));
+        int id = new Integer(in.nextLine());
+        Book cbook = aCC.getBook(id);
+        System.out.printf("%25s %15s\n", cbook.getTitle(), cbook.getAuthor().getName());
+        System.out.print("Edit book's title Y/N?");
+        String str = in.nextLine();
+        if (str.equals("Y")) {
+            System.out.print("Input book's new title: ");
+            str = in.nextLine();
+            cbook.setTitle(str);
+        }
+        System.out.print("Edit book's author Y/N?");
+        str = in.nextLine();
+        if (str.equals("Y")) {
+            viewAuthors();
+			System.out.printf("%5d %15s\n", aCC.getAuthorsContainer().getAuthors().size(), "Add author");
+            System.out.print("Input book's new auhtor's id: ");
+            int id2 = new Integer(in.nextLine());
+            Book tempB;
+            if (id2 < aCC.getAuthorsContainer().getAuthors().size()) {
+                aCC.removeBook(id);
+                cbook.setAuthor(aCC.getAuthor(id2));
+                aCC.addBook(cbook, id2);
+            } else if (id2 == aCC.getAuthorsContainer().getAuthors().size()) {
+                addAuthor(in);
+                aCC.removeBook(id);
+                cbook.setAuthor(aCC.getAuthor(id2));
+                aCC.addBook(cbook, id2);
+            }
+        }
     }
 
     private void deleteBook(Scanner in) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.print(("Input book's id: "));
+        int id = new Integer(in.nextLine());
+        aCC.removeBook(id);
     }
 }

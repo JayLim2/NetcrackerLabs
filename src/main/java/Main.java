@@ -28,7 +28,7 @@ public class Main {
 //            author2.getBooks().add(book4);
             JAXBContext context = JAXBContext.newInstance(AuthorsContainer.class);
             Unmarshaller unmarsh = context.createUnmarshaller();
-            AuthorsContainer authors = (AuthorsContainer)unmarsh.unmarshal(this.getClass().getResourceAsStream("TRANSFER.xls"));
+            AuthorsContainer authors = (AuthorsContainer)unmarsh.unmarshal(new File("XML1.xml"));
             AuthorContainerController aCC = new AuthorContainerController(authors);
             aCC.reInitAuthorsInBooks();
 //            aCC.addAuthor(author1);
