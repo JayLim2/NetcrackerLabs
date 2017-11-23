@@ -15,6 +15,47 @@ public class AuthorContainerController {
         authorsContainer.getAuthors().add(author);
     }
     
+    public Author getAuthor(int id){
+        return authorsContainer.getAuthor(id);
+    }
+    
+    public Book getBook(int id){
+        if ((id < 0)||(id >= countBooks())) throw new IndexOutOfBoundsException();
+        Book res = null;
+        for(Author author: authorsContainer.getAuthors())
+            if (id < author.getBooks().size())
+            {
+                res = author.getBooks().get(id);
+                break;
+            }
+            else
+                id -= author.getBooks().size();
+        return res;
+    }
+    
+    private int countBooks(){
+        int size = 0;
+        for(Author author:authorsContainer.getAuthors())
+            size += author.getBooks().size();
+        return size;
+    }
+    
+    public void removeBook(int id){
+        if ((id < 0)||(id >= countBooks())) throw new IndexOutOfBoundsException();
+        for(Author author: authorsContainer.getAuthors())
+            if (id < author.getBooks().size())
+            {
+                author.getBooks().remove(id);
+                break;
+            }
+            else
+                id -= author.getBooks().size();
+    }
+    
+    public void removeAuthor(int id){
+        authorsContainer.getAuthors().remove(id);
+    }
+    
     public AuthorsContainer getAuthorsContainer(){
         return authorsContainer;
     }

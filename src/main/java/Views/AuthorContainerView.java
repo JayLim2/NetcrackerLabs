@@ -7,9 +7,19 @@ package Views;
 
 import Controllers.AuthorContainerController;
 import Models.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 /**
  * @author Алескандр
@@ -29,47 +39,66 @@ public class AuthorContainerView {
             if (menuState) {
                 String inp = in.nextLine();
                 char fsymb = inp.charAt(0);
-                switch (fsymb) {
-                    case '1':
+                switch (inp) {
+                    case "1":
                         viewBooks();
                         break;//view books
-                    case '2':
+                    case "2":
                         viewAuthors();
                         menuState = false;
                         break;//view authors and switch to author edit
-                    case '3':
+                    case "3":
                         addBook(in);
                         break;//add book
-                    case '4':
+                    case "4":
                         deleteBook(in);
                         break;//delete book
-                    case '5':
+                    case "5":
                         editBook(in);
-                        break;//edit book
+                        break;
+                    case "6":
+                        loadFromFile(in);
+                        break;
+                    case "7":
+                        saveToFile(in);
+                        break;
+                    case "q":
+                        break;  
+                    default:
+                        System.out.println("Unknown command");
                 }
-                if (fsymb == 'q') break;
+                if (inp.equals("q")) break;
             } else {
                 String inp = in.nextLine();
-                char fsymb = inp.charAt(0);
-                switch (fsymb) {
-                    case '1':
+                switch (inp) {
+                    case "1":
                         viewBooks();
                         menuState = true;
                         break;//view books and switch to book edit
-                    case '2':
+                    case "2":
                         viewAuthors();
                         break;//view authors 
-                    case '3':
+                    case "3":
                         addAuthor(in);
                         break;//add author
-                    case '4':
+                    case "4":
                         deleteAuthor(in);
                         break;//delete author
-                    case '5':
+                    case "5":
                         editAuthor(in);
                         break;//edit author
+                    case "6":
+                        loadFromFile(in);
+                        break;
+                    case "7":
+                        saveToFile(in);
+                        break;
+                    case "q":
+                        break;  
+                    default:
+                        System.out.println("Unknown command");
                 }
-                if (fsymb == 'q') break;
+                if (inp.equals("q")) break;
             }
 
             /*System.out.println("Чтобы продолжить введите 0.");
@@ -79,6 +108,40 @@ public class AuthorContainerView {
         }
     }
 
+    private void loadFromFile(Scanner in){
+        try{
+            JAXBContext context = JAXBContext.newInstance(AuthorsContainer.class);
+            Unmarshaller unmarsh = context.createUnmarshaller();
+            System.out.print("Input name of the file: ");
+            String str = in.nextLine();
+            FileInputStream fin = new FileInputStream(str);
+            AuthorsContainer authors = (AuthorsContainer)unmarsh.unmarshal(fin);
+            AuthorContainerController taCC = new AuthorContainerController(authors);
+            taCC.reInitAuthorsInBooks();
+            aCC = taCC;
+            System.out.println("Loaded sucsefully");
+        }catch(JAXBException ex){
+            System.out.println("File format error. Load cancelled");
+        } catch (FileNotFoundException ex) {
+            System.out.println("File not found. Load cancelled");
+        }
+    }
+    
+    private void saveToFile(Scanner in){
+        try{
+            JAXBContext context = JAXBContext.newInstance(AuthorsContainer.class);
+            Marshaller marsh = context.createMarshaller();
+            System.out.print("Input name of the file: ");
+            String str = in.nextLine();
+            File fin = new File(str);
+            marsh.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            marsh.marshal(aCC.getAuthorsContainer(), fin);
+            System.out.println("Saved");
+        }catch(JAXBException ex){
+            System.out.println("Should not happen at all. Save cancelled");
+        }
+    }
+    
     private void viewBooks() {
         System.out.printf("%45s%n", "=============== Book list ===============");
         int id = 0;
@@ -108,6 +171,8 @@ public class AuthorContainerView {
             System.out.println("3. Add book");
             System.out.println("4. Remove book");
             System.out.println("5. Change book");
+            System.out.println("6. Load form file");
+            System.out.println("7. Save to file");
             System.out.println("q. Quit");
         } else {
             System.out.println("Author mode\n================");
@@ -116,6 +181,8 @@ public class AuthorContainerView {
             System.out.println("3. Add author");
             System.out.println("4. Remove author");
             System.out.println("5. Change auhtor");
+            System.out.println("6. Load form file");
+            System.out.println("7. Save to file");
             System.out.println("q. Quit");
         }
         System.out.println();
@@ -127,15 +194,22 @@ public class AuthorContainerView {
         String name = in.nextLine();
         viewAuthors();
         System.out.printf("%5d %15s\n", aCC.getAuthorsContainer().getAuthors().size(), "Add author");
-        int id = new Integer(in.nextLine());
-        Book tempB;
-        if (id < aCC.getAuthorsContainer().getAuthors().size()) {
-            tempB = new Book(name, aCC.getAuthorsContainer().getAuthors().get(id), 0, "", "");
-            aCC.addBook(tempB, id);
-        } else if (id == aCC.getAuthorsContainer().getAuthors().size()) {
-            addAuthor(in);
-            tempB = new Book(name, aCC.getAuthorsContainer().getAuthors().get(id), 0, "", "");
-            aCC.addBook(tempB, id);
+        try{
+            int id = new Integer(in.nextLine());
+            Book tempB;
+            if ((id < aCC.getAuthorsContainer().getAuthors().size())&&(id >=0)) {
+                tempB = new Book(name, aCC.getAuthorsContainer().getAuthors().get(id), 0, "", "");
+                aCC.addBook(tempB, id);
+            } else if (id == aCC.getAuthorsContainer().getAuthors().size()) {
+                addAuthor(in);
+                tempB = new Book(name, aCC.getAuthorsContainer().getAuthors().get(id), 0, "", "");
+                aCC.addBook(tempB, id);
+            }else throw new IndexOutOfBoundsException();
+        }catch (NumberFormatException ex){
+            System.out.println("Id must be a number. Addition canceled.");
+        }
+        catch (IndexOutOfBoundsException ex){
+            System.out.println("Index out of range. Addition canceled.");
         }
     }
 
@@ -146,18 +220,107 @@ public class AuthorContainerView {
     }
 
     private void deleteAuthor(Scanner in) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        viewAuthors();
+        System.out.print(("Input auhtor's id: "));
+        try{
+            int id = new Integer(in.nextLine());
+            System.out.print(("Warning! deleting an author will remove all his books as well. Procced? Y/N: "));
+            String str = in.nextLine();
+            if (str.toUpperCase().equals("Y")) {
+                aCC.removeAuthor(id);
+                System.out.println("Deletion succsessful.");
+            }
+            else if (str.toUpperCase().equals("N"))  System.out.println("Ok. Deletion canceled.");
+            else  System.out.println("No such option. Deletion canceled.");
+        }catch (NumberFormatException ex){
+            System.out.println("Id must be a number. Deletion canceled.");
+        }
+        catch (IndexOutOfBoundsException ex){
+            System.out.println("Index out of range. Deletion canceled.");
+        }
     }
 
     private void editAuthor(Scanner in) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        viewAuthors();
+        System.out.print(("Input auhtor's id: "));
+        try{
+            int id = new Integer(in.nextLine());
+            Author cauthor = aCC.getAuthor(id);
+            System.out.println(cauthor.getName());
+            System.out.print(("Input auhtor's new name: "));
+            String str = in.nextLine();
+            cauthor.setName(str);
+        }catch (NumberFormatException ex){
+            System.out.println("Id must be a number. Edition canceled.");
+        }
+        catch (IndexOutOfBoundsException ex){
+            System.out.println("Index out of range. Edition canceled.");
+        }
     }
 
     private void editBook(Scanner in) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        viewBooks();
+        System.out.print(("Input book's id: "));
+        try{
+            int id = new Integer(in.nextLine());
+            Book cbook = aCC.getBook(id);
+            System.out.printf("%25s %15s\n", cbook.getTitle(), cbook.getAuthor().getName());
+            System.out.print("Edit book's title Y/N?: ");
+            String str = in.nextLine();
+            if (str.toUpperCase().equals("Y")) {
+                System.out.print("Input book's new title: ");
+                str = in.nextLine();
+                cbook.setTitle(str);
+            }else if (str.toUpperCase().equals("N")){
+            }else System.out.println("Unknow command: " + str);
+            System.out.print("Edit book's author Y/N?: ");
+            str = in.nextLine();
+            if (str.toUpperCase().equals("Y")) {
+                viewAuthors();
+                System.out.printf("%5d %15s\n", aCC.getAuthorsContainer().getAuthors().size(), "Add author");
+                System.out.print("Input book's new auhtor's id: ");
+                try{
+                    int id2 = new Integer(in.nextLine());
+                    Book tempB;
+                    if ((id2 < aCC.getAuthorsContainer().getAuthors().size())&&(id2 >= 0)) {
+                        aCC.removeBook(id);
+                        cbook.setAuthor(aCC.getAuthor(id2));
+                        aCC.addBook(cbook, id2);
+                    } else if (id2 == aCC.getAuthorsContainer().getAuthors().size()) {
+                        addAuthor(in);
+                        aCC.removeBook(id);
+                        cbook.setAuthor(aCC.getAuthor(id2));
+                        aCC.addBook(cbook, id2);
+                    }
+                    else throw new IndexOutOfBoundsException();
+                }catch (NumberFormatException ex){
+                    System.out.println("Id must be a number. Author Field Edition canceled.");
+                }
+                catch (IndexOutOfBoundsException ex){
+                    System.out.println("Index out of range. Author Field Edition canceled.");
+                }
+            }else if (str.toUpperCase().equals("N")){
+            }else System.out.println("Unknow command: " + str);
+        }catch (NumberFormatException ex){
+            System.out.println("Id must be a number. Edition canceled.");
+        }
+        catch (IndexOutOfBoundsException ex){
+            System.out.println("Index out of range. Edition canceled.");
+        }
     }
 
     private void deleteBook(Scanner in) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        viewBooks();
+        try{
+            System.out.print(("Input book's id: "));
+            int id = new Integer(in.nextLine());
+            aCC.removeBook(id);
+            System.out.println("Deletion successdful");
+        }catch (NumberFormatException ex){
+            System.out.println("Id must be a number. Deletion canceled.");
+        }
+        catch (IndexOutOfBoundsException ex){
+            System.out.println("Index out of range. Deletion canceled.");
+        }
     }
 }
