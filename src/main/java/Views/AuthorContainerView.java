@@ -38,7 +38,6 @@ public class AuthorContainerView {
             viewMenu(menuState);
             if (menuState) {
                 String inp = in.nextLine();
-                char fsymb = inp.charAt(0);
                 switch (inp) {
                     case "1":
                         viewBooks();
