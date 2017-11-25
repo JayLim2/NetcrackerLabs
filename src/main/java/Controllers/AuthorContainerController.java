@@ -4,6 +4,8 @@ import Models.Author;
 import Models.AuthorsContainer;
 import Models.Book;
 
+import java.util.List;
+
 public class AuthorContainerController {
     private AuthorsContainer authorsContainer;
 
@@ -69,5 +71,14 @@ public class AuthorContainerController {
             for(Book book: author.getBooks()) 
                 book.setAuthor(author);
         }
+    }
+    //Проверяет есть ли у автора книги. Если их нет - вернет false
+    public boolean checkBooksInAuthor(){
+        List<Author> tmp =  authorsContainer.getAuthors();
+        for (int i = 0; i < tmp.size(); i++) {
+            if (!tmp.get(i).getBooks().isEmpty())
+                return true;
+        }
+        return false;
     }
 }
