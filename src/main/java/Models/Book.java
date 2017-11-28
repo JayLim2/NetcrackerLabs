@@ -1,6 +1,7 @@
 package Models;
 
 import javax.xml.bind.annotation.*;
+import java.util.Calendar;
 
 
 @XmlRootElement
@@ -47,7 +48,15 @@ public class Book {
     }
 
     public void setPublishYear(int publishYear) {
-            this.publishYear = publishYear;
+        if (publishYear>=0&&publishYear<Calendar.getInstance().get(Calendar.YEAR)){
+            try {
+                this.publishYear = publishYear;
+            } catch (NumberFormatException ex) {
+                System.out.println("The year of publishing must be a number. Operation canceled.");
+            }
+        }
+        else
+            System.out.println("The year of publishing must be in range 0 - Current year");
     }
 
     @XmlElement

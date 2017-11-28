@@ -65,6 +65,10 @@ public class AuthorContainerController {
     public void addBook(Book book, int id){
         authorsContainer.getAuthor(id).addBook(book);
     }
+
+    public void addBook(Book book, int id, int publishYear){
+        authorsContainer.getAuthor(id).addBook(book);
+    }
     
     public void reInitAuthorsInBooks(){//если оставим эту штуку с xml наверное будет приватным и вызыватся только при десериализации
         for(Author author : authorsContainer.getAuthors()){

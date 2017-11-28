@@ -14,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -151,7 +152,7 @@ public class AuthorContainerView {
             for (int j = 0; j < aCC.getAuthorsContainer().getAuthors().size(); j++) {
                 List<Book> tempB = aCC.getAuthorsContainer().getAuthors().get(j).getBooks();
                 for (int i = 0; i < tempB.size(); i++) {
-                    System.out.printf("%5d %25s %15s\n", id++, tempB.get(i).getTitle(), tempB.get(i).getAuthor().getName());
+                    System.out.printf("%5d %25s %15s %5d\n", id++, tempB.get(i).getTitle(), tempB.get(i).getAuthor().getName(), tempB.get(i).getPublishYear());
                 }
             }
         }
@@ -210,15 +211,28 @@ public class AuthorContainerView {
             int id = new Integer(in.nextLine());
             Book tempB;
             if ((id < aCC.getAuthorsContainer().getAuthors().size())&&(id >=0)) {
-                tempB = new Book(name, aCC.getAuthorsContainer().getAuthors().get(id), 0, "", "");
-                aCC.addBook(tempB, id);
+                System.out.print("Input the year of publishing: ");
+                int publishYear = new Integer(in.nextLine());
+                if (publishYear>=0&&publishYear< Calendar.getInstance().get(Calendar.YEAR)){
+                    tempB = new Book(name, aCC.getAuthorsContainer().getAuthors().get(id), publishYear, "", "");
+                    aCC.addBook(tempB, id, publishYear);
+                }
+                else
+                    System.out.println("The year of publishing must be in range 0 - Current year");
             } else if (id == aCC.getAuthorsContainer().getAuthors().size()) {
                 addAuthor(in);
-                tempB = new Book(name, aCC.getAuthorsContainer().getAuthors().get(id), 0, "", "");
-                aCC.addBook(tempB, id);
+                System.out.print("Input the year of publishing: ");
+                int publishYear = new Integer(in.nextLine());
+                if (publishYear>=0&&publishYear< Calendar.getInstance().get(Calendar.YEAR)){
+                    tempB = new Book(name, aCC.getAuthorsContainer().getAuthors().get(id), publishYear, "", "");
+                    aCC.addBook(tempB, id, publishYear);
+                }
+                else
+                    System.out.println("The year of publishing must be in range 0 - Current year");
             }else throw new IndexOutOfBoundsException();
-        }catch (NumberFormatException ex){
-            System.out.println("Id must be a number. Addition canceled.");
+        }
+        catch (NumberFormatException ex){
+            System.out.println("It must be a number. Addition canceled.");
         }
         catch (IndexOutOfBoundsException ex){
             System.out.println("Index out of range. Addition canceled.");
@@ -321,8 +335,16 @@ public class AuthorContainerView {
                     }
                 } else if (str.toUpperCase().equals("N")) {
                 } else System.out.println("Unknow command: " + str);
+                System.out.print("Edit book's year of publishing Y/N?: ");
+                str = in.nextLine();
+                if (str.toUpperCase().equals("Y")) {
+                    System.out.print("Input book's new year of publishing: ");
+                    int publishYear = new Integer(in.nextLine());
+                    cbook.setPublishYear(publishYear);
+                } else if (str.toUpperCase().equals("N")) {
+                } else System.out.println("Unknow command: " + str);
             } catch (NumberFormatException ex) {
-                System.out.println("Id must be a number. Edition canceled.");
+                System.out.println("It must be a number. Edition canceled.");
             } catch (IndexOutOfBoundsException ex) {
                 System.out.println("Index out of range. Edition canceled.");
             }
