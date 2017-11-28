@@ -65,6 +65,12 @@ public class AuthorContainerView {
                         saveToFile(in);
                         break;
                     case "q":
+                        System.out.print(("Save changes to file? Y/N: "));
+                        String str = in.nextLine();
+                        if (str.toUpperCase().equals("Y")) {
+                            saveToFile(in);
+                        } else if (str.toUpperCase().equals("N"))
+                            break;
                         break;  
                     default:
                         System.out.println("Unknown command");
@@ -96,6 +102,11 @@ public class AuthorContainerView {
                         saveToFile(in);
                         break;
                     case "q":
+                        System.out.print(("Save changes to file? Y/N: "));
+                        String str = in.nextLine();
+                        if (str.toUpperCase().equals("Y")) {
+                            saveToFile(in);
+                        } else if (str.toUpperCase().equals("N"))
                         break;  
                     default:
                         System.out.println("Unknown command");
@@ -128,7 +139,8 @@ public class AuthorContainerView {
             System.out.println("File not found. Load cancelled");
         }
     }
-    
+
+
     private void saveToFile(Scanner in){
         try{
             JAXBContext context = JAXBContext.newInstance(AuthorsContainer.class);
