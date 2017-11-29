@@ -21,7 +21,7 @@ public class AuthorContainerController {
     }
 
     public void addAuthor(Author author){
-        authorsContainer.getAuthors().add(author);
+        authorsContainer.addAuthor(author);
     }
     
     public Author getAuthor(int id){
