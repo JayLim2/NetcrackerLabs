@@ -49,6 +49,7 @@ public class Author {
 
     public void addBook(Book book){
         books.add(book);
+        books.sort(new BooksComparator());
     }
 
 }
