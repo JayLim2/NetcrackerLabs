@@ -14,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -111,15 +112,11 @@ public class AuthorContainerView {
 
     private void loadFromFile(Scanner in){
         try{
-            JAXBContext context = JAXBContext.newInstance(AuthorsContainer.class);
-            Unmarshaller unmarsh = context.createUnmarshaller();
+            
             System.out.print("Input name of the file: ");
             String str = in.nextLine();
             FileInputStream fin = new FileInputStream(str);
-            AuthorsContainer authors = (AuthorsContainer)unmarsh.unmarshal(fin);
-            AuthorContainerController taCC = new AuthorContainerController(authors);
-            taCC.reInitAuthorsInBooks();
-            aCC = taCC;
+            aCC.load(fin);
             System.out.println("Loaded sucsefully");
         }catch(JAXBException ex){
             System.out.println("File format error. Load cancelled");
@@ -127,16 +124,14 @@ public class AuthorContainerView {
             System.out.println("File not found. Load cancelled");
         }
     }
-    
+
+
     private void saveToFile(Scanner in){
         try{
-            JAXBContext context = JAXBContext.newInstance(AuthorsContainer.class);
-            Marshaller marsh = context.createMarshaller();
             System.out.print("Input name of the file: ");
             String str = in.nextLine();
-            File fin = new File(str);
-            marsh.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            marsh.marshal(aCC.getAuthorsContainer(), fin);
+            File fout = new File(str);
+            aCC.save(fout);
             System.out.println("Saved");
         }catch(JAXBException ex){
             System.out.println("Should not happen at all. Save cancelled");
@@ -147,11 +142,10 @@ public class AuthorContainerView {
         if (aCC.checkBooksInAuthor())
         {
             System.out.printf("%45s%n", "=============== Book list ===============");
-            int id = 0;
             for (int j = 0; j < aCC.getAuthorsContainer().getAuthors().size(); j++) {
                 List<Book> tempB = aCC.getAuthorsContainer().getAuthors().get(j).getBooks();
                 for (int i = 0; i < tempB.size(); i++) {
-                    System.out.printf("%5d %25s %15s\n", id++, tempB.get(i).getTitle(), tempB.get(i).getAuthor().getName());
+                    System.out.printf("%5d %25s %15s %5d\n", tempB.get(i).getId(), tempB.get(i).getTitle(), tempB.get(i).getAuthor().getName(), tempB.get(i).getPublishYear());
                 }
             }
         }
@@ -166,7 +160,7 @@ public class AuthorContainerView {
             System.out.printf("%20s%n", "=============== Author list ===============");
             List<Author> tempA = aCC.getAuthorsContainer().getAuthors();
             for (int i = 0; i < tempA.size(); i++) {
-                System.out.printf("%5d %15s\n", i, tempA.get(i).getName());
+                System.out.printf("%5d %15s\n", tempA.get(i).getId(), tempA.get(i).getName());
             }
         }
         else{
@@ -204,31 +198,40 @@ public class AuthorContainerView {
     private void addBook(Scanner in) {
         System.out.print("Input book's title: ");
         String name = in.nextLine();
+        System.out.println("Input book's author: ");
+        System.out.printf("%5d %15s\n", -1, "Add author");
         viewAuthors();
-        System.out.printf("%5d %15s\n", aCC.getAuthorsContainer().getAuthors().size(), "Add author");
         try{
             int id = new Integer(in.nextLine());
             Book tempB;
-            if ((id < aCC.getAuthorsContainer().getAuthors().size())&&(id >=0)) {
-                tempB = new Book(name, aCC.getAuthorsContainer().getAuthors().get(id), 0, "", "");
-                aCC.addBook(tempB, id);
-            } else if (id == aCC.getAuthorsContainer().getAuthors().size()) {
-                addAuthor(in);
-                tempB = new Book(name, aCC.getAuthorsContainer().getAuthors().get(id), 0, "", "");
-                aCC.addBook(tempB, id);
-            }else throw new IndexOutOfBoundsException();
-        }catch (NumberFormatException ex){
+            if (id == -1) id  = addAuthor(in);
+            Author author = aCC.getAuthor(id);
+            System.out.print("Input the year of publishing: ");
+            try{
+                int publishYear = new Integer(in.nextLine());
+                tempB = new Book(name, author, publishYear, "", "");
+                aCC.addBook(tempB, id, publishYear);
+            }
+            catch (NumberFormatException ex){
+                System.out.println("Year must be a number. Addition canceled.");
+            }catch (YearOutOfBoundsException ex) {
+                System.out.println("Year out of range. Addition canceled");
+            }
+        }
+        catch (NumberFormatException ex){
             System.out.println("Id must be a number. Addition canceled.");
         }
         catch (IndexOutOfBoundsException ex){
             System.out.println("Index out of range. Addition canceled.");
-        }
+        } 
     }
 
-    private void addAuthor(Scanner in) {
+    private int addAuthor(Scanner in) {
         System.out.print("Input author's name: ");
         String name = in.nextLine();
-        aCC.addAuthor(new Author(name));
+        Author author = new Author(name);
+        aCC.addAuthor(author);
+        return author.getId();
     }
 
     private void deleteAuthor(Scanner in) {
@@ -298,22 +301,16 @@ public class AuthorContainerView {
                 System.out.print("Edit book's author Y/N?: ");
                 str = in.nextLine();
                 if (str.toUpperCase().equals("Y")) {
+                    System.out.printf("%5d %15s\n", -1, "Add author");
                     viewAuthors();
-                    System.out.printf("%5d %15s\n", aCC.getAuthorsContainer().getAuthors().size(), "Add author");
                     System.out.print("Input book's new auhtor's id: ");
                     try {
                         int id2 = new Integer(in.nextLine());
-                        Book tempB;
-                        if ((id2 < aCC.getAuthorsContainer().getAuthors().size()) && (id2 >= 0)) {
-                            aCC.removeBook(id);
-                            cbook.setAuthor(aCC.getAuthor(id2));
-                            aCC.addBook(cbook, id2);
-                        } else if (id2 == aCC.getAuthorsContainer().getAuthors().size()) {
-                            addAuthor(in);
-                            aCC.removeBook(id);
-                            cbook.setAuthor(aCC.getAuthor(id2));
-                            aCC.addBook(cbook, id2);
-                        } else throw new IndexOutOfBoundsException();
+                        if (id2 == -1) id2  = addAuthor(in);
+                        Author author = aCC.getAuthor(id2);
+                        aCC.removeBook(id);
+                        cbook.setAuthor(author);
+                        aCC.addBook(cbook, id2);
                     } catch (NumberFormatException ex) {
                         System.out.println("Id must be a number. Author Field Edition canceled.");
                     } catch (IndexOutOfBoundsException ex) {
@@ -321,8 +318,22 @@ public class AuthorContainerView {
                     }
                 } else if (str.toUpperCase().equals("N")) {
                 } else System.out.println("Unknow command: " + str);
+                System.out.print("Edit book's year of publishing Y/N?: ");
+                str = in.nextLine();
+                if (str.toUpperCase().equals("Y")) {
+                    System.out.print("Input book's new year of publishing: ");
+                    try{
+                    int publishYear = new Integer(in.nextLine());
+                    cbook.setPublishYear(publishYear);
+                    } catch (NumberFormatException ex) {
+                        System.out.println("Year must be a number. Year Filed Edition canceled");
+                    } catch (YearOutOfBoundsException ex) {
+                        System.out.println("Year out of range. Year Filed Edition canceled");
+                    }
+                } else if (str.toUpperCase().equals("N")) {
+                } else System.out.println("Unknow command: " + str);
             } catch (NumberFormatException ex) {
-                System.out.println("Id must be a number. Edition canceled.");
+                System.out.println("It must be a number. Edition canceled.");
             } catch (IndexOutOfBoundsException ex) {
                 System.out.println("Index out of range. Edition canceled.");
             }

@@ -27,7 +27,6 @@ public class AuthorsContainer {
     }
 
     public void addAuthor(Author author){
-        Author.id =authors.size();
         authors.add(author);
         sort();
     }

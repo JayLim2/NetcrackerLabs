@@ -1,6 +1,7 @@
 package Models;
 
 import javax.xml.bind.annotation.*;
+import java.util.Calendar;
 
 
 @XmlRootElement
@@ -10,15 +11,19 @@ public class Book {
     private int publishYear;
     private String publisher;
     private String brief;
+    private static int  cid = 0;
+    private int id = 0;
 
-    public static int id = 0;
-
+    {
+        id = cid++;
+    }
+    
     public Book() {    }
 
-    public Book(String title, Author author, int publishYear, String publisher, String brief) {
+    public Book(String title, Author author, int publishYear, String publisher, String brief) throws YearOutOfBoundsException {
         this.title = title;
         this.author = author;
-        this.publishYear = publishYear;
+        setPublishYear(publishYear);
         this.publisher = publisher;
         this.brief = brief;
     }
@@ -36,6 +41,11 @@ public class Book {
     public Author getAuthor() {
             return author;
     }
+    
+    @XmlTransient
+    public int getId(){
+        return id;
+    }
 
     public void setAuthor(Author author) {
             this.author = author;
@@ -46,8 +56,10 @@ public class Book {
             return publishYear;
     }
 
-    public void setPublishYear(int publishYear) {
-            this.publishYear = publishYear;
+    public final void setPublishYear(int publishYear) throws YearOutOfBoundsException {
+        if (!(publishYear>=0&&publishYear<Calendar.getInstance().get(Calendar.YEAR))) throw new YearOutOfBoundsException(); 
+        this.publishYear = publishYear;
+ 
     }
 
     @XmlElement
