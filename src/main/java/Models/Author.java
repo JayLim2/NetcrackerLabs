@@ -9,8 +9,13 @@ import javax.xml.bind.annotation.*;
 public class Author {
     private String name;
     private List<Book> books;
+    
+    private static int  cid = 0;
+    private int id = 0;
 
-    public static int id = 0;
+    {
+        id = cid++;
+    }
 
     public Author(){books = new LinkedList<Book>();}
     
@@ -22,6 +27,11 @@ public class Author {
     @XmlElement
     public String getName() {
         return name;
+    }
+    
+    @XmlTransient
+    public int getId(){
+        return id;
     }
 
     public void setName(String name) {
@@ -38,7 +48,6 @@ public class Author {
     }
 
     public void addBook(Book book){
-        book.id = books.size();
         books.add(book);
     }
 
