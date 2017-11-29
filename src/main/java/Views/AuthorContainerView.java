@@ -199,8 +199,8 @@ public class AuthorContainerView {
         System.out.print("Input book's title: ");
         String name = in.nextLine();
         System.out.println("Input book's author: ");
-        System.out.printf("%5d %15s\n", -1, "Add author");
         viewAuthors();
+        System.out.printf("%5d %15s\n", -1, "Add author");
         try{
             int id = new Integer(in.nextLine());
             Book tempB;
