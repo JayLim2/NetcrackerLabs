@@ -3,6 +3,7 @@ package Controllers;
 import Models.Author;
 import Models.AuthorsContainer;
 import Models.Book;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -20,14 +21,14 @@ public class AuthorContainerController {
         this.authorsContainer = authorsContainer;
     }
 
-    public void addAuthor(Author author){
+    public void addAuthor(Author author) {
         authorsContainer.addAuthor(author);
     }
-    
-    public Author getAuthor(int id){
+
+    public Author getAuthor(int id) {
         Author res = null;
-        for(Author author:authorsContainer.getAuthors()){
-            if (id == author.getId()){
+        for (Author author : authorsContainer.getAuthors()) {
+            if (id == author.getId()) {
                 res = author;
                 break;
             }
@@ -35,14 +36,14 @@ public class AuthorContainerController {
         if (res == null) throw new IndexOutOfBoundsException();
         return res;
     }
-    
-    public Book getBook(int id){
+
+    public Book getBook(int id) {
         Book res = null;
-        a:{
-            for(Author author: authorsContainer.getAuthors())
-                for (Book book: author.getBooks())
-                {
-                    if (id == book.getId()){
+        a:
+        {
+            for (Author author : authorsContainer.getAuthors())
+                for (Book book : author.getBooks()) {
+                    if (id == book.getId()) {
                         res = book;
                         break a;
                     }
@@ -51,42 +52,41 @@ public class AuthorContainerController {
         if (res == null) throw new IndexOutOfBoundsException();
         return res;
     }
-    
-    private int countBooks(){
+
+    private int countBooks() {
         int size = 0;
-        for(Author author:authorsContainer.getAuthors())
+        for (Author author : authorsContainer.getAuthors())
             size += author.getBooks().size();
         return size;
     }
-    
-    public void load(FileInputStream fin) throws JAXBException{
-            JAXBContext context = JAXBContext.newInstance(AuthorsContainer.class);
-            Unmarshaller unmarsh = context.createUnmarshaller();
-            AuthorsContainer authors = (AuthorsContainer)unmarsh.unmarshal(fin);
-            authorsContainer = authors;
-            reInitAuthorsInBooks();
+
+    public void load(FileInputStream fin) throws JAXBException {
+        JAXBContext context = JAXBContext.newInstance(AuthorsContainer.class);
+        Unmarshaller unmarsh = context.createUnmarshaller();
+        AuthorsContainer authors = (AuthorsContainer) unmarsh.unmarshal(fin);
+        authorsContainer = authors;
+        reInitAuthorsInBooks();
     }
-    
-    public void save(File fout) throws JAXBException{
-            JAXBContext context = JAXBContext.newInstance(AuthorsContainer.class);
-            Marshaller marsh = context.createMarshaller();
-            marsh.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            marsh.marshal(getAuthorsContainer(), fout);
+
+    public void save(File fout) throws JAXBException {
+        JAXBContext context = JAXBContext.newInstance(AuthorsContainer.class);
+        Marshaller marsh = context.createMarshaller();
+        marsh.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        marsh.marshal(getAuthorsContainer(), fout);
     }
-    
-    public void removeBook(int id){
+
+    public void removeBook(int id) {
         Book res = null;
-        a:{
-            for(Author author: authorsContainer.getAuthors())
-            {
-                for (Book book: author.getBooks())
-                {
-                    if (id == book.getId()){
+        a:
+        {
+            for (Author author : authorsContainer.getAuthors()) {
+                for (Book book : author.getBooks()) {
+                    if (id == book.getId()) {
                         res = book;
                         break;
                     }
                 }
-                if (res != null){
+                if (res != null) {
                     author.getBooks().remove(res);
                     break a;
                 }
@@ -94,42 +94,43 @@ public class AuthorContainerController {
         }
         if (res == null) throw new IndexOutOfBoundsException();
     }
-    
-    public void removeAuthor(int id){
+
+    public void removeAuthor(int id) {
         Author res = null;
-        for(Author author:authorsContainer.getAuthors()){
-            if (id == author.getId()){
+        for (Author author : authorsContainer.getAuthors()) {
+            if (id == author.getId()) {
                 res = author;
                 break;
             }
         }
-        if (res != null) 
+        if (res != null)
             authorsContainer.getAuthors().remove(res);
         else
             throw new IndexOutOfBoundsException();
     }
-    
-    public AuthorsContainer getAuthorsContainer(){
+
+    public AuthorsContainer getAuthorsContainer() {
         return authorsContainer;
     }
 
-    public void addBook(Book book, int id){
+    public void addBook(Book book, int id) {
         authorsContainer.getAuthor(id).addBook(book);
     }
 
-    public void addBook(Book book, int id, int publishYear){
+    public void addBook(Book book, int id, int publishYear) {
         authorsContainer.getAuthor(id).addBook(book);
     }
-    
-    public void reInitAuthorsInBooks(){//если оставим эту штуку с xml наверное будет приватным и вызыватся только при десериализации
-        for(Author author : authorsContainer.getAuthors()){
-            for(Book book: author.getBooks()) 
+
+    public void reInitAuthorsInBooks() {//если оставим эту штуку с xml наверное будет приватным и вызыватся только при десериализации
+        for (Author author : authorsContainer.getAuthors()) {
+            for (Book book : author.getBooks())
                 book.setAuthor(author);
         }
     }
+
     //Проверяет есть ли у автора книги. Если их нет - вернет false
-    public boolean checkBooksInAuthor(){
-        List<Author> tmp =  authorsContainer.getAuthors();
+    public boolean checkBooksInAuthor() {
+        List<Author> tmp = authorsContainer.getAuthors();
         for (int i = 0; i < tmp.size(); i++) {
             if (!tmp.get(i).getBooks().isEmpty())
                 return true;
