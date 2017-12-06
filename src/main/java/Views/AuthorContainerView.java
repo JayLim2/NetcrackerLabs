@@ -65,7 +65,7 @@ public class AuthorContainerView {
                         saveToFile(in);
                         break;
                     case "q":
-                        break;  
+                        break;
                     default:
                         System.out.println("Unknown command");
                 }
@@ -96,7 +96,7 @@ public class AuthorContainerView {
                         saveToFile(in);
                         break;
                     case "q":
-                        break;  
+                        break;
                     default:
                         System.out.println("Unknown command");
                 }
@@ -110,15 +110,15 @@ public class AuthorContainerView {
         }
     }
 
-    private void loadFromFile(Scanner in){
-        try{
-            
+    private void loadFromFile(Scanner in) {
+        try {
+
             System.out.print("Input name of the file: ");
             String str = in.nextLine();
             FileInputStream fin = new FileInputStream(str);
             aCC.load(fin);
             System.out.println("Loaded sucsefully");
-        }catch(JAXBException ex){
+        } catch (JAXBException ex) {
             System.out.println("File format error. Load cancelled");
         } catch (FileNotFoundException ex) {
             System.out.println("File not found. Load cancelled");
@@ -126,21 +126,20 @@ public class AuthorContainerView {
     }
 
 
-    private void saveToFile(Scanner in){
-        try{
+    private void saveToFile(Scanner in) {
+        try {
             System.out.print("Input name of the file: ");
             String str = in.nextLine();
             File fout = new File(str);
             aCC.save(fout);
             System.out.println("Saved");
-        }catch(JAXBException ex){
+        } catch (JAXBException ex) {
             System.out.println("Should not happen at all. Save cancelled");
         }
     }
-    
+
     private void viewBooks() {
-        if (aCC.checkBooksInAuthor())
-        {
+        if (aCC.checkBooksInAuthor()) {
             System.out.printf("%45s%n", "=============== Book list ===============");
             for (int j = 0; j < aCC.getAuthorsContainer().getAuthors().size(); j++) {
                 List<Book> tempB = aCC.getAuthorsContainer().getAuthors().get(j).getBooks();
@@ -148,8 +147,7 @@ public class AuthorContainerView {
                     System.out.printf("%5d %25s %15s %5d\n", tempB.get(i).getId(), tempB.get(i).getTitle(), tempB.get(i).getAuthor().getName(), tempB.get(i).getPublishYear());
                 }
             }
-        }
-        else
+        } else
             System.out.println("Book list is empty\n");
 
         System.out.println();
@@ -162,15 +160,14 @@ public class AuthorContainerView {
             for (int i = 0; i < tempA.size(); i++) {
                 System.out.printf("%5d %15s\n", tempA.get(i).getId(), tempA.get(i).getName());
             }
-        }
-        else{
+        } else {
             System.out.println("Author list is empty\n");
         }
     }
 
     private void viewMenu(boolean menustate) {
         //menustate = true - MAIN MENU, else - AUTHOR EDIT MENU
-        if(menustate) {
+        if (menustate) {
             System.out.println("Main menu\n================");
             System.out.println("1. Book list");
             System.out.println("2. Author list");
@@ -201,29 +198,26 @@ public class AuthorContainerView {
         System.out.println("Input book's author: ");
         viewAuthors();
         System.out.printf("%5d %15s\n", -1, "Add author");
-        try{
+        try {
             int id = new Integer(in.nextLine());
             Book tempB;
-            if (id == -1) id  = addAuthor(in);
+            if (id == -1) id = addAuthor(in);
             Author author = aCC.getAuthor(id);
             System.out.print("Input the year of publishing: ");
-            try{
+            try {
                 int publishYear = new Integer(in.nextLine());
                 tempB = new Book(name, author, publishYear, "", "");
                 aCC.addBook(tempB, id, publishYear);
-            }
-            catch (NumberFormatException ex){
+            } catch (NumberFormatException ex) {
                 System.out.println("Year must be a number. Addition canceled.");
-            }catch (YearOutOfBoundsException ex) {
+            } catch (YearOutOfBoundsException ex) {
                 System.out.println("Year out of range. Addition canceled");
             }
-        }
-        catch (NumberFormatException ex){
+        } catch (NumberFormatException ex) {
             System.out.println("Id must be a number. Addition canceled.");
-        }
-        catch (IndexOutOfBoundsException ex){
+        } catch (IndexOutOfBoundsException ex) {
             System.out.println("Index out of range. Addition canceled.");
-        } 
+        }
     }
 
     private int addAuthor(Scanner in) {
@@ -252,8 +246,7 @@ public class AuthorContainerView {
             } catch (IndexOutOfBoundsException ex) {
                 System.out.println("Index out of range. Deletion canceled.");
             }
-        }
-        else{
+        } else {
             System.out.println("Author list is empty\n");
         }
 
@@ -275,8 +268,7 @@ public class AuthorContainerView {
             } catch (IndexOutOfBoundsException ex) {
                 System.out.println("Index out of range. Edition canceled.");
             }
-        }
-        else{
+        } else {
             System.out.println("Author list is empty\n");
         }
 
@@ -306,7 +298,7 @@ public class AuthorContainerView {
                     System.out.print("Input book's new auhtor's id: ");
                     try {
                         int id2 = new Integer(in.nextLine());
-                        if (id2 == -1) id2  = addAuthor(in);
+                        if (id2 == -1) id2 = addAuthor(in);
                         Author author = aCC.getAuthor(id2);
                         aCC.removeBook(id);
                         cbook.setAuthor(author);
@@ -322,9 +314,9 @@ public class AuthorContainerView {
                 str = in.nextLine();
                 if (str.toUpperCase().equals("Y")) {
                     System.out.print("Input book's new year of publishing: ");
-                    try{
-                    int publishYear = new Integer(in.nextLine());
-                    cbook.setPublishYear(publishYear);
+                    try {
+                        int publishYear = new Integer(in.nextLine());
+                        cbook.setPublishYear(publishYear);
                     } catch (NumberFormatException ex) {
                         System.out.println("Year must be a number. Year Filed Edition canceled");
                     } catch (YearOutOfBoundsException ex) {
@@ -337,28 +329,24 @@ public class AuthorContainerView {
             } catch (IndexOutOfBoundsException ex) {
                 System.out.println("Index out of range. Edition canceled.");
             }
-        }
-        else
+        } else
             System.out.println("Book list is empty\n");
     }
 
     private void deleteBook(Scanner in) {
         if (aCC.checkBooksInAuthor()) {
             viewBooks();
-            try{
+            try {
                 System.out.print(("Input book's id: "));
                 int id = new Integer(in.nextLine());
                 aCC.removeBook(id);
                 System.out.println("Deletion successdful");
-            }
-            catch (NumberFormatException ex){
+            } catch (NumberFormatException ex) {
                 System.out.println("Id must be a number. Deletion canceled.");
-            }
-            catch (IndexOutOfBoundsException ex){
+            } catch (IndexOutOfBoundsException ex) {
                 System.out.println("Index out of range. Deletion canceled.");
             }
-        }
-        else
+        } else
             System.out.println("Book list is empty\n");
     }
 }
