@@ -58,7 +58,7 @@ public class Book {
     }
 
     public final void setPublishYear(int publishYear) throws YearOutOfBoundsException {
-        if (!(publishYear >= 0 && publishYear < Calendar.getInstance().get(Calendar.YEAR)))
+        if (!(publishYear >= 0 && publishYear <= Calendar.getInstance().get(Calendar.YEAR)))
             throw new YearOutOfBoundsException();
         this.publishYear = publishYear;
     }

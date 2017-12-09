@@ -194,10 +194,29 @@ public class AuthorContainerView {
         System.out.print("Input menu command id: ");
     }
 
+    private static final int BOOK_TITLE_LINIT = 75;
+    private static final int AUTHOR_NAME_LIMIT = 100;
+
     private void addBook(Scanner in) {
         System.out.print("Input book's title: ");
         String name = in.nextLine();
-        cancelCheck(name);
+        while (true) {
+            cancelCheck(name);
+
+            name = name.trim();
+            if(!name.isEmpty()) {
+                if(name.length() <= BOOK_TITLE_LINIT) {
+                    break;
+                } else {
+                    System.out.println("Book's title is out of range. Try again.");
+                    name = in.nextLine();
+                }
+            }
+            else {
+                System.out.println("Book's title is empty. Try again.");
+                name = in.nextLine();
+            }
+        }
         System.out.println("Input book's author: ");
         viewAuthors();
         System.out.printf("%5d %15s\n", -1, "Add author");
@@ -218,14 +237,21 @@ public class AuthorContainerView {
                     try {
                         int publishYear = new Integer(test1);
                         tempB = new Book(name, author, publishYear, "", "");
-                        aCC.addBook(tempB, id, publishYear);
-                        System.out.println("Book " + "\"" + tempB.getTitle() + "\"" + " added to author " + "\"" + author.getName() + "\"\n");
-                        mark2 = true;
-                        try {
-                            aCC.save(new File("XML1.xml"));
-                        } catch (JAXBException ex) {
-                            System.out.println("Should not happen at all. Save cancelled");
+                        if(!isExists(tempB, author.getBooks())) {
+                            aCC.addBook(tempB, id, publishYear);
+
+                            System.out.println("Book " + "\"" + tempB.getTitle() + "\"" + " added to author " + "\"" + author.getName() + "\"\n");
+                            mark2 = true;
+                            try {
+                                aCC.save(new File("XML1.xml"));
+                            } catch (JAXBException ex) {
+                                System.out.println("Should not happen at all. Save cancelled");
+                            }
+                        } else {
+                            System.out.println("Book is already added. Book adding is cancelled.");
+                            break;
                         }
+
                     } catch (NumberFormatException ex) {
                         System.out.println("Year must be a number. Try again");
                     } catch (YearOutOfBoundsException ex) {
@@ -241,18 +267,55 @@ public class AuthorContainerView {
         }
     }
 
+    private boolean isExists(Book book, List<Book> bookList) {
+        for (Book currentBook : bookList) {
+            if (book.equals(currentBook))
+                return true;
+        }
+        return false;
+    }
+
     private int addAuthor(Scanner in) {
         System.out.print("Input author's name: ");
         String name = in.nextLine();
+        while (true) {
+            name = name.trim();
+            if(!name.isEmpty()) {
+                if(name.length() <= AUTHOR_NAME_LIMIT) {
+                    break;
+                } else {
+                    System.out.println("Author's name is out of range. Try again.");
+                    name = in.nextLine();
+                }
+            } else {
+                System.out.println("Author's name is empty. Try again.");
+                name = in.nextLine();
+            }
+        }
         cancelCheck(name);
         Author author = new Author(name);
-        aCC.addAuthor(author);
-        try{
-            aCC.save(new File("XML1.xml"));
-        }catch (JAXBException ex) {
-            System.out.println("Should not happen at all. Save cancelled");
+        if(!isExists(author, aCC.getAuthorsContainer().getAuthors())) {
+            aCC.addAuthor(author);
+
+            try{
+                aCC.save(new File("XML1.xml"));
+            }catch (JAXBException ex) {
+                System.out.println("Should not happen at all. Save cancelled");
+            }
+            return author.getId();
         }
-        return author.getId();
+        else {
+            System.out.println("Author is already added. Adding is cancelled.");
+            return -1;
+        }
+    }
+
+    private boolean isExists(Author author, List<Author> authors) {
+        for (Author currentAuthor : authors) {
+            if (author.equals(currentAuthor))
+                return true;
+        }
+        return false;
     }
 
     private void deleteAuthor(Scanner in) {
