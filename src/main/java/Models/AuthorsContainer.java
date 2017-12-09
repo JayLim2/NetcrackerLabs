@@ -29,19 +29,27 @@ public class AuthorsContainer {
     }
 
     public void addAuthor(Author author){
+
         if(!isExists(author, authors) && isValid(author)) {
             author.setName(author.getName().trim());
             authors.add(author);
+            System.out.println("Author "+ "\""+author.getName()+"\"" + " added");
             sort();
+        } else
+            System.out.println("Authors name is not correct");
+
         }
-    }
+
 
     public void addAuthor(int index, Author author) {
-        if(!isExists(author, authors) && isValid(author)) {
-            author.setName(author.getName().trim());
 
-            authors.add(index, author);
-        }
+            if (!isExists(author, authors) && isValid(author)) {
+                author.setName(author.getName().trim());
+                authors.add(index, author);
+                System.out.println("Author " + "\"" + author.getName() + "\"" + " added");
+            } else
+                System.out.println("Authors name is not correct");
+
     }
 
     private boolean isExists(Author author, List<Author> authors) {

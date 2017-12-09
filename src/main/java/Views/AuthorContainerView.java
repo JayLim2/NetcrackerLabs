@@ -24,6 +24,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+
 /**
  * @author Алескандр
  */
@@ -138,6 +139,7 @@ public class AuthorContainerView {
         }
     }
 
+
     private void viewBooks() {
         if (aCC.checkBooksInAuthor()) {
             System.out.printf("%45s%n", "=============== Book list ===============");
@@ -195,158 +197,291 @@ public class AuthorContainerView {
     private void addBook(Scanner in) {
         System.out.print("Input book's title: ");
         String name = in.nextLine();
+        cancelCheck(name);
         System.out.println("Input book's author: ");
         viewAuthors();
         System.out.printf("%5d %15s\n", -1, "Add author");
-        try {
-            int id = new Integer(in.nextLine());
-            Book tempB;
-            if (id == -1) id = addAuthor(in);
-            Author author = aCC.getAuthor(id);
-            System.out.print("Input the year of publishing: ");
+        boolean mark = false;
+        boolean mark2 = false;
+        while (!mark) {
             try {
-                int publishYear = new Integer(in.nextLine());
-                tempB = new Book(name, author, publishYear, "", "");
-                aCC.addBook(tempB, id, publishYear);
+                String test = in.nextLine();
+                cancelCheck(test);
+                int id = new Integer(test);
+                Book tempB;
+                if (id == -1) id = addAuthor(in);
+                Author author = aCC.getAuthor(id);
+                System.out.print("Input the year of publishing: ");
+                while (!mark2) {
+                    String test1 = in.nextLine();
+                    cancelCheck(test1);
+                    try {
+                        int publishYear = new Integer(test1);
+                        tempB = new Book(name, author, publishYear, "", "");
+                        aCC.addBook(tempB, id, publishYear);
+                        System.out.println("Book " + "\"" + tempB.getTitle() + "\"" + " added to author " + "\"" + author.getName() + "\"\n");
+                        mark2 = true;
+                        try {
+                            aCC.save(new File("XML1.xml"));
+                        } catch (JAXBException ex) {
+                            System.out.println("Should not happen at all. Save cancelled");
+                        }
+                    } catch (NumberFormatException ex) {
+                        System.out.println("Year must be a number. Try again");
+                    } catch (YearOutOfBoundsException ex) {
+                        System.out.println("Year out of range. Try again");
+                    }
+                }
+                mark = true;
             } catch (NumberFormatException ex) {
-                System.out.println("Year must be a number. Addition canceled.");
-            } catch (YearOutOfBoundsException ex) {
-                System.out.println("Year out of range. Addition canceled");
+                System.out.println("Id must be a number. Try again.");
+            } catch (IndexOutOfBoundsException ex) {
+                System.out.println("Index out of range. Try again.");
             }
-        } catch (NumberFormatException ex) {
-            System.out.println("Id must be a number. Addition canceled.");
-        } catch (IndexOutOfBoundsException ex) {
-            System.out.println("Index out of range. Addition canceled.");
         }
     }
 
     private int addAuthor(Scanner in) {
         System.out.print("Input author's name: ");
         String name = in.nextLine();
+        cancelCheck(name);
         Author author = new Author(name);
         aCC.addAuthor(author);
+        try{
+            aCC.save(new File("XML1.xml"));
+        }catch (JAXBException ex) {
+            System.out.println("Should not happen at all. Save cancelled");
+        }
         return author.getId();
     }
 
     private void deleteAuthor(Scanner in) {
+        boolean mark = false;
         if (!aCC.getAuthorsContainer().getAuthors().isEmpty()) {
             viewAuthors();
-            System.out.print(("Input auhtor's id: "));
-            try {
-                int id = new Integer(in.nextLine());
-                System.out.print(("Warning! deleting an author will remove all his books as well. Procced? Y/N: "));
-                String str = in.nextLine();
-                if (str.toUpperCase().equals("Y")) {
-                    aCC.removeAuthor(id);
-                    System.out.println("Deletion succsessful.");
-                } else if (str.toUpperCase().equals("N")) System.out.println("Ok. Deletion canceled.");
-                else System.out.println("No such option. Deletion canceled.");
-            } catch (NumberFormatException ex) {
-                System.out.println("Id must be a number. Deletion canceled.");
-            } catch (IndexOutOfBoundsException ex) {
-                System.out.println("Index out of range. Deletion canceled.");
+            while (!mark) {
+                System.out.print(("Input auhtor's id: "));
+                try {
+                    String check = in.nextLine();
+                    cancelCheck(check);
+                    int id = new Integer(check);
+                    boolean mark2 = false;
+                    while (!mark2) {
+                        if (id < aCC.getAuthorsContainer().getAuthors().size()) {
+                            System.out.print(("Warning! deleting an author will remove all his books as well. Procced? Y/N: "));
+                            String str = in.nextLine();
+                            cancelCheck(str);
+                            if (str.toUpperCase().equals("Y")) {
+                                aCC.removeAuthor(id);
+                                System.out.println("Deletion succsessful.");
+                                mark2 = true;
+                                try {
+                                    aCC.save(new File("XML1.xml"));
+                                } catch (JAXBException ex) {
+                                    System.out.println("Should not happen at all. Save cancelled");
+                                }
+                            } else if (str.toUpperCase().equals("N")) {
+                                System.out.println("Ok. Deletion canceled.");
+                                break;
+                            } else System.out.println("Unknown command: " + str);
+                        } else throw new IndexOutOfBoundsException();
+                    }
+                    mark = true;
+                } catch (NumberFormatException ex) {
+                    System.out.println("Id must be a number. Try again.");
+                } catch (IndexOutOfBoundsException ex) {
+                    System.out.println("Index out of range. Try again.");
+                }
             }
         } else {
             System.out.println("Author list is empty\n");
         }
-
     }
 
     private void editAuthor(Scanner in) {
+        boolean mark = false;
         if (!aCC.getAuthorsContainer().getAuthors().isEmpty()) {
             viewAuthors();
-            System.out.print(("Input auhtor's id: "));
-            try {
-                int id = new Integer(in.nextLine());
-                Author cauthor = aCC.getAuthor(id);
-                System.out.println(cauthor.getName());
-                System.out.print(("Input auhtor's new name: "));
-                String str = in.nextLine();
-                cauthor.setName(str);
-            } catch (NumberFormatException ex) {
-                System.out.println("Id must be a number. Edition canceled.");
-            } catch (IndexOutOfBoundsException ex) {
-                System.out.println("Index out of range. Edition canceled.");
+            while (!mark) {
+                System.out.print(("Input auhtor's id: "));
+                try {
+                    String check = in.nextLine();
+                    cancelCheck(check);
+                    int id = new Integer(check);
+                    Author cauthor = aCC.getAuthor(id);
+                    String oldName = cauthor.getName();
+                    System.out.println(oldName);
+                    System.out.print(("Input auhtor's new name: "));
+
+                    String str = in.nextLine();
+                    cancelCheck(str);
+                    cauthor.setName(str);
+                    System.out.println("Author " + "\"" + oldName + "\"" + " got new name " + "\"" + cauthor.getName() + "\"\n");
+                    mark = true;
+                    try {
+                        aCC.save(new File("XML1.xml"));
+                    } catch (JAXBException ex) {
+                        System.out.println("Should not happen at all. Save cancelled");
+                    }
+
+                } catch (NumberFormatException ex) {
+                    System.out.println("Id must be a number. Try again.");
+                } catch (IndexOutOfBoundsException ex) {
+                    System.out.println("Index out of range. Try again.");
+                }
             }
+            System.out.println("Edition succsessful.\n");
         } else {
-            System.out.println("Author list is empty\n");
+            System.out.println("Author list is empty");
         }
 
     }
 
     private void editBook(Scanner in) {
+        boolean mark = false;
         if (aCC.checkBooksInAuthor()) {
             viewBooks();
-            System.out.print(("Input book's id: "));
-            try {
-                int id = new Integer(in.nextLine());
-                Book cbook = aCC.getBook(id);
-                System.out.printf("%25s %15s\n", cbook.getTitle(), cbook.getAuthor().getName());
-                System.out.print("Edit book's title Y/N?: ");
-                String str = in.nextLine();
-                if (str.toUpperCase().equals("Y")) {
-                    System.out.print("Input book's new title: ");
-                    str = in.nextLine();
-                    cbook.setTitle(str);
-                } else if (str.toUpperCase().equals("N")) {
-                } else System.out.println("Unknow command: " + str);
-                System.out.print("Edit book's author Y/N?: ");
-                str = in.nextLine();
-                if (str.toUpperCase().equals("Y")) {
-                    System.out.printf("%5d %15s\n", -1, "Add author");
-                    viewAuthors();
-                    System.out.print("Input book's new auhtor's id: ");
-                    try {
-                        int id2 = new Integer(in.nextLine());
-                        if (id2 == -1) id2 = addAuthor(in);
-                        Author author = aCC.getAuthor(id2);
-                        aCC.removeBook(id);
-                        cbook.setAuthor(author);
-                        aCC.addBook(cbook, id2);
-                    } catch (NumberFormatException ex) {
-                        System.out.println("Id must be a number. Author Field Edition canceled.");
-                    } catch (IndexOutOfBoundsException ex) {
-                        System.out.println("Index out of range. Author Field Edition canceled.");
+            while (!mark) {
+                System.out.print(("Input book's id: "));
+                try {
+                    String c = in.nextLine();
+                    cancelCheck(c);
+                    int id = new Integer(c);
+                    Book cbook = aCC.getBook(id);
+                    boolean mark1 = false;
+                    while (!mark1) {
+                        System.out.printf("%25s %15s\n", cbook.getTitle(), cbook.getAuthor().getName());
+                        System.out.print("Edit book's title Y/N?: ");
+                        String str = in.nextLine();
+                        cancelCheck(str);
+                        if (str.toUpperCase().equals("Y")) {
+                            System.out.print("Input book's new title: ");
+                            str = in.nextLine();
+                            cancelCheck(str);
+                            String oldTitle = cbook.getTitle();
+                            cbook.setTitle(str);
+                            System.out.println("Book " + "\"" + oldTitle + "\"" + " got new title " + "\"" + cbook.getTitle() + "\"\n");
+                            mark1 = true;
+                            try {
+                                aCC.save(new File("XML1.xml"));
+                            } catch (JAXBException ex) {
+                                System.out.println("Should not happen at all. Save cancelled");
+                            }
+                        } else if (str.toUpperCase().equals("N")) {
+                            break;
+                        } else System.out.println("Unknown command: " + str);
                     }
-                } else if (str.toUpperCase().equals("N")) {
-                } else System.out.println("Unknow command: " + str);
-                System.out.print("Edit book's year of publishing Y/N?: ");
-                str = in.nextLine();
-                if (str.toUpperCase().equals("Y")) {
-                    System.out.print("Input book's new year of publishing: ");
-                    try {
-                        int publishYear = new Integer(in.nextLine());
-                        cbook.setPublishYear(publishYear);
-                    } catch (NumberFormatException ex) {
-                        System.out.println("Year must be a number. Year Filed Edition canceled");
-                    } catch (YearOutOfBoundsException ex) {
-                        System.out.println("Year out of range. Year Filed Edition canceled");
+                    boolean mark2 = false;
+                    while (!mark2) {
+                        System.out.print("Edit book's author Y/N?: ");
+                        String str = in.nextLine();
+                        cancelCheck(str);
+                        if (str.toUpperCase().equals("Y")) {
+                            System.out.printf("%5d %15s\n", -1, "Add author");
+                            viewAuthors();
+                            System.out.print("Input book's new auhtor's id: ");
+                            try {
+                                String check = in.nextLine();
+                                cancelCheck(check);
+                                int id2 = new Integer(check);
+                                if (id2 == -1) id2 = addAuthor(in);
+                                Author author = aCC.getAuthor(id2);
+                                aCC.removeBook(id);
+                                cbook.setAuthor(author);
+                                aCC.addBook(cbook, id2);
+                                System.out.println("Book " + "\"" + cbook.getTitle() + "\"" + " is moved to new author " + "\"" + aCC.getAuthor(id2).getName() + "\"" + " from old " + "\"" + aCC.getAuthor(id).getName() + "\"\n");
+                                try {
+                                    aCC.save(new File("XML1.xml"));
+                                } catch (JAXBException ex) {
+                                    System.out.println("Should not happen at all. Save cancelled");
+                                }
+                            } catch (NumberFormatException ex) {
+                                System.out.println("Id must be a number. Author Field Edition canceled.");
+                            } catch (IndexOutOfBoundsException ex) {
+                                System.out.println("Index out of range. Author Field Edition canceled.");
+                            }
+                            mark2 = true;
+                        } else if (str.toUpperCase().equals("N")) {
+                            break;
+                        } else System.out.println("Unknow command: " + str);
                     }
-                } else if (str.toUpperCase().equals("N")) {
-                } else System.out.println("Unknow command: " + str);
-            } catch (NumberFormatException ex) {
-                System.out.println("It must be a number. Edition canceled.");
-            } catch (IndexOutOfBoundsException ex) {
-                System.out.println("Index out of range. Edition canceled.");
+                    boolean mark3 = false;
+                    while (!mark3) {
+                        System.out.print("Edit book's year of publishing Y/N?: ");
+                        String str = in.nextLine();
+                        cancelCheck(str);
+                        if (str.toUpperCase().equals("Y")) {
+                            System.out.print("Input book's new year of publishing: ");
+                            try {
+                                String check = in.nextLine();
+                                cancelCheck(check);
+                                int publishYear = new Integer(check);
+                                int oldPY = cbook.getPublishYear();
+                                cbook.setPublishYear(publishYear);
+                                System.out.println("Old publish year " + "\"" + oldPY + "\"" + " is changed to new " + "\"" + cbook.getPublishYear() + "\"\n");
+                                mark3 = true;
+                                try {
+                                    aCC.save(new File("XML1.xml"));
+                                } catch (JAXBException ex) {
+                                    System.out.println("Should not happen at all. Save cancelled");
+                                }
+                            } catch (NumberFormatException ex) {
+                                System.out.println("Year must be a number. Try again.");
+                            } catch (YearOutOfBoundsException ex) {
+                                System.out.println("Year out of range. Try again.");
+                            }
+                        } else if (str.toUpperCase().equals("N")) {
+                            break;
+                        } else System.out.println("Unknow command: " + str);
+                    }
+                    mark = true;
+                    System.out.println("Edition succsessful.\n");
+                } catch (NumberFormatException ex) {
+                    System.out.println("It must be a number. Try again.");
+                } catch (IndexOutOfBoundsException ex) {
+                    System.out.println("Index out of range.Try again.");
+                }
             }
         } else
-            System.out.println("Book list is empty\n");
+            System.out.println("Book list is empty.");
     }
 
+
     private void deleteBook(Scanner in) {
+
         if (aCC.checkBooksInAuthor()) {
+            boolean mark = false;
             viewBooks();
-            try {
-                System.out.print(("Input book's id: "));
-                int id = new Integer(in.nextLine());
-                aCC.removeBook(id);
-                System.out.println("Deletion successdful");
-            } catch (NumberFormatException ex) {
-                System.out.println("Id must be a number. Deletion canceled.");
-            } catch (IndexOutOfBoundsException ex) {
-                System.out.println("Index out of range. Deletion canceled.");
+            while (!mark) {
+                try {
+                    System.out.print(("Input book's id: "));
+                    String check = in.nextLine();
+                    cancelCheck(check);
+                    int id = new Integer(check);
+                    aCC.removeBook(id);
+                    System.out.println("Deletion successdful");
+                    mark = true;
+                    try {
+                        aCC.save(new File("XML1.xml"));
+                    } catch (JAXBException ex) {
+                        System.out.println("Should not happen at all. Save cancelled");
+                    }
+                } catch (NumberFormatException ex) {
+                    System.out.println("Id must be a number. Try again.");
+                } catch (IndexOutOfBoundsException ex) {
+                    System.out.println("Index out of range. Try again.");
+                }
             }
         } else
             System.out.println("Book list is empty\n");
+
+    }
+
+    //Метод проверки ввода "отмены"
+    private void cancelCheck(String in){
+        if (in.trim().equalsIgnoreCase("cancel")){
+            System.out.println("Action canceled");
+            mainLoop();
+        }
     }
 }
