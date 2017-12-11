@@ -2,6 +2,7 @@ package Models;
 
 import java.util.LinkedList;
 import java.util.List;
+import javax.xml.bind.ValidationException;
 import javax.xml.bind.annotation.*;
 
 @XmlRootElement
@@ -10,15 +11,23 @@ public class Author {
     private String name;
     private List<Book> books;
 
-    private static int cid = 0;
+    private static List<Integer> busyId;
     private int id = 0;
+
 
     private static final int TITLE_LIMIT = 75;
     private static final int BRIEF_LIMIT = 1500;
     private static final int PUBLISHER_LIMIT = 75;
-
+    
+    static{
+        busyId = new LinkedList<>();
+    }
+    
     {
-        id = cid++;
+        int cid = 0;
+        while (busyId.contains(cid)) cid++;
+        id = cid;
+        busyId.add(id);
     }
 
     public Author() {
@@ -35,11 +44,26 @@ public class Author {
         return name;
     }
 
-    @XmlTransient
+    @XmlElement
     public int getId() {
         return id;
     }
-
+    
+    public void setId(int val) throws ValidationException {
+        busyId.remove(new Integer(id));
+        if (busyId.contains(val)) {
+            busyId.add(id);
+            throw new ValidationException("busy id");
+        }
+        
+        id = val;
+        busyId.add(id);
+    }
+    
+    public static void resetId(){
+        busyId = new LinkedList<>();
+    }
+     
     public void setName(String name) {
         this.name = name.trim();
     }

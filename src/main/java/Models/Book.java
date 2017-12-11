@@ -2,6 +2,9 @@ package Models;
 
 import javax.xml.bind.annotation.*;
 import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.List;
+import javax.xml.bind.ValidationException;
 
 
 @XmlRootElement
@@ -11,13 +14,21 @@ public class Book {
     private int publishYear;
     private String publisher;
     private String brief;
-    private static int cid = 0;
+    private static List<Integer> busyId;
     private int id = 0;
 
-    {
-        id = cid++;
-    }
 
+    static{
+        busyId = new LinkedList<>();
+    }
+    
+    {
+        int cid = 0;
+        while (busyId.contains(cid)) cid++;
+        id = cid;
+        busyId.add(id);
+    }
+    
     public Book() {
     }
 
@@ -43,9 +54,23 @@ public class Book {
         return author;
     }
 
-    @XmlTransient
+    @XmlElement
     public int getId() {
         return id;
+    }
+    
+    public void setId(int val) throws ValidationException {
+        busyId.remove(new Integer(id));
+        if (busyId.contains(val)) {
+            busyId.add(id);
+            throw new ValidationException("busy id");
+        }
+        id = val;
+        busyId.add(id);
+    }
+    
+    public static void resetId(){
+        busyId = new LinkedList<>();
     }
 
     public void setAuthor(Author author) {
