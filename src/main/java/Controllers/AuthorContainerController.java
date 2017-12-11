@@ -65,6 +65,8 @@ public class AuthorContainerController {
         Unmarshaller unmarsh = context.createUnmarshaller();
         AuthorsContainer authors = (AuthorsContainer) unmarsh.unmarshal(fin);
         authorsContainer = authors;
+        Author.resetId();
+        Book.resetId();
         reInitAuthorsInBooks();
     }
 
