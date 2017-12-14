@@ -201,8 +201,6 @@ public class AuthorContainerView {
         System.out.print("Input book's title: ");
         String name = in.nextLine();
         while (true) {
-            cancelCheck(name);
-
             name = name.trim();
             if(!name.isEmpty()) {
                 if(name.length() <= BOOK_TITLE_LINIT) {
@@ -225,7 +223,9 @@ public class AuthorContainerView {
         while (!mark) {
             try {
                 String test = in.nextLine();
-                cancelCheck(test);
+                if(test.equalsIgnoreCase("cancel")){
+                    System.out.println("Action canceled");
+                    break;}
                 int id = new Integer(test);
                 Book tempB;
                 if (id == -1) id = addAuthor(in);
@@ -233,7 +233,9 @@ public class AuthorContainerView {
                 System.out.print("Input the year of publishing: ");
                 while (!mark2) {
                     String test1 = in.nextLine();
-                    cancelCheck(test1);
+                    if(test1.equalsIgnoreCase("cancel")){
+                        System.out.println("Action canceled");
+                        break;}
                     try {
                         int publishYear = new Integer(test1);
                         tempB = new Book(name, author, publishYear, "", "");
@@ -292,7 +294,7 @@ public class AuthorContainerView {
                 name = in.nextLine();
             }
         }
-        cancelCheck(name);
+
         Author author = new Author(name);
         if(!isExists(author, aCC.getAuthorsContainer().getAuthors())) {
             aCC.addAuthor(author);
@@ -326,14 +328,18 @@ public class AuthorContainerView {
                 System.out.print(("Input auhtor's id: "));
                 try {
                     String check = in.nextLine();
-                    cancelCheck(check);
+                    if(check.equalsIgnoreCase("cancel")){
+                        System.out.println("Action canceled");
+                        break;}
                     int id = new Integer(check);
                     boolean mark2 = false;
                     while (!mark2) {
                         if (id < aCC.getAuthorsContainer().getAuthors().size()) {
                             System.out.print(("Warning! deleting an author will remove all his books as well. Procced? Y/N: "));
                             String str = in.nextLine();
-                            cancelCheck(str);
+                            if(str.equalsIgnoreCase("cancel")){
+                                System.out.println("Action canceled");
+                                break;}
                             if (str.toUpperCase().equals("Y")) {
                                 aCC.removeAuthor(id);
                                 System.out.println("Deletion succsessful.");
@@ -369,7 +375,10 @@ public class AuthorContainerView {
                 System.out.print(("Input auhtor's id: "));
                 try {
                     String check = in.nextLine();
-                    cancelCheck(check);
+                    if(check.equalsIgnoreCase("cancel")){
+                        System.out.println("Action canceled");
+                        break;}
+
                     int id = new Integer(check);
                     Author cauthor = aCC.getAuthor(id);
                     String oldName = cauthor.getName();
@@ -377,12 +386,13 @@ public class AuthorContainerView {
                     System.out.print(("Input auhtor's new name: "));
 
                     String str = in.nextLine();
-                    cancelCheck(str);
+
                     cauthor.setName(str);
                     System.out.println("Author " + "\"" + oldName + "\"" + " got new name " + "\"" + cauthor.getName() + "\"\n");
                     mark = true;
                     try {
                         aCC.save(new File("XML1.xml"));
+                        System.out.println("Edition successful.\n");
                     } catch (JAXBException ex) {
                         System.out.println("Should not happen at all. Save cancelled");
                     }
@@ -393,7 +403,7 @@ public class AuthorContainerView {
                     System.out.println("Index out of range. Try again.");
                 }
             }
-            System.out.println("Edition succsessful.\n");
+
         } else {
             System.out.println("Author list is empty");
         }
@@ -408,7 +418,9 @@ public class AuthorContainerView {
                 System.out.print(("Input book's id: "));
                 try {
                     String c = in.nextLine();
-                    cancelCheck(c);
+                    if(c.equalsIgnoreCase("cancel")){
+                        System.out.println("Action canceled");
+                        break;}
                     int id = new Integer(c);
                     Book cbook = aCC.getBook(id);
                     boolean mark1 = false;
@@ -416,11 +428,13 @@ public class AuthorContainerView {
                         System.out.printf("%25s %15s\n", cbook.getTitle(), cbook.getAuthor().getName());
                         System.out.print("Edit book's title Y/N?: ");
                         String str = in.nextLine();
-                        cancelCheck(str);
+                        if(str.equalsIgnoreCase("cancel")){
+                            System.out.println("Action canceled");
+                            break;}
                         if (str.toUpperCase().equals("Y")) {
                             System.out.print("Input book's new title: ");
                             str = in.nextLine();
-                            cancelCheck(str);
+
                             String oldTitle = cbook.getTitle();
                             cbook.setTitle(str);
                             System.out.println("Book " + "\"" + oldTitle + "\"" + " got new title " + "\"" + cbook.getTitle() + "\"\n");
@@ -438,14 +452,18 @@ public class AuthorContainerView {
                     while (!mark2) {
                         System.out.print("Edit book's author Y/N?: ");
                         String str = in.nextLine();
-                        cancelCheck(str);
+                        if(str.equalsIgnoreCase("cancel")){
+                            System.out.println("Action canceled");
+                            break;}
                         if (str.toUpperCase().equals("Y")) {
                             System.out.printf("%5d %15s\n", -1, "Add author");
                             viewAuthors();
                             System.out.print("Input book's new auhtor's id: ");
                             try {
                                 String check = in.nextLine();
-                                cancelCheck(check);
+                                if(check.equalsIgnoreCase("cancel")){
+                                    System.out.println("Action canceled");
+                                    break;}
                                 int id2 = new Integer(check);
                                 if (id2 == -1) id2 = addAuthor(in);
                                 Author author = aCC.getAuthor(id2);
@@ -472,12 +490,16 @@ public class AuthorContainerView {
                     while (!mark3) {
                         System.out.print("Edit book's year of publishing Y/N?: ");
                         String str = in.nextLine();
-                        cancelCheck(str);
+                        if(str.equalsIgnoreCase("cancel")){
+                            System.out.println("Action canceled");
+                            break;}
                         if (str.toUpperCase().equals("Y")) {
                             System.out.print("Input book's new year of publishing: ");
                             try {
                                 String check = in.nextLine();
-                                cancelCheck(check);
+                                if(str.equalsIgnoreCase("cancel")){
+                                    System.out.println("Action canceled");
+                                    break;}
                                 int publishYear = new Integer(check);
                                 int oldPY = cbook.getPublishYear();
                                 cbook.setPublishYear(publishYear);
@@ -519,7 +541,9 @@ public class AuthorContainerView {
                 try {
                     System.out.print(("Input book's id: "));
                     String check = in.nextLine();
-                    cancelCheck(check);
+                    if(check.equalsIgnoreCase("cancel")){
+                        System.out.println("Action canceled");
+                        break;}
                     int id = new Integer(check);
                     aCC.removeBook(id);
                     System.out.println("Deletion successdful");
@@ -538,13 +562,5 @@ public class AuthorContainerView {
         } else
             System.out.println("Book list is empty\n");
 
-    }
-
-    //Метод проверки ввода "отмены"
-    private void cancelCheck(String in){
-        if (in.trim().equalsIgnoreCase("cancel")){
-            System.out.println("Action canceled");
-            mainLoop();
-        }
     }
 }
