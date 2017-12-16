@@ -111,7 +111,7 @@ public class Author {
 
         if (obj instanceof Author) {
             Author author = (Author) obj;
-            return name.equals(author.name) &&
+            return name.equals(author.name.trim()) &&
                     books.equals(author.books);
         }
 
