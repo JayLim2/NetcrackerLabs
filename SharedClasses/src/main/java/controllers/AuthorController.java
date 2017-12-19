@@ -1,8 +1,8 @@
-package Controllers;
+package controllers;
 
-import Models.Author;
-import Models.AuthorsContainer;
-import Models.Book;
+import models.Author;
+import models.AuthorsContainer;
+import models.Book;
 
 public class AuthorController {
     private Author author;

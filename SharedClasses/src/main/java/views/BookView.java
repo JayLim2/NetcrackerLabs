@@ -1,6 +1,6 @@
-package Views;
+package views;
 
-import Models.Book;
+import models.Book;
 
 public class BookView {
     void printBook(Book book) {

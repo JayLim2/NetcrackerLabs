@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>WebShop</groupId>
+    <artifactId>Client</artifactId>
+    <version>1.0</version>
+        
+	<build>
+		
+        <plugins> 
+			  <plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+				  <execution>
+					<phase>package</phase>
+					<goals>
+					  <goal>single</goal>
+					</goals>
+				  </execution>
+				</executions>
+				<configuration>
+				  <descriptorRefs>
+					<descriptorRef>jar-with-dependencies</descriptorRef>
+				  </descriptorRefs>
+				</configuration>
+			  </plugin>		
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <archive>
+                        <manifest>
+                          <mainClass>server.Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <!--useDefaultManifestFile>true</useDefaultManifestFile-->
+                    <archive>      
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>Main</mainClass>
+                            <!--packageName>com.alenag.client</packageName-->
+                        </manifest>
+                        <addMavenDescriptor>false</addMavenDescriptor>
+                    </archive>
+                </configuration>
+            </plugin> 
+        </plugins>
+    </build>   
+	
+        <dependencies>
+             
+             <dependency>
+                <groupId>WebShop</groupId>
+                <artifactId>SharedClasses</artifactId>
+                <version>1.0</version>
+             </dependency>
+         </dependencies>
+         <repositories>
+             <repository>
+                 <id>projectlombok.org</id>
+                 <url>http://projectlombok.org/mavenrepo</url>
+             </repository>
+         </repositories>
+
+</project>

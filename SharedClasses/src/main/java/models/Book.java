@@ -1,4 +1,4 @@
-package Models;
+package models;
 
 import javax.xml.bind.annotation.*;
 import java.util.Calendar;
