@@ -317,7 +317,7 @@ public class AuthorContainerView {
         return !author.getName().isEmpty() &&
                 author.getName().length() <=AUTHOR_NAME_LIMIT;
     }
-
+ 
     private void deleteAuthor(Scanner in) {
         boolean mark = false;
         if (!aCC.getAuthorsContainer().getAuthors().isEmpty()) {
