@@ -1,7 +1,7 @@
-package Controllers;
+package controllers;
 
-import Models.Author;
-import Models.Book;
+import models.Author;
+import models.Book;
 
 public class BookController  {
     private Book book;

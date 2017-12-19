@@ -1,4 +1,4 @@
-package Models;
+package models;
 
 import java.util.Comparator;
 //Возвращает 1, если первая строка больше второй

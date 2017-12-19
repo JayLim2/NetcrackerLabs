@@ -1,6 +1,6 @@
-package Views;
+package views;
 
-import Models.Author;
+import models.Author;
 
 public class AuthorView {
     void printAuthor(Author author){

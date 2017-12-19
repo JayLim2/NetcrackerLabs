@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<authorsContainer>
+    <authorList>
+        <booksList>
+            <brief></brief>
+            <id>0</id>
+            <publishYear>666</publishYear>
+            <publisher></publisher>
+            <title>cancel</title>
+        </booksList>
+        <booksList>
+            <brief></brief>
+            <id>2</id>
+            <publishYear>666</publishYear>
+            <publisher></publisher>
+            <title>cancel</title>
+        </booksList>
+        <id>0</id>
+        <name>cancel</name>
+    </authorList>
+</authorsContainer>

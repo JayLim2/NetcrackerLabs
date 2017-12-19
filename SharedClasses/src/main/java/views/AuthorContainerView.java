@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Views;
+package views;
 
-import Controllers.AuthorContainerController;
-import Models.Author;
-import Models.Book;
-import Models.YearOutOfBoundsException;
+import controllers.AuthorContainerController;
+import models.Author;
+import models.Book;
+import models.YearOutOfBoundsException;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
