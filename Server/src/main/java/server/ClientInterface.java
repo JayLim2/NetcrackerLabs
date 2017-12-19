@@ -51,16 +51,15 @@ public class ClientInterface implements Runnable{
             Unmarshaller unmarshIndex = contextIndex.createUnmarshaller();
             Unmarshaller unmarshBook = contextBook.createUnmarshaller();
             Marshaller marshResponses = contextResponses.createMarshaller();
+            Marshaller marshAuthorsContainer = contextAuthorsContainer.createMarshaller();
             while(true){
                 Commands command = (Commands)unmarshCommands.unmarshal(inp);
                 switch(command){
+                   case VIEW_BOOKS:
+                       marshResponses.marshal(Responses.OK, outp);
+                       marshAuthorsContainer.marshal(aCC.getAuthorsContainer(), outp);
+                       break;
                    case ADD_BOOK:
-                       int id = (Integer)unmarshIndex.unmarshal(inp);
-                       Book book = (Book)unmarshBook.unmarshal(inp);
-                       Author tA = aCC.getAuthor(id);
-                       synchronized(tA){
-                           new AuthorController(tA).addBook(0, book);
-                       }
                    case ADD_AUTHOR:
                    case SET_BOOK:
                    case SET_AUTHOR:
@@ -68,7 +67,6 @@ public class ClientInterface implements Runnable{
                    case REMOVE_AUTHOR:
                    case VIEW_AUTHORS:
                    case BYE:
-                   case VIEW_BOOKS:
                    default: marshResponses.marshal(Responses.ERROR, outp);
                 }
             }
