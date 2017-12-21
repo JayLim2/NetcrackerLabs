@@ -15,18 +15,11 @@ public class Book {
     private String publisher;
     private String brief;
     private static List<Integer> busyId;
-    private int id = 0;
+    private int id = -1;
 
 
     static{
         busyId = new LinkedList<>();
-    }
-    
-    {
-        int cid = 0;
-        while (busyId.contains(cid)) cid++;
-        id = cid;
-        busyId.add(id);
     }
     
     public Book() {
@@ -60,14 +53,26 @@ public class Book {
     }
     
     public void setId(int val) throws ValidationException {
-        busyId.remove(new Integer(id));
-        if (busyId.contains(val)) {
-            busyId.add(id);
-            throw new ValidationException("busy id");
-        }
-        id = val;
-        busyId.add(id);
+		if (val != -1){
+			busyId.remove(new Integer(id));
+			if (busyId.contains(val)) {
+				busyId.add(id);
+				throw new ValidationException("busy id");
+			}
+			id = val;
+			busyId.add(id);
+		}
     }
+	
+	public void dispatchId(){
+		int nid = 0;
+		while(busyId.contains(id)) nid++;
+		id = nid;
+	}
+	
+	public static void removeId(int id){
+		busyId.remove(new Integer(id));
+	}
     
     public static void resetId(){
         busyId = new LinkedList<>();

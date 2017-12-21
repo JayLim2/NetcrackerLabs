@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.*;
@@ -37,8 +38,9 @@ public class Main {
                 AuthorsContainer empty = new AuthorsContainer();
                 aCC = new AuthorContainerController(empty);
             }
+            ReadWriteLock rwl = new ReentrantReadWriteLock() ;
             while(true){
-                exec.submit(new ClientInterface(serverSocket.accept(), aCC));
+                exec.submit(new ClientInterface(serverSocket.accept(), aCC, rwl));
             }
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
