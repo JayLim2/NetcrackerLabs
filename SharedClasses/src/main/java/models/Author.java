@@ -12,7 +12,7 @@ public class Author {
     private List<Book> books;
 
     private static List<Integer> busyId;
-    private int id = 0;
+    private int id = -1;
 
 
     private static final int TITLE_LIMIT = 75;
@@ -21,14 +21,7 @@ public class Author {
     
     static{
         busyId = new LinkedList<>();
-    }
-    
-    {
-        int cid = 0;
-        while (busyId.contains(cid)) cid++;
-        id = cid;
-        busyId.add(id);
-    }
+	}
 
     public Author() {
         books = new LinkedList<>();
@@ -38,6 +31,16 @@ public class Author {
         this.name = name.trim();
         books = new LinkedList<>();
     }
+	
+	public void dispatchId(){
+		int nid = 0;
+		while(busyId.contains(id)) nid++;
+		id = nid;
+	}
+	
+	public static void removeId(int id){
+		busyId.remove(new Integer(id));
+	}
 
     @XmlElement
     public String getName() {
@@ -50,14 +53,15 @@ public class Author {
     }
     
     public void setId(int val) throws ValidationException {
-        busyId.remove(new Integer(id));
-        if (busyId.contains(val)) {
-            busyId.add(id);
-            throw new ValidationException("busy id");
-        }
-        
-        id = val;
-        busyId.add(id);
+		if (val != -1){
+			busyId.remove(new Integer(id));
+			if (busyId.contains(val)) {
+				busyId.add(id);
+				throw new ValidationException("busy id");
+			}
+			id = val;
+			busyId.add(id);
+		}
     }
     
     public static void resetId(){

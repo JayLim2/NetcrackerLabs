@@ -7,6 +7,7 @@ package server;
 
 import controllers.AuthorContainerController;
 import controllers.AuthorController;
+import controllers.BookController;
 import models.Author;
 import models.AuthorsContainer;
 import models.Book;
@@ -14,6 +15,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
@@ -30,10 +34,14 @@ import protocol.Responses;
 public class ClientInterface implements Runnable{
     private final Socket clientSocket;
     private AuthorContainerController aCC;
+    private Lock readLock;
+    private Lock writeLock;
     
-    public ClientInterface(Socket clientSocket, AuthorContainerController aCC){
+    public ClientInterface(Socket clientSocket, AuthorContainerController aCC, ReadWriteLock rwl){
         this.clientSocket = clientSocket;
         this.aCC = aCC;
+        readLock = rwl.readLock();
+        writeLock = rwl.writeLock();
     }
     
     @Override
@@ -50,24 +58,98 @@ public class ClientInterface implements Runnable{
             Unmarshaller unmarshCommands = contextCommands.createUnmarshaller();
             Unmarshaller unmarshIndex = contextIndex.createUnmarshaller();
             Unmarshaller unmarshBook = contextBook.createUnmarshaller();
+            Unmarshaller unmarshAuthor = contextAuthor.createUnmarshaller();
             Marshaller marshResponses = contextResponses.createMarshaller();
             Marshaller marshAuthorsContainer = contextAuthorsContainer.createMarshaller();
-            while(true){
-                Commands command = (Commands)unmarshCommands.unmarshal(inp);
-                switch(command){
-                   case VIEW_BOOKS:
-                       marshResponses.marshal(Responses.OK, outp);
-                       marshAuthorsContainer.marshal(aCC.getAuthorsContainer(), outp);
-                       break;
-                   case ADD_BOOK:
-                   case ADD_AUTHOR:
-                   case SET_BOOK:
-                   case SET_AUTHOR:
-                   case REMOVE_BOOK:
-                   case REMOVE_AUTHOR:
-                   case VIEW_AUTHORS:
-                   case BYE:
-                   default: marshResponses.marshal(Responses.ERROR, outp);
+            a:{
+                while(true){
+                    Commands command = (Commands)unmarshCommands.unmarshal(inp);
+                    switch(command){
+                       case VIEW_BOOKS:
+                           readLock.lock();
+                           try{
+                                marshResponses.marshal(Responses.OK, outp);
+                                marshAuthorsContainer.marshal(aCC.getAuthorsContainer(), outp);
+                           }
+                           finally{
+                               readLock.unlock();
+                           }
+                           break;
+                       case ADD_BOOK:{
+                            Index id = (Index)unmarshIndex.unmarshal(inp);
+                            Book book = (Book)unmarshBook.unmarshal(inp);
+                            writeLock.lock();
+                            try{
+                                 book.dispatchId();
+                                 book.setAuthor(aCC.getAuthor(id.getId()));//надо чтоб в контроллере это ваялось
+                                 new  AuthorController(aCC.getAuthor(id.getId())).addBook(0, book);
+                                 marshResponses.marshal(Responses.OK, outp);
+                            }
+                            finally{
+                                writeLock.unlock();
+                            }
+                        }
+                        break;
+                       case ADD_AUTHOR:
+                           Author author = (Author)unmarshAuthor.unmarshal(inp);
+                           writeLock.lock();
+                           try{
+                                author.dispatchId();
+                                aCC.addAuthor(author);
+                                marshResponses.marshal(Responses.OK, outp);
+                           }
+                           finally{
+                               writeLock.unlock();
+                           }
+                           break;
+                       case SET_BOOK:{
+    //                        Index id = (Index)unmarshIndex.unmarshal(inp);
+    //                        Book book = (Book)unmarshBook.unmarshal(inp);
+    //                        writeLock.lock();
+    //                        try{
+    //                            
+    //                            book.setAuthor(aCC.getAuthor(id.getId()));
+    //                            new  AuthorController(aCC.getAuthor(id.getId())).addBook(0, book);
+    //                        }
+    //                        finally{
+    //                            writeLock.unlock();
+    //                        }
+                        }
+                           break;
+                       case SET_AUTHOR:
+                       case REMOVE_BOOK:
+                       {
+                            Index id = (Index)unmarshIndex.unmarshal(inp);
+                            writeLock.lock();
+                            try{
+                                 aCC.removeBook(id.getId());
+                                 Book.removeId(id.getId());//надо засунуть в контроллер
+                                 marshResponses.marshal(Responses.OK, outp);
+                            }
+                            finally{
+                                writeLock.unlock();
+                            }
+                       }
+                       case REMOVE_AUTHOR:
+                       {
+                            Index id = (Index)unmarshIndex.unmarshal(inp);
+                            writeLock.lock();
+                            try{
+                                 aCC.removeAuthor(id.getId());
+                                 Author.removeId(id.getId());//надо засунуть в контроллер
+                                 marshResponses.marshal(Responses.OK, outp);
+                            }
+                            finally{
+                                writeLock.unlock();
+                            }
+                       }    
+                       case VIEW_AUTHORS:
+                       case BYE:{
+                           marshResponses.marshal(Responses.OK, outp);
+                           break a;
+                       }
+                       default: marshResponses.marshal(Responses.ERROR, outp);
+                    }
                 }
             }
         } catch (JAXBException ex) {
