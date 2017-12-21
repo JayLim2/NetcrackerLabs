@@ -81,7 +81,7 @@ public class Author {
         this.books = books;
     }
 
-    public void addBook(Book book) {
+    public boolean addBook(Book book) {
         if (!isExists(book, books) && isValid(book)) {
             book.setTitle(book.getTitle().trim());
             book.setPublisher(book.getPublisher().trim());
@@ -89,7 +89,9 @@ public class Author {
 
             books.add(book);
             books.sort(new BooksComparator());
+            return true;
         }
+        return false;
     }
 
     private boolean isExists(Book book, List<Book> bookList) {

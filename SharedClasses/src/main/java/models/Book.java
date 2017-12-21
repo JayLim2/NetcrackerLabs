@@ -79,6 +79,10 @@ public class Book {
     }
 
     public void setAuthor(Author author) {
+        if (!author.addBook(this));//throw something later
+        if(this.author != null){
+            this.author.getBooks().remove(this);
+        }
         this.author = author;
     }
 
