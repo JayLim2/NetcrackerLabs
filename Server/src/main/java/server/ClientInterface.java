@@ -24,6 +24,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import models.YearOutOfBoundsException;
 import protocol.Commands;
 import protocol.Responses;
 
@@ -65,6 +66,7 @@ public class ClientInterface implements Runnable{
                 while(true){
                     Commands command = (Commands)unmarshCommands.unmarshal(inp);
                     switch(command){
+                       case VIEW_AUTHORS:
                        case VIEW_BOOKS:
                            readLock.lock();
                            try{
@@ -91,6 +93,7 @@ public class ClientInterface implements Runnable{
                         }
                         break;
                        case ADD_AUTHOR:
+                       {
                            Author author = (Author)unmarshAuthor.unmarshal(inp);
                            writeLock.lock();
                            try{
@@ -101,22 +104,42 @@ public class ClientInterface implements Runnable{
                            finally{
                                writeLock.unlock();
                            }
+                       }
                            break;
                        case SET_BOOK:{
-    //                        Index id = (Index)unmarshIndex.unmarshal(inp);
-    //                        Book book = (Book)unmarshBook.unmarshal(inp);
-    //                        writeLock.lock();
-    //                        try{
-    //                            
-    //                            book.setAuthor(aCC.getAuthor(id.getId()));
-    //                            new  AuthorController(aCC.getAuthor(id.getId())).addBook(0, book);
-    //                        }
-    //                        finally{
-    //                            writeLock.unlock();
-    //                        }
+                            Index id = (Index)unmarshIndex.unmarshal(inp);
+                            Index id2 = (Index)unmarshIndex.unmarshal(inp);
+                            Book book = (Book)unmarshBook.unmarshal(inp);
+                            writeLock.lock();
+                            try{
+                                Book destBook = aCC.getBook(id.getId());//должон быть первым. если обломится, то прекращаем редактирование. предотвратит дубликат. так и не вынесли isExsist в контроллер.
+                                destBook.setAuthor(aCC.getAuthor(id2.getId()));//неплохо бы вынести все это дело в контроллер
+                                destBook.setPublishYear(book.getPublishYear());
+                                destBook.setBrief(book.getBrief());
+                                destBook.setPublisher(book.getPublisher());
+                                destBook.setTitle(book.getTitle());
+                            }
+                            catch (YearOutOfBoundsException ex) {
+                                //вообще произойти не должно. валидация года в клиенте должна быть
+                            }   
+                            finally{
+                                writeLock.unlock();
+                            }
                         }
                            break;
                        case SET_AUTHOR:
+                       {
+                            Index id = (Index)unmarshIndex.unmarshal(inp);
+                            Author author = (Author)unmarshAuthor.unmarshal(inp);
+                            writeLock.lock();
+                            try{
+                                aCC.getAuthor(id.getId()).setName(author.getName());
+                            } 
+                            finally{
+                                writeLock.unlock();
+                            }
+                       }
+                            break;
                        case REMOVE_BOOK:
                        {
                             Index id = (Index)unmarshIndex.unmarshal(inp);
@@ -143,7 +166,6 @@ public class ClientInterface implements Runnable{
                                 writeLock.unlock();
                             }
                        }    
-                       case VIEW_AUTHORS:
                        case BYE:{
                            marshResponses.marshal(Responses.OK, outp);
                            break a;
