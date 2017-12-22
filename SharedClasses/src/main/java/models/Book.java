@@ -124,7 +124,7 @@ public class Book {
         if (obj instanceof Book) {
             Book book = (Book) obj;
             return title.equals(book.title.trim()) &&
-                    author.equals(book.author) &&
+                    (author == author) &&
                     publishYear == book.publishYear &&
                     publisher.equals(book.publisher.trim()) &&
                     brief.equals(book.brief.trim());

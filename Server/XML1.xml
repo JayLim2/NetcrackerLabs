@@ -2,17 +2,17 @@
 <authorsContainer>
     <authorList>
         <booksList>
-            <brief></brief>
+            <brief>hmm</brief>
             <id>0</id>
             <publishYear>666</publishYear>
-            <publisher></publisher>
+            <publisher>myfrog</publisher>
             <title>cancel</title>
         </booksList>
         <booksList>
-            <brief></brief>
+            <brief>hmm</brief>
             <id>2</id>
             <publishYear>666</publishYear>
-            <publisher></publisher>
+            <publisher>myfrog</publisher>
             <title>cancel</title>
         </booksList>
         <id>0</id>
