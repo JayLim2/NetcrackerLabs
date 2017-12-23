@@ -233,7 +233,7 @@ public class AuthorContainerView {
                         int publishYear = new Integer(test1);
                         tempB = new Book(name, author, publishYear, "", "");
                         if(!isExists(tempB, author.getBooks())) {
-                            aCC.addBook(tempB, id, publishYear);
+                            aCC.addBook(tempB, id);
 
                             System.out.println("Book " + "\"" + tempB.getTitle() + "\"" + " added to author " + "\"" + author.getName() + "\"\n");
                             mark2 = true;

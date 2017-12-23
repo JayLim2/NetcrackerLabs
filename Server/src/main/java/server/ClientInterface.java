@@ -95,9 +95,7 @@ public class ClientInterface implements Runnable{
                             Book book = adbp.getBook();
                             writeLock.lock();
                             try{
-                                 book.dispatchId();
-                                 book.setAuthor(aCC.getAuthor(id));//надо чтоб в контроллере это ваялось
-                                 new  AuthorController(aCC.getAuthor(id)).addBook(0, book);
+                                 aCC.addBook(book, id);
                                  marshResponse.marshal(new OkPacket(Responses.OK), outp);
                             }
                             finally{
@@ -111,7 +109,6 @@ public class ClientInterface implements Runnable{
                            writeLock.lock();
                            try{
                                 Author author = abap.getAuthor();
-                                author.dispatchId();
                                 aCC.addAuthor(author);
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
                            }
@@ -122,21 +119,17 @@ public class ClientInterface implements Runnable{
                            break;
                        case SET_BOOK:{
                             SetBookPacket stbp = (SetBookPacket)command;
+                            Book book = stbp.getBook();
+                            int id = stbp.getBookId();
+                            int id2 = stbp.getNewAuthorId();
                             writeLock.lock();
                             try{
-                                Book book = stbp.getBook();
-                                int id = stbp.getBookId();
-                                int id2 = stbp.getNewAuthorId();
-                                Book destBook = aCC.getBook(id);//должон быть первым. если обломится, то прекращаем редактирование. предотвратит дубликат. так и не вынесли isExsist в контроллер.
-                                destBook.setAuthor(aCC.getAuthor(id2));//неплохо бы вынести все это дело в контроллер
-                                destBook.setPublishYear(book.getPublishYear());
-                                destBook.setBrief(book.getBrief());
-                                destBook.setPublisher(book.getPublisher());
-                                destBook.setTitle(book.getTitle());
+                                aCC.changeBook(book, id, id2);//мб предварительную валидацию года приписать
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
                             }
-                            catch (YearOutOfBoundsException ex) {
+                            catch (YearOutOfBoundsException|IndexOutOfBoundsException ex) {
                                 //вообще произойти не должно. валидация года в клиенте должна быть
+                                marshResponse.marshal(new ErrorPacket(Responses.OK,"Index/Year error"), outp);
                             }   
                             finally{
                                 writeLock.unlock();
@@ -162,8 +155,10 @@ public class ClientInterface implements Runnable{
                             writeLock.lock();
                             try{
                                  aCC.removeBook(rmbp.getId());
-                                 Book.removeId(rmbp.getId());//надо засунуть в контроллер
                                  marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                            }
+                            catch(IndexOutOfBoundsException ex){
+                                marshResponse.marshal(new ErrorPacket(Responses.ERROR,"no Author with such index"), outp);
                             }
                             finally{
                                 writeLock.unlock();
@@ -174,9 +169,11 @@ public class ClientInterface implements Runnable{
                             RemoveAuthorPacket rmap = (RemoveAuthorPacket)command;
                             writeLock.lock();
                             try{
-                                 aCC.removeAuthor(rmap.getId());
-                                 Author.removeId(rmap.getId());//надо засунуть в контроллер
-                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                                aCC.removeAuthor(rmap.getId());
+                                marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                            }
+                            catch(IndexOutOfBoundsException ex){
+                                marshResponse.marshal(new ErrorPacket(Responses.ERROR,"no Author with such index"), outp);
                             }
                             finally{
                                 writeLock.unlock();

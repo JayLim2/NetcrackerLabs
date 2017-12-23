@@ -13,6 +13,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import models.YearOutOfBoundsException;
 
 public class AuthorContainerController {
     private AuthorsContainer authorsContainer;
@@ -23,6 +24,7 @@ public class AuthorContainerController {
 
     public void addAuthor(Author author) {
         authorsContainer.addAuthor(author);
+        author.dispatchId();
     }
 
     public Author getAuthor(int id) {
@@ -90,6 +92,7 @@ public class AuthorContainerController {
                 }
                 if (res != null) {
                     author.getBooks().remove(res);
+                    Book.removeId(id);
                     break a;
                 }
             }
@@ -106,7 +109,10 @@ public class AuthorContainerController {
             }
         }
         if (res != null)
+        {
             authorsContainer.getAuthors().remove(res);
+            Author.removeId(id);
+        }
         else
             throw new IndexOutOfBoundsException();
     }
@@ -116,11 +122,24 @@ public class AuthorContainerController {
     }
 
     public void addBook(Book book, int id) {
-        authorsContainer.getAuthor(id).addBook(book);
+        book.dispatchId();
+        book.setAuthor(authorsContainer.getAuthor(id));
     }
-
-    public void addBook(Book book, int id, int publishYear) {
-        authorsContainer.getAuthor(id).addBook(book);
+    
+    public boolean existAlready(Author author, Book book){
+        BookController bcBook = new BookController(book);
+        for(Book exBook: author.getBooks()){
+            if (bcBook.isEquvalent(exBook))
+                return true;
+        }
+        return false;
+    }
+    
+    public void changeBook(Book book, int bid, int naid) throws YearOutOfBoundsException{
+        Book chBook = getBook(bid);
+        Author chAuthor = getAuthor(naid);
+        if (existAlready(chAuthor,book));//throw Exception
+        new BookController(chBook).modifyBook(book);
     }
 
     public void reInitAuthorsInBooks() {//если оставим эту штуку с xml наверное будет приватным и вызыватся только при десериализации
