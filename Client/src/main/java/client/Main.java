@@ -17,6 +17,11 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 
 public class Main {
     public static void main(String[] args) {
@@ -36,11 +41,16 @@ public class Main {
             Unmarshaller responseUnmarshaller = contextResponses.createUnmarshaller();
 
             commandMarshaller.marshal(currentCommand, OS);
-            currentResponse = (Responses) responseUnmarshaller.unmarshal(IS);
-
-            if (currentResponse == Responses.OK) {
+//            currentResponse = (Responses) responseUnmarshaller.unmarshal(IS);
+//
+//            if (currentResponse == Responses.OK) {
                 System.out.println("Response accepted.\n");
-                AuthorsContainer authorsContainer = (AuthorsContainer) authorsContainerUnmarshaller.unmarshal(IS);
+                XMLInputFactory xmi = XMLInputFactory.newFactory();
+                InputStream inp = clientSocket.getInputStream();
+                XMLEventReader xer = xmi.createXMLEventReader(IS);
+                xer.nextEvent();
+                xer.peek();
+                AuthorsContainer authorsContainer = (AuthorsContainer) authorsContainerUnmarshaller.unmarshal(xer);
                 //AuthorContainerController aCC = new AuthorContainerController(authorsContainer);
 
                 //View books
@@ -48,14 +58,28 @@ public class Main {
                 for (Author author : authors) {
                     List<Book> books = author.getBooks();
                     for (Book book : books) {
-                        System.out.printf("%4d %30s %15s %5d %15s %25s", book.getId(), book.getTitle(), book.getAuthor().getName(), book.getPublishYear(), book.getPublisher(), book.getBrief());
+                        System.out.printf("%4d %30s %5d %15s %25s%n", book.getId(), book.getTitle(),  book.getPublishYear(), book.getPublisher(), book.getBrief());
                     }
                 }
+                commandMarshaller.marshal(currentCommand, OS);
+                xer = xmi.createXMLEventReader(IS);
+                xer.nextEvent();
+                 xer.peek();
+                 Book.resetId();
+                 Author.resetId();
+                authorsContainer = (AuthorsContainer) authorsContainerUnmarshaller.unmarshal(xer);
 
+                 authors = authorsContainer.getAuthors();
+                for (Author author : authors) {
+                    List<Book> books = author.getBooks();
+                    for (Book book : books) {
+                        System.out.printf("%4d %30s %5d %15s %25s%n", book.getId(), book.getTitle(),  book.getPublishYear(), book.getPublisher(), book.getBrief());
+                    }
+                }
                 //System.out.println("Authors Containter received.");
-            } else {
-                System.out.println("400 - Bad request.");
-            }
+//            } else {
+//                System.out.println("400 - Bad request.");
+//            }
 
             IS.close();
             OS.close();
@@ -66,6 +90,8 @@ public class Main {
             System.out.println("Ошибка механизма ввода-вывода.");
         } catch (JAXBException e) {
             System.out.println("Ошибка XML-сериализации.");
+        } catch (XMLStreamException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

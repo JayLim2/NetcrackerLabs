@@ -24,6 +24,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 import models.YearOutOfBoundsException;
 import protocol.Commands;
 import protocol.Responses;
@@ -49,7 +52,9 @@ public class ClientInterface implements Runnable{
     public void run() {
         try {
             OutputStream outp = clientSocket.getOutputStream();
+            XMLInputFactory xmi = XMLInputFactory.newFactory();
             InputStream inp = clientSocket.getInputStream();
+            XMLEventReader xer;
             JAXBContext contextCommands = JAXBContext.newInstance(Commands.class);
             JAXBContext contextResponses = JAXBContext.newInstance(Responses.class);
             JAXBContext contextBook = JAXBContext.newInstance(Book.class);
@@ -64,13 +69,17 @@ public class ClientInterface implements Runnable{
             Marshaller marshAuthorsContainer = contextAuthorsContainer.createMarshaller();
             a:{
                 while(true){
-                    Commands command = (Commands)unmarshCommands.unmarshal(inp);
+                    Commands command = Commands.VIEW_AUTHORS;
+                    xer = xmi.createXMLEventReader(inp);
+                    xer.nextEvent();
+                    xer.peek();
+                    command = (Commands)unmarshCommands.unmarshal(xer);
                     switch(command){
                        case VIEW_AUTHORS:
                        case VIEW_BOOKS:
                            readLock.lock();
                            try{
-                                marshResponses.marshal(Responses.OK, outp);
+                                //marshResponses.marshal(Responses.OK, outp);
                                 marshAuthorsContainer.marshal(aCC.getAuthorsContainer(), outp);
                            }
                            finally{
@@ -177,6 +186,8 @@ public class ClientInterface implements Runnable{
         } catch (JAXBException ex) {
             Logger.getLogger(ClientInterface.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
+            Logger.getLogger(ClientInterface.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (XMLStreamException ex) {
             Logger.getLogger(ClientInterface.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
