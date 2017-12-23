@@ -28,8 +28,7 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import models.YearOutOfBoundsException;
-import protocol.Commands;
-import protocol.Responses;
+import protocol.*;
 
 /**
  *
@@ -55,46 +54,51 @@ public class ClientInterface implements Runnable{
             XMLInputFactory xmi = XMLInputFactory.newFactory();
             InputStream inp = clientSocket.getInputStream();
             XMLEventReader xer;
-            JAXBContext contextCommands = JAXBContext.newInstance(Commands.class);
-            JAXBContext contextResponses = JAXBContext.newInstance(Responses.class);
-            JAXBContext contextBook = JAXBContext.newInstance(Book.class);
-            JAXBContext contextAuthor = JAXBContext.newInstance(Author.class);
-            JAXBContext contextIndex = JAXBContext.newInstance(Index.class);
-            JAXBContext contextAuthorsContainer = JAXBContext.newInstance(AuthorsContainer.class);
-            Unmarshaller unmarshCommands = contextCommands.createUnmarshaller();
-            Unmarshaller unmarshIndex = contextIndex.createUnmarshaller();
-            Unmarshaller unmarshBook = contextBook.createUnmarshaller();
-            Unmarshaller unmarshAuthor = contextAuthor.createUnmarshaller();
-            Marshaller marshResponses = contextResponses.createMarshaller();
-            Marshaller marshAuthorsContainer = contextAuthorsContainer.createMarshaller();
+            JAXBContext contextPacket = JAXBContext.newInstance(CommandPacket.class, AddBookPacket.class, ViewBooksPacket.class,
+            AddAuthorPacket.class, RemoveBookPacket.class, RemoveAuthorPacket.class, SetAuthorPacket.class, SetBookPacket.class);
+            Unmarshaller unmarshPacket = contextPacket.createUnmarshaller();
+//            JAXBContext contextCommands = JAXBContext.newInstance(Commands.class);
+            JAXBContext contextResponse = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class,
+            ViewBooksResponsePacket.class);
+//            JAXBContext contextBook = JAXBContext.newInstance(Book.class);
+//            JAXBContext contextAuthor = JAXBContext.newInstance(Author.class);
+//            JAXBContext contextIndex = JAXBContext.newInstance(Index.class);
+            //JAXBContext contextAuthorsContainer = JAXBContext.newInstance(AuthorsContainer.class);
+//            Unmarshaller unmarshCommands = contextCommands.createUnmarshaller();
+//            Unmarshaller unmarshIndex = contextIndex.createUnmarshaller();
+//            Unmarshaller unmarshBook = contextBook.createUnmarshaller();
+//            Unmarshaller unmarshAuthor = contextAuthor.createUnmarshaller();
+            Marshaller marshResponse = contextResponse.createMarshaller();
+            //Marshaller marshAuthorsContainer = contextAuthorsContainer.createMarshaller();
             a:{
                 while(true){
-                    Commands command = Commands.VIEW_AUTHORS;
+                    CommandPacket command = new CommandPacket();
                     xer = xmi.createXMLEventReader(inp);
                     xer.nextEvent();
                     xer.peek();
-                    command = (Commands)unmarshCommands.unmarshal(xer);
-                    switch(command){
+                    command = (CommandPacket)unmarshPacket.unmarshal(xer);
+                    switch(command.getCommand()){
                        case VIEW_AUTHORS:
                        case VIEW_BOOKS:
                            readLock.lock();
                            try{
                                 //marshResponses.marshal(Responses.OK, outp);
-                                marshAuthorsContainer.marshal(aCC.getAuthorsContainer(), outp);
+                                marshResponse.marshal(new ViewBooksResponsePacket(Responses.OK, aCC.getAuthorsContainer()), outp);
                            }
                            finally{
                                readLock.unlock();
                            }
                            break;
                        case ADD_BOOK:{
-                            Index id = (Index)unmarshIndex.unmarshal(inp);
-                            Book book = (Book)unmarshBook.unmarshal(inp);
+                            AddBookPacket adbp = (AddBookPacket)command;
+                            int id = adbp.getId();
+                            Book book = adbp.getBook();
                             writeLock.lock();
                             try{
                                  book.dispatchId();
-                                 book.setAuthor(aCC.getAuthor(id.getId()));//надо чтоб в контроллере это ваялось
-                                 new  AuthorController(aCC.getAuthor(id.getId())).addBook(0, book);
-                                 marshResponses.marshal(Responses.OK, outp);
+                                 book.setAuthor(aCC.getAuthor(id));//надо чтоб в контроллере это ваялось
+                                 new  AuthorController(aCC.getAuthor(id)).addBook(0, book);
+                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
                             }
                             finally{
                                 writeLock.unlock();
@@ -103,12 +107,13 @@ public class ClientInterface implements Runnable{
                         break;
                        case ADD_AUTHOR:
                        {
-                           Author author = (Author)unmarshAuthor.unmarshal(inp);
+                           AddAuthorPacket abap = (AddAuthorPacket)command;
                            writeLock.lock();
                            try{
+                                Author author = abap.getAuthor();
                                 author.dispatchId();
                                 aCC.addAuthor(author);
-                                marshResponses.marshal(Responses.OK, outp);
+                                marshResponse.marshal(new OkPacket(Responses.OK), outp);
                            }
                            finally{
                                writeLock.unlock();
@@ -116,17 +121,19 @@ public class ClientInterface implements Runnable{
                        }
                            break;
                        case SET_BOOK:{
-                            Index id = (Index)unmarshIndex.unmarshal(inp);
-                            Index id2 = (Index)unmarshIndex.unmarshal(inp);
-                            Book book = (Book)unmarshBook.unmarshal(inp);
+                            SetBookPacket stbp = (SetBookPacket)command;
                             writeLock.lock();
                             try{
-                                Book destBook = aCC.getBook(id.getId());//должон быть первым. если обломится, то прекращаем редактирование. предотвратит дубликат. так и не вынесли isExsist в контроллер.
-                                destBook.setAuthor(aCC.getAuthor(id2.getId()));//неплохо бы вынести все это дело в контроллер
+                                Book book = stbp.getBook();
+                                int id = stbp.getBookId();
+                                int id2 = stbp.getNewAuthorId();
+                                Book destBook = aCC.getBook(id);//должон быть первым. если обломится, то прекращаем редактирование. предотвратит дубликат. так и не вынесли isExsist в контроллер.
+                                destBook.setAuthor(aCC.getAuthor(id2));//неплохо бы вынести все это дело в контроллер
                                 destBook.setPublishYear(book.getPublishYear());
                                 destBook.setBrief(book.getBrief());
                                 destBook.setPublisher(book.getPublisher());
                                 destBook.setTitle(book.getTitle());
+                                marshResponse.marshal(new OkPacket(Responses.OK), outp);
                             }
                             catch (YearOutOfBoundsException ex) {
                                 //вообще произойти не должно. валидация года в клиенте должна быть
@@ -138,11 +145,11 @@ public class ClientInterface implements Runnable{
                            break;
                        case SET_AUTHOR:
                        {
-                            Index id = (Index)unmarshIndex.unmarshal(inp);
-                            Author author = (Author)unmarshAuthor.unmarshal(inp);
+                            SetAuthorPacket stap = (SetAuthorPacket)command; 
                             writeLock.lock();
                             try{
-                                aCC.getAuthor(id.getId()).setName(author.getName());
+                                aCC.getAuthor(stap.getId()).setName(stap.getAuthor().getName());
+                                marshResponse.marshal(new OkPacket(Responses.OK), outp);
                             } 
                             finally{
                                 writeLock.unlock();
@@ -151,12 +158,12 @@ public class ClientInterface implements Runnable{
                             break;
                        case REMOVE_BOOK:
                        {
-                            Index id = (Index)unmarshIndex.unmarshal(inp);
+                            RemoveBookPacket rmbp = (RemoveBookPacket)command;
                             writeLock.lock();
                             try{
-                                 aCC.removeBook(id.getId());
-                                 Book.removeId(id.getId());//надо засунуть в контроллер
-                                 marshResponses.marshal(Responses.OK, outp);
+                                 aCC.removeBook(rmbp.getId());
+                                 Book.removeId(rmbp.getId());//надо засунуть в контроллер
+                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
                             }
                             finally{
                                 writeLock.unlock();
@@ -164,22 +171,22 @@ public class ClientInterface implements Runnable{
                        }
                        case REMOVE_AUTHOR:
                        {
-                            Index id = (Index)unmarshIndex.unmarshal(inp);
+                            RemoveAuthorPacket rmap = (RemoveAuthorPacket)command;
                             writeLock.lock();
                             try{
-                                 aCC.removeAuthor(id.getId());
-                                 Author.removeId(id.getId());//надо засунуть в контроллер
-                                 marshResponses.marshal(Responses.OK, outp);
+                                 aCC.removeAuthor(rmap.getId());
+                                 Author.removeId(rmap.getId());//надо засунуть в контроллер
+                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
                             }
                             finally{
                                 writeLock.unlock();
                             }
                        }    
                        case BYE:{
-                           marshResponses.marshal(Responses.OK, outp);
+                           marshResponse.marshal(new OkPacket(Responses.OK), outp);
                            break a;
                        }
-                       default: marshResponses.marshal(Responses.ERROR, outp);
+                       default: marshResponse.marshal(new ErrorPacket(Responses.ERROR,"unknownCommand"), outp);
                     }
                 }
             }
