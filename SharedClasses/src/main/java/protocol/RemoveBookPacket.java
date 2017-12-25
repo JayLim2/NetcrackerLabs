@@ -10,15 +10,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author Алескандр
+ * @author пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
  */
 @XmlRootElement
 public class RemoveBookPacket extends CommandPacket{
      private int id;
     
     public RemoveBookPacket(){}
-    
-    public RemoveBookPacket(Commands command,int id){
+
+    public RemoveBookPacket(Commands command, int id) {
         super(command);
         this.id = id;
     }
