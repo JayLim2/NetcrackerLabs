@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Алескандр
  */
 @XmlRootElement
-public class ViewBooksPacket extends CommandPacket{
+public class ViewBooksPacket extends CommandPacket {
     
     public ViewBooksPacket(){}
     
