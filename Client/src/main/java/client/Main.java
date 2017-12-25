@@ -38,7 +38,7 @@ public class Main {
             out = clientSocket.getOutputStream();
             in = clientSocket.getInputStream();
 
-            contextCommands = JAXBContext.newInstance(CommandPacket.class, AddBookPacket.class, ViewBooksPacket.class);
+            contextCommands = JAXBContext.newInstance(CommandPacket.class, AddBookPacket.class, ViewBooksPacket.class, SetBookPacket.class);
             commandMarshaller = contextCommands.createMarshaller();
             xmi = XMLInputFactory.newFactory();
 
@@ -66,6 +66,24 @@ public class Main {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
 
+            //======================== EDIT BOOK ==============================
+            try {
+                Book book = new Book("test111", null, 1234, "somedude", "a test book");
+                editBook(0, book);
+            } catch (XMLStreamException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (YearOutOfBoundsException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            //======================== VIEW BOOK ==============================
+            /*try {
+                viewBooks();
+            } catch (XMLStreamException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }*/
+
+            //======================================================================
             in.close();
             out.close();
             clientSocket.close();
@@ -80,6 +98,12 @@ public class Main {
         }
     }
 
+    /**
+     * Команда просмотра списка книг
+     *
+     * @throws JAXBException
+     * @throws XMLStreamException
+     */
     public static void viewBooks() throws JAXBException, XMLStreamException {
         //====================== VIEW BOOKS ==============================
         ViewBooksPacket currentCommand = new ViewBooksPacket(Commands.VIEW_BOOKS);
@@ -98,7 +122,7 @@ public class Main {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШИБКА: невозможно выполнить команду.");
+            System.out.println("ОШИБКА: невозможно выполнить команду VIEW BOOKS.");
         }
 
         //Если всё ок
@@ -116,6 +140,12 @@ public class Main {
         }
     }
 
+    /**
+     * Команда добавления книги
+     * @param book
+     * @throws JAXBException
+     * @throws XMLStreamException
+     */
     public static void addBook(Book book) throws JAXBException, XMLStreamException {
         AddBookPacket currentCommand = new AddBookPacket(Commands.ADD_BOOK, 0, book);
 
@@ -135,7 +165,7 @@ public class Main {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШИБКА: невозможно выполнить команду.\n");
+            System.out.println("ОШИБКА: невозможно выполнить команду ADD BOOK.\n");
         }
 
         //Если всё ок
@@ -144,11 +174,94 @@ public class Main {
         }
     }
 
-    public static void editBook(int id) {
+    /**
+     * Команда изменения книги
+     *
+     * @param id
+     * @param book
+     * @throws JAXBException
+     * @throws XMLStreamException
+     */
+    public static void editBook(int id, Book book) throws JAXBException, XMLStreamException {
+        SetBookPacket currentCommand = new SetBookPacket(Commands.SET_BOOK, 0, 0, book);
+
+        JAXBContext contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
+        Unmarshaller unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
+
+        commandMarshaller.marshal(currentCommand, out);
+
+        xer = xmi.createXMLEventReader(in);
+        xer.nextEvent();
+        xer.peek();
+        Book.resetId();
+        Author.resetId();
+
+        ResponsePacket response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
+        System.out.println("Response accepted.\n");
+
+        //Если произошла ошибка при выполнении команды
+        if (response instanceof ErrorPacket) {
+            System.out.println("ОШИБКА: невозможно выполнить команду EDIT BOOK.\n");
+            System.out.println(((ErrorPacket) response).getDescription());
+        }
+
+        //Если всё ок
+        if (response instanceof OkPacket) {
+            System.out.println("Книга изменена успешно.\n");
+        }
+    }
+
+    /**
+     * Команда удаления книги
+     *
+     * @param id
+     * @throws JAXBException
+     * @throws XMLStreamException
+     */
+    public static void deleteBook(int id) throws JAXBException, XMLStreamException {
+        RemoveBookPacket currentCommand = new RemoveBookPacket(Commands.REMOVE_BOOK, id);
+
+        JAXBContext contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
+        Unmarshaller unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
+
+        commandMarshaller.marshal(currentCommand, out);
+
+        xer = xmi.createXMLEventReader(in);
+        xer.nextEvent();
+        xer.peek();
+        Book.resetId();
+        Author.resetId();
+
+        ResponsePacket response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
+        System.out.println("Response accepted.\n");
+
+        //Если произошла ошибка при выполнении команды
+        if (response instanceof ErrorPacket) {
+            System.out.println("ОШИБКА: невозможно выполнить команду DELETE BOOK.\n");
+            System.out.println(((ErrorPacket) response).getDescription());
+        }
+
+        //Если всё ок
+        if (response instanceof OkPacket) {
+            System.out.println("Книга удалена успешно.\n");
+        }
+    }
+
+    //-------------------------------
+
+    public static void viewAuthors() {
 
     }
 
-    public static void deleteBook(int id) {
+    public static void addAuthor(Author author) {
+
+    }
+
+    public static void editAuthor(int id, String authorName) {
+
+    }
+
+    public static void deleteAuthor(int id) {
 
     }
 }
