@@ -32,6 +32,7 @@ public class Main {
     private static XMLInputFactory xmi;
     private static XMLEventReader xer;
 
+    //Пример общения клиента с сервером по различным видам команд
     public static void main(String[] args) {
         try {
             clientSocket = new Socket(InetAddress.getLocalHost(), 4444);
@@ -99,7 +100,7 @@ public class Main {
     }
 
     /**
-     * Команда просмотра списка книг
+     * Отправка из клиента команды VIEW_BOOKS
      *
      * @throws JAXBException
      * @throws XMLStreamException
@@ -131,6 +132,7 @@ public class Main {
 
             AuthorsContainer authorsContainer = viewBooksResponsePacket.getAuthorsContainer();
             List<Author> authors = authorsContainer.getAuthors();
+            System.out.printf("%4s %30s %5s %15s %25s%n", "#", "Title", "Year", "Publisher", "Brief");
             for (Author author : authors) {
                 List<Book> books = author.getBooks();
                 for (Book book : books) {
@@ -141,7 +143,7 @@ public class Main {
     }
 
     /**
-     * Команда добавления книги
+     * Отправка из клиента команды ADD_BOOK [DATA]
      * @param book
      * @throws JAXBException
      * @throws XMLStreamException
@@ -175,8 +177,7 @@ public class Main {
     }
 
     /**
-     * Команда изменения книги
-     *
+     * Отправка из клиента команды SET_BOOK [DATA] by ID
      * @param id
      * @param book
      * @throws JAXBException
@@ -212,7 +213,7 @@ public class Main {
     }
 
     /**
-     * Команда удаления книги
+     * Отправка из клиента команды REMOVE_BOOK by ID
      *
      * @param id
      * @throws JAXBException
@@ -249,19 +250,155 @@ public class Main {
 
     //-------------------------------
 
-    public static void viewAuthors() {
+    /**
+     * FIXME 25.12.17
+     * Отправка из клиента команды VIEW_AUTHORS
+     *
+     * @throws JAXBException
+     * @throws XMLStreamException
+     */
+    public static void viewAuthors() throws JAXBException, XMLStreamException {
+        //пока реализована точно так же как VIEW_BOOKS
+        ViewBooksPacket currentCommand = new ViewBooksPacket(Commands.VIEW_BOOKS);
 
+        JAXBContext contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class, ViewBooksResponsePacket.class);
+        Unmarshaller unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
+
+        commandMarshaller.marshal(currentCommand, out);
+
+        xer = xmi.createXMLEventReader(in);
+        xer.nextEvent();
+        xer.peek();
+
+        ResponsePacket response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
+        System.out.println("Response accepted.\n");
+
+        //Если произошла ошибка при выполнении команды
+        if (response instanceof ErrorPacket) {
+            System.out.println("ОШИБКА: невозможно выполнить команду VIEW BOOKS.");
+        }
+
+        //Если всё ок
+        if (response instanceof ViewBooksResponsePacket) {
+            ViewBooksResponsePacket viewBooksResponsePacket = (ViewBooksResponsePacket) response;
+
+            AuthorsContainer authorsContainer = viewBooksResponsePacket.getAuthorsContainer();
+            List<Author> authors = authorsContainer.getAuthors();
+            System.out.printf("%4s %15s %15s%n", "#", "Author name", "Count of books");
+            for (Author author : authors) {
+                System.out.printf("%4d %15s %15d%n", author.getId(), author.getName(), author.getBooks().size());
+            }
+        }
     }
 
-    public static void addAuthor(Author author) {
+    /**
+     * Отправка из клиента команды ADD_AUTHOR [DATA]
+     *
+     * @param authorName
+     * @throws JAXBException
+     * @throws XMLStreamException
+     */
+    public static void addAuthor(String authorName) throws JAXBException, XMLStreamException {
+        Author author = new Author(authorName);
+        AddAuthorPacket currentCommand = new AddAuthorPacket(Commands.ADD_AUTHOR, author);
 
+        JAXBContext contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
+        Unmarshaller unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
+
+        commandMarshaller.marshal(currentCommand, out);
+
+        xer = xmi.createXMLEventReader(in);
+        xer.nextEvent();
+        xer.peek();
+        //Book.resetId();
+        //Author.resetId();
+
+        ResponsePacket response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
+        System.out.println("Response accepted.\n");
+
+        //Если произошла ошибка при выполнении команды
+        if (response instanceof ErrorPacket) {
+            System.out.println("ОШИБКА: невозможно выполнить команду ADD AUTHOR.\n");
+            System.out.println(((ErrorPacket) response).getDescription());
+        }
+
+        //Если всё ок
+        if (response instanceof OkPacket) {
+            System.out.println("Автор добавлен успешно.\n");
+        }
     }
 
-    public static void editAuthor(int id, String authorName) {
+    /**
+     * Отправка из клиента команды SET_AUTHOR [NEW_DATA] by ID
+     *
+     * @param id
+     * @param authorName
+     * @throws JAXBException
+     * @throws XMLStreamException
+     */
+    public static void editAuthor(int id, String authorName) throws JAXBException, XMLStreamException {
+        Author author = new Author(authorName);
+        SetAuthorPacket currentCommand = new SetAuthorPacket(Commands.SET_AUTHOR, id, author);
 
+        JAXBContext contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
+        Unmarshaller unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
+
+        commandMarshaller.marshal(currentCommand, out);
+
+        xer = xmi.createXMLEventReader(in);
+        xer.nextEvent();
+        xer.peek();
+        //Book.resetId();
+        //Author.resetId();
+
+        ResponsePacket response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
+        System.out.println("Response accepted.\n");
+
+        //Если произошла ошибка при выполнении команды
+        if (response instanceof ErrorPacket) {
+            System.out.println("ОШИБКА: невозможно выполнить команду SET AUTHOR.\n");
+            System.out.println(((ErrorPacket) response).getDescription());
+        }
+
+        //Если всё ок
+        if (response instanceof OkPacket) {
+            System.out.println("Автор изменен успешно.\n");
+        }
     }
 
-    public static void deleteAuthor(int id) {
+    /**
+     * Отправка из клиента команды REMOVE_AUTHOR by ID
+     *
+     * @param id
+     * @throws JAXBException
+     * @throws XMLStreamException
+     */
+    public static void deleteAuthor(int id) throws JAXBException, XMLStreamException {
+        RemoveAuthorPacket currentCommand = new RemoveAuthorPacket(Commands.REMOVE_AUTHOR, id);
 
+        JAXBContext contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
+        Unmarshaller unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
+
+        commandMarshaller.marshal(currentCommand, out);
+
+        xer = xmi.createXMLEventReader(in);
+        xer.nextEvent();
+        xer.peek();
+        //Book.resetId();
+        //Author.resetId();
+
+        ResponsePacket response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
+        System.out.println("Response accepted.\n");
+
+        //Если произошла ошибка при выполнении команды
+        if (response instanceof ErrorPacket) {
+            System.out.println("ОШИБКА: невозможно выполнить команду REMOVE AUTHOR.\n");
+            System.out.println(((ErrorPacket) response).getDescription());
+        }
+
+        //Если всё ок
+        if (response instanceof OkPacket) {
+            System.out.println("Автор удален успешно.\n");
+        }
     }
 }
