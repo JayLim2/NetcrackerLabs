@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<AnchorPane prefHeight="662.0" prefWidth="732.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="client.gui.Controller">
+    <children>
+        <Label layoutX="32.0" layoutY="41.0" text="Список книг">
+            <font>
+                <Font name="System Bold" size="12.0"/>
+            </font>
+        </Label>
+        <MenuBar layoutY="2.0" prefHeight="25.0" prefWidth="732.0">
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Open"/>
+                        <MenuItem mnemonicParsing="false" text="Save"/>
+                        <MenuItem mnemonicParsing="false" text="Save as ...."/>
+                        <MenuItem mnemonicParsing="false" text="Close"/>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="About"/>
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+        <Label layoutX="392.0" layoutY="41.0" text="Список авторов">
+            <font>
+                <Font name="System Bold" size="12.0"/>
+            </font>
+        </Label>
+        <TableView layoutX="32.0" layoutY="67.0" prefHeight="226.0" prefWidth="342.0">
+            <columns>
+                <TableColumn prefWidth="75.0" text="id"/>
+                <TableColumn prefWidth="140.0" text="Название"/>
+                <TableColumn prefWidth="121.0" text="Автор"/>
+                <TableColumn prefWidth="75.0" text="Год"/>
+                <TableColumn prefWidth="110.0" text="Издатель"/>
+                <TableColumn prefWidth="129.0" text="Описание"/>
+            </columns>
+        </TableView>
+        <TableView layoutX="392.0" layoutY="66.0" prefHeight="226.0" prefWidth="303.0">
+            <columns>
+                <TableColumn prefWidth="75.0" text="id"/>
+                <TableColumn prefWidth="101.0" text="Имя автора"/>
+                <TableColumn prefWidth="75.0" text="Всего книг"/>
+            </columns>
+        </TableView>
+        <Label layoutX="38.0" layoutY="352.0" prefHeight="17.0" prefWidth="72.0" text="id:"/>
+        <Label layoutX="40.0" layoutY="387.0" prefHeight="17.0" prefWidth="72.0" text="Название:"/>
+        <Label layoutX="40.0" layoutY="418.0" prefHeight="17.0" prefWidth="72.0" text="Автор:"/>
+        <Label layoutX="40.0" layoutY="451.0" prefHeight="17.0" prefWidth="72.0" text="Год:"/>
+        <Label layoutX="40.0" layoutY="485.0" prefHeight="17.0" prefWidth="72.0" text="Издатель:"/>
+        <Label layoutX="40.0" layoutY="527.0" prefHeight="17.0" prefWidth="72.0" text="Описание:"/>
+        <TextField disable="true" editable="false" layoutX="111.0" layoutY="348.0" prefHeight="25.0" prefWidth="84.0"/>
+        <TextField layoutX="111.0" layoutY="381.0" prefHeight="25.0" prefWidth="269.0"/>
+        <TextField layoutX="111.0" layoutY="447.0" prefHeight="25.0" prefWidth="94.0"/>
+        <ComboBox layoutX="111.0" layoutY="414.0" prefHeight="25.0" prefWidth="158.0" promptText="- Выберите автора -"/>
+        <TextField layoutX="111.0" layoutY="481.0" prefHeight="25.0" prefWidth="158.0"/>
+        <TextArea layoutX="111.0" layoutY="527.0" prefHeight="64.0" prefWidth="269.0"/>
+        <TextField disable="true" layoutX="480.0" layoutY="379.0" prefHeight="25.0" prefWidth="214.0"/>
+        <TextField disable="true" editable="false" layoutX="480.0" layoutY="344.0" prefHeight="25.0" prefWidth="84.0"/>
+        <Label layoutX="400.0" layoutY="383.0" prefHeight="17.0" prefWidth="72.0" text="Имя автора:"/>
+        <Label layoutX="398.0" layoutY="348.0" prefHeight="17.0" prefWidth="72.0" text="id:"/>
+        <Group layoutX="-2.0" layoutY="10.0">
+            <children>
+                <RadioButton layoutX="34.0" layoutY="305.0" mnemonicParsing="false" selected="true" text="Книга"/>
+                <RadioButton layoutX="106.0" layoutY="305.0" mnemonicParsing="false" text="Автор"/>
+            </children>
+        </Group>
+        <Button layoutX="263.0" layoutY="37.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="111.0"
+                text="Получить список"/>
+        <Button layoutX="584.0" layoutY="37.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="111.0"
+                text="Получить список"/>
+        <Label layoutX="212.0" layoutY="316.0" text="Тип операции:"/>
+        <Group layoutX="-6.0" layoutY="10.0">
+            <children>
+                <RadioButton layoutX="506.0" layoutY="306.0" mnemonicParsing="false" text="Удалить"/>
+                <RadioButton layoutX="412.0" layoutY="305.0" mnemonicParsing="false" text="Изменить"/>
+                <RadioButton layoutX="319.0" layoutY="306.0" mnemonicParsing="false" text="Добавить"/>
+            </children>
+        </Group>
+        <Button layoutX="32.0" layoutY="605.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="664.0"
+                text="Выполнить операцию"/>
+    </children>
+</AnchorPane>
