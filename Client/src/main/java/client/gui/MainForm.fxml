@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.Group?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 <AnchorPane prefHeight="662.0" prefWidth="732.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
@@ -34,21 +33,21 @@
                 <Font name="System Bold" size="12.0"/>
             </font>
         </Label>
-        <TableView layoutX="32.0" layoutY="67.0" prefHeight="226.0" prefWidth="342.0">
+        <TableView fx:id="booksTable" layoutX="32.0" layoutY="67.0" prefHeight="226.0" prefWidth="342.0">
             <columns>
-                <TableColumn prefWidth="75.0" text="id"/>
-                <TableColumn prefWidth="140.0" text="Название"/>
-                <TableColumn prefWidth="121.0" text="Автор"/>
-                <TableColumn prefWidth="75.0" text="Год"/>
-                <TableColumn prefWidth="110.0" text="Издатель"/>
-                <TableColumn prefWidth="129.0" text="Описание"/>
+                <TableColumn fx:id="bookIdCol" prefWidth="75.0" text="id"/>
+                <TableColumn fx:id="bookTitleCol" prefWidth="140.0" text="Название"/>
+                <TableColumn fx:id="bookAuthorNameCol" prefWidth="121.0" text="Автор"/>
+                <TableColumn fx:id="bookYearCol" prefWidth="75.0" text="Год"/>
+                <TableColumn fx:id="bookPublisherCol" prefWidth="110.0" text="Издатель"/>
+                <TableColumn fx:id="bookBriefCol" prefWidth="129.0" text="Описание"/>
             </columns>
         </TableView>
-        <TableView layoutX="392.0" layoutY="66.0" prefHeight="226.0" prefWidth="303.0">
+        <TableView fx:id="authorsTable" layoutX="392.0" layoutY="66.0" prefHeight="226.0" prefWidth="303.0">
             <columns>
-                <TableColumn prefWidth="75.0" text="id"/>
-                <TableColumn prefWidth="101.0" text="Имя автора"/>
-                <TableColumn prefWidth="75.0" text="Всего книг"/>
+                <TableColumn fx:id="authorIdCol" prefWidth="75.0" text="id"/>
+                <TableColumn fx:id="authorNameCol" prefWidth="101.0" text="Имя автора"/>
+                <TableColumn fx:id="authorBooksCountCol" prefWidth="75.0" text="Всего книг"/>
             </columns>
         </TableView>
         <Label layoutX="38.0" layoutY="352.0" prefHeight="17.0" prefWidth="72.0" text="id:"/>
@@ -57,35 +56,36 @@
         <Label layoutX="40.0" layoutY="451.0" prefHeight="17.0" prefWidth="72.0" text="Год:"/>
         <Label layoutX="40.0" layoutY="485.0" prefHeight="17.0" prefWidth="72.0" text="Издатель:"/>
         <Label layoutX="40.0" layoutY="527.0" prefHeight="17.0" prefWidth="72.0" text="Описание:"/>
-        <TextField disable="true" editable="false" layoutX="111.0" layoutY="348.0" prefHeight="25.0" prefWidth="84.0"/>
-        <TextField layoutX="111.0" layoutY="381.0" prefHeight="25.0" prefWidth="269.0"/>
-        <TextField layoutX="111.0" layoutY="447.0" prefHeight="25.0" prefWidth="94.0"/>
-        <ComboBox layoutX="111.0" layoutY="414.0" prefHeight="25.0" prefWidth="158.0" promptText="- Выберите автора -"/>
-        <TextField layoutX="111.0" layoutY="481.0" prefHeight="25.0" prefWidth="158.0"/>
-        <TextArea layoutX="111.0" layoutY="527.0" prefHeight="64.0" prefWidth="269.0"/>
-        <TextField disable="true" layoutX="480.0" layoutY="379.0" prefHeight="25.0" prefWidth="214.0"/>
-        <TextField disable="true" editable="false" layoutX="480.0" layoutY="344.0" prefHeight="25.0" prefWidth="84.0"/>
+        <TextField fx:id="bookIdInp" disable="true" editable="false" layoutX="111.0" layoutY="348.0" prefHeight="25.0"
+                   prefWidth="84.0"/>
+        <TextField fx:id="bookTitleInp" layoutX="111.0" layoutY="381.0" prefHeight="25.0" prefWidth="269.0"/>
+        <TextField fx:id="bookYearInp" layoutX="111.0" layoutY="447.0" prefHeight="25.0" prefWidth="94.0"/>
+        <ComboBox fx:id="bookAuthorInp" layoutX="111.0" layoutY="414.0" prefHeight="25.0" prefWidth="158.0"
+                  promptText="- Выберите автора -"/>
+        <TextField fx:id="bookPublisherInp" layoutX="111.0" layoutY="481.0" prefHeight="25.0" prefWidth="158.0"/>
+        <TextArea fx:id="bookBriefInp" layoutX="111.0" layoutY="527.0" prefHeight="64.0" prefWidth="269.0"/>
+        <TextField fx:id="authorNameInp" disable="true" layoutX="480.0" layoutY="379.0" prefHeight="25.0"
+                   prefWidth="214.0"/>
+        <TextField fx:id="authorIdInp" disable="true" editable="false" layoutX="480.0" layoutY="344.0" prefHeight="25.0"
+                   prefWidth="84.0"/>
         <Label layoutX="400.0" layoutY="383.0" prefHeight="17.0" prefWidth="72.0" text="Имя автора:"/>
         <Label layoutX="398.0" layoutY="348.0" prefHeight="17.0" prefWidth="72.0" text="id:"/>
-        <Group layoutX="-2.0" layoutY="10.0">
-            <children>
-                <RadioButton layoutX="34.0" layoutY="305.0" mnemonicParsing="false" selected="true" text="Книга"/>
-                <RadioButton layoutX="106.0" layoutY="305.0" mnemonicParsing="false" text="Автор"/>
-            </children>
-        </Group>
-        <Button layoutX="263.0" layoutY="37.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="111.0"
-                text="Получить список"/>
-        <Button layoutX="584.0" layoutY="37.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="111.0"
-                text="Получить список"/>
+        <RadioButton fx:id="selectBook" layoutX="38.0" layoutY="315.0" mnemonicParsing="false" onAction="#selectBook"
+                     selected="true" text="Книга"/>
+        <RadioButton fx:id="selectAuthor" layoutX="110.0" layoutY="315.0" mnemonicParsing="false"
+                     onAction="#selectAuthor" text="Автор"/>
+        <Button layoutX="263.0" layoutY="37.0" mnemonicParsing="false" onAction="#runViewBooks" prefHeight="25.0"
+                prefWidth="111.0" text="Получить список"/>
+        <Button layoutX="584.0" layoutY="37.0" mnemonicParsing="false" onAction="#runViewAuthors" prefHeight="25.0"
+                prefWidth="111.0" text="Получить список"/>
         <Label layoutX="212.0" layoutY="316.0" text="Тип операции:"/>
-        <Group layoutX="-6.0" layoutY="10.0">
-            <children>
-                <RadioButton layoutX="506.0" layoutY="306.0" mnemonicParsing="false" text="Удалить"/>
-                <RadioButton layoutX="412.0" layoutY="305.0" mnemonicParsing="false" text="Изменить"/>
-                <RadioButton layoutX="319.0" layoutY="306.0" mnemonicParsing="false" text="Добавить"/>
-            </children>
-        </Group>
-        <Button layoutX="32.0" layoutY="605.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="664.0"
-                text="Выполнить операцию"/>
+        <RadioButton fx:id="selectDelOperation" layoutX="503.0" layoutY="316.0" mnemonicParsing="false"
+                     onAction="#selectDelOperation" text="Удалить"/>
+        <RadioButton fx:id="selectEditOperation" layoutX="409.0" layoutY="315.0" mnemonicParsing="false"
+                     onAction="#selectEditOperation" text="Изменить"/>
+        <RadioButton fx:id="selectAddOperation" layoutX="316.0" layoutY="316.0" mnemonicParsing="false"
+                     onAction="#selectAddOperation" text="Добавить"/>
+        <Button layoutX="38.0" layoutY="607.0" mnemonicParsing="false" onAction="#runModification" prefHeight="33.0"
+                prefWidth="658.0" text="Выполнить операцию"/>
     </children>
 </AnchorPane>
