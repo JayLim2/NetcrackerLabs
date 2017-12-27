@@ -54,6 +54,12 @@ public class Main {
             try {
                 Book book = new Book("test", null, 1234, "somedude", "a test book");
                 addBook(book);
+                book = new Book("test111", null, 1234, "somedude", "a test book");
+                editBook(0, book);
+                Book.resetId();
+                Author.resetId();
+                viewBooks();
+                
             } catch (XMLStreamException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             } catch (YearOutOfBoundsException ex) {
@@ -61,21 +67,20 @@ public class Main {
             }
 
             //======================== VIEW BOOK ==============================
-            try {
-                viewBooks();
-            } catch (XMLStreamException ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            }
+//            try {
+//              //  viewBooks();
+//            } catch (XMLStreamException ex) {
+//                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+//            }
 
             //======================== EDIT BOOK ==============================
-            try {
-                Book book = new Book("test111", null, 1234, "somedude", "a test book");
-                editBook(0, book);
-            } catch (XMLStreamException ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (YearOutOfBoundsException ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            }
+//            try {
+//                
+//            } catch (XMLStreamException ex) {
+//                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+//            } catch (YearOutOfBoundsException ex) {
+//                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+//            }
 
             //======================== VIEW BOOK ==============================
             /*try {
@@ -123,7 +128,7 @@ public class Main {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШИБКА: невозможно выполнить команду VIEW BOOKS.");
+            System.out.println("ОШ�?БКА: невозможно выполнить команду VIEW BOOKS.");
         }
 
         //Если всё ок
@@ -167,7 +172,7 @@ public class Main {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШИБКА: невозможно выполнить команду ADD BOOK.\n");
+            System.out.println("ОШ�?БКА: невозможно выполнить команду ADD BOOK.\n");
         }
 
         //Если всё ок
@@ -202,7 +207,7 @@ public class Main {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШИБКА: невозможно выполнить команду EDIT BOOK.\n");
+            System.out.println("ОШ�?БКА: невозможно выполнить команду EDIT BOOK.\n");
             System.out.println(((ErrorPacket) response).getDescription());
         }
 
@@ -238,7 +243,7 @@ public class Main {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШИБКА: невозможно выполнить команду DELETE BOOK.\n");
+            System.out.println("ОШ�?БКА: невозможно выполнить команду DELETE BOOK.\n");
             System.out.println(((ErrorPacket) response).getDescription());
         }
 
@@ -275,7 +280,7 @@ public class Main {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШИБКА: невозможно выполнить команду VIEW BOOKS.");
+            System.out.println("ОШ�?БКА: невозможно выполнить команду VIEW BOOKS.");
         }
 
         //Если всё ок
@@ -318,7 +323,7 @@ public class Main {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШИБКА: невозможно выполнить команду ADD AUTHOR.\n");
+            System.out.println("ОШ�?БКА: невозможно выполнить команду ADD AUTHOR.\n");
             System.out.println(((ErrorPacket) response).getDescription());
         }
 
@@ -356,7 +361,7 @@ public class Main {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШИБКА: невозможно выполнить команду SET AUTHOR.\n");
+            System.out.println("ОШ�?БКА: невозможно выполнить команду SET AUTHOR.\n");
             System.out.println(((ErrorPacket) response).getDescription());
         }
 
@@ -392,7 +397,7 @@ public class Main {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШИБКА: невозможно выполнить команду REMOVE AUTHOR.\n");
+            System.out.println("ОШ�?БКА: невозможно выполнить команду REMOVE AUTHOR.\n");
             System.out.println(((ErrorPacket) response).getDescription());
         }
 
