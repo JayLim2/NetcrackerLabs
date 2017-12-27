@@ -1,9 +1,11 @@
 package models;
 
+import javax.xml.bind.ValidationException;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.LinkedList;
 import java.util.List;
-import javax.xml.bind.ValidationException;
-import javax.xml.bind.annotation.*;
 
 @XmlRootElement
 @XmlSeeAlso(Book.class)
@@ -18,10 +20,10 @@ public class Author {
     private static final int TITLE_LIMIT = 75;
     private static final int BRIEF_LIMIT = 1500;
     private static final int PUBLISHER_LIMIT = 75;
-    
-    static{
+
+    static {
         busyId = new LinkedList<>();
-	}
+    }
 
     public Author() {
         books = new LinkedList<>();
@@ -31,16 +33,16 @@ public class Author {
         this.name = name.trim();
         books = new LinkedList<>();
     }
-	
-	public void dispatchId(){
-		int nid = 0;
-		while(busyId.contains(id)) nid++;
-		id = nid;
-	}
-	
-	public static void removeId(int id){
-		busyId.remove(new Integer(id));
-	}
+
+    public void dispatchId() {
+        int nid = 0;
+        while (busyId.contains(id)) nid++;
+        id = nid;
+    }
+
+    public static void removeId(int id) {
+        busyId.remove(new Integer(id));
+    }
 
     @XmlElement
     public String getName() {
@@ -51,23 +53,23 @@ public class Author {
     public int getId() {
         return id;
     }
-    
+
     public void setId(int val) throws ValidationException {
-		if (val != -1){
-			busyId.remove(new Integer(id));
-			if (busyId.contains(val)) {
-				busyId.add(id);
-				throw new ValidationException("busy id");
-			}
-			id = val;
-			busyId.add(id);
-		}
+        if (val != -1) {
+            busyId.remove(new Integer(id));
+            if (busyId.contains(val)) {
+                busyId.add(id);
+                throw new ValidationException("busy id");
+            }
+            id = val;
+            busyId.add(id);
+        }
     }
-    
-    public static void resetId(){
+
+    public static void resetId() {
         busyId = new LinkedList<>();
     }
-     
+
     public void setName(String name) {
         this.name = name.trim();
     }

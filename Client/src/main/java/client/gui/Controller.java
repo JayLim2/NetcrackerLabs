@@ -1,13 +1,33 @@
 package client.gui;
 
+import client.Main;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import models.Author;
+import models.AuthorsContainer;
+import models.Book;
+import models.YearOutOfBoundsException;
+import protocol.*;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Controller {
     @FXML
@@ -42,7 +62,7 @@ public class Controller {
     @FXML
     private TextField bookTitleInp;
     @FXML
-    private ComboBox<String> bookAuthorInp;
+    private ComboBox<Author> bookAuthorInp;
     @FXML
     private TextField bookYearInp;
     @FXML
@@ -174,7 +194,31 @@ public class Controller {
         }
     }
 
+    private ClientInterface clientInterface;
+
     public void initialize() {
+        try {
+            Socket clientSocket = new Socket(InetAddress.getLocalHost(), 4444);
+            OutputStream out = clientSocket.getOutputStream();
+            InputStream in = clientSocket.getInputStream();
+
+            JAXBContext contextCommands = JAXBContext.newInstance(CommandPacket.class, ViewBooksPacket.class, AddBookPacket.class, SetBookPacket.class, RemoveBookPacket.class, AddAuthorPacket.class, SetAuthorPacket.class, RemoveAuthorPacket.class);
+            Marshaller commandMarshaller = contextCommands.createMarshaller();
+            XMLInputFactory xmi = XMLInputFactory.newFactory();
+
+            //Создание объекта вспомогательного класса, созданного только для общения с сервером
+            clientInterface = new ClientInterface(clientSocket, out, in, commandMarshaller, contextCommands, xmi);
+        } catch (UnknownHostException e) {
+            System.out.println("Неизвестный хост.");
+        } catch (IOException e) {
+            System.out.println("Ошибка механизма ввода-вывода.");
+            e.printStackTrace();
+        } catch (JAXBException e) {
+            System.out.println("Ошибка XML-сериализации.");
+            e.printStackTrace();
+        }
+
+        //================================================
         group1 = new ToggleGroup();
         group2 = new ToggleGroup();
         selectBook.setToggleGroup(group1);
@@ -199,20 +243,199 @@ public class Controller {
 
         booksTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 
-        bookRecords.add(new BookRecord(0, "test", "author1", 2017, "EKSMO", "aaaa?"));
+        //bookRecords.add(new BookRecord(0, "test", "author1", 2017, "EKSMO", "aaaa?"));
+        //booksTable.setItems(bookRecords);
+    }
+
+    public void runModification(ActionEvent event) throws JAXBException, XMLStreamException {
+        Commands currentCommand = null;
+        if (selectBook.isSelected()) {
+            if (selectAddOperation.isSelected()) {
+                currentCommand = Commands.ADD_BOOK;
+            }
+            if (selectEditOperation.isSelected()) {
+                currentCommand = Commands.SET_BOOK;
+            }
+            if (selectDelOperation.isSelected()) {
+                currentCommand = Commands.REMOVE_BOOK;
+            }
+        } else if (selectAuthor.isSelected()) {
+            if (selectAddOperation.isSelected()) {
+                currentCommand = Commands.ADD_AUTHOR;
+            }
+            if (selectEditOperation.isSelected()) {
+                currentCommand = Commands.SET_AUTHOR;
+            }
+            if (selectDelOperation.isSelected()) {
+                currentCommand = Commands.REMOVE_AUTHOR;
+            }
+        }
+
+        if (currentCommand == null)
+            return;
+
+        //Считывание информации
+        Book book = null;
+        Author author = null;
+        if (currentCommand != Commands.REMOVE_BOOK && currentCommand != Commands.REMOVE_AUTHOR) {
+            book = getBookInfo();
+            author = getAuthorInfo();
+        }
+
+        BookRecord bookRecord;
+        AuthorRecord authorRecord;
+
+        System.out.println(currentCommand);
+
+        switch (currentCommand) {
+            case ADD_BOOK: {
+                if (book != null) {
+                    bookRecord = new BookRecord(book.getId(), book.getTitle(), book.getAuthor().getName(), book.getPublishYear(), book.getPublisher(), book.getBrief());
+                    clientInterface.addBook(book);
+                    bookRecords.add(bookRecord);
+                }
+            }
+            break;
+            case SET_BOOK: {
+                if (book != null) {
+                    int bookId = book.getId();
+                    bookRecord = new BookRecord(bookId, book.getTitle(), book.getAuthor().getName(), book.getPublishYear(), book.getPublisher(), book.getBrief());
+                    clientInterface.editBook(bookId, book);
+                    int recordsCount = bookRecords.size();
+                    int i;
+                    for (i = 0; i < recordsCount && bookRecords.get(i).getId() != bookId; i++) ;
+                    bookRecords.set(i, bookRecord);
+                }
+            }
+            break;
+            case REMOVE_BOOK: {
+                int id = -1;
+                try {
+                    id = Integer.parseInt(bookIdInp.getText());
+                } catch (Exception ex) {
+                    new Alert(Alert.AlertType.ERROR, "Уникальный Id книги должен быть числом.");
+                }
+                if (id != -1) {
+                    clientInterface.deleteBook(id);
+                    int i;
+                    int recordsCount = bookRecords.size();
+                    for (i = 0; i < recordsCount && bookRecords.get(i).getId() != id; i++) ;
+                    bookRecords.remove(i);
+                }
+            }
+            break;
+            case ADD_AUTHOR: {
+                if (author != null) {
+                    authorRecord = new AuthorRecord(author.getId(), author.getName(), 0);
+                    clientInterface.addAuthor(author.getName());
+                    authorRecords.add(authorRecord);
+                }
+            }
+            break;
+            case SET_AUTHOR: {
+                if (author != null) {
+                    int authorId = author.getId();
+                    authorRecord = new AuthorRecord(authorId, author.getName(), author.getBooks().size());
+                    clientInterface.editAuthor(authorId, author.getName());
+                    int recordsCount = authorRecords.size();
+                    int i;
+                    for (i = 0; i < recordsCount && authorRecords.get(i).getId() != authorId; i++) ;
+                    authorRecords.set(i, authorRecord);
+                }
+            }
+            break;
+            case REMOVE_AUTHOR: {
+                int id = -1;
+                try {
+                    id = Integer.parseInt(authorIdInp.getText());
+                } catch (Exception ex) {
+                    new Alert(Alert.AlertType.ERROR, "Уникальный Id автора должен быть числом.");
+                }
+                if (id != -1) {
+                    clientInterface.deleteAuthor(id);
+                    int i;
+                    int recordsCount = authorRecords.size();
+                    for (i = 0; i < recordsCount && authorRecords.get(i).getId() != id; i++) ;
+                    authorRecords.remove(i);
+                }
+            }
+            break;
+        }
+        authorsTable.setItems(authorRecords);
         booksTable.setItems(bookRecords);
     }
 
-    public void runModification(ActionEvent event) {
+    private Book getBookInfo() {
+        Book book = null;
+        try {
+            int id = Integer.parseInt(bookIdInp.getText());
+            String title = bookTitleInp.getText();
+            Author bookAuthor = bookAuthorInp.getValue();
+            int year = Integer.parseInt(bookYearInp.getText());
+            String publisher = bookPublisherInp.getText();
+            String brief = bookBriefInp.getText();
+            book = new Book(title, bookAuthor, year, publisher, brief);
+        } catch (YearOutOfBoundsException ex) {
 
+        } catch (Exception ex) {
+
+        }
+        return book;
+    }
+
+    private Author getAuthorInfo() {
+        Author author = null;
+        try {
+            int authorId = Integer.parseInt(authorIdInp.getText());
+            String authorName = authorNameInp.getText();
+            author = new Author(authorName);
+        } catch (Exception ex) {
+
+        }
+        return author;
     }
 
     public void runViewBooks(ActionEvent event) {
+        try {
+            bookRecords.clear();
+            authorRecords.clear();
 
+            AuthorsContainer authorsContainer = clientInterface.viewBooks();
+            if (authorsContainer != null) {
+                List<Author> authors = authorsContainer.getAuthors();
+                for (Author author : authors) {
+                    authorRecords.add(new AuthorRecord(author.getId(), author.getName(), author.getBooks().size()));
+                    List<Book> books = author.getBooks();
+                    for (Book book : books) {
+                        bookRecords.add(new BookRecord(book.getId(), book.getTitle(), author.getName(), book.getPublishYear(), book.getPublisher(), book.getBrief()));
+                    }
+                }
+                booksTable.setItems(bookRecords);
+                authorsTable.setItems(authorRecords);
+
+                System.out.println("Список книг получен.");
+            } else {
+                System.out.println("Список книг НЕ получен.");
+            }
+
+        } catch (XMLStreamException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JAXBException ex) {
+            System.out.println("Ошибка XML-сериализаци.");
+            ex.printStackTrace();
+        }
     }
 
     public void runViewAuthors(ActionEvent event) {
-
+        try {
+            AuthorsContainer authorsContainer = clientInterface.viewAuthors();
+            System.out.println("Список авторов получен.");
+        } catch (XMLStreamException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JAXBException ex) {
+            System.out.println("Ошибка XML-сериализаци.");
+            ex.printStackTrace();
+        }
     }
 
     public void selectBook(ActionEvent event) {
