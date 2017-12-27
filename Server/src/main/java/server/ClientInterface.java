@@ -26,6 +26,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import models.BookAlreadyExistsException;
 
 /**
  * @author Алескандр
@@ -93,7 +94,9 @@ public class ClientInterface implements Runnable {
                             try {
                                 aCC.addBook(book, id);
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
-                            } finally {
+                            } catch (BookAlreadyExistsException ex) {
+                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Duplicate Book error"), outp);
+                        } finally {
                                 writeLock.unlock();
                             }
                         }
@@ -121,10 +124,12 @@ public class ClientInterface implements Runnable {
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
                             } catch (YearOutOfBoundsException ex) {
                                 //вообще произойти не должно. валидация года в клиенте должна быть
-                                marshResponse.marshal(new ErrorPacket(Responses.OK, "Year error"), outp);
+                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Year error"), outp);
                             } catch (IndexOutOfBoundsException ex) {
-                                marshResponse.marshal(new ErrorPacket(Responses.OK, "Index error"), outp);
-                            } finally {
+                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Index error"), outp);
+                            } catch (BookAlreadyExistsException ex) {
+                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Duplicate Book error"), outp);
+                        } finally {
                                 writeLock.unlock();
                             }
                         }

@@ -54,8 +54,9 @@ public class Main {
             try {
                 Book book = new Book("test", null, 1234, "somedude", "a test book");
                 addBook(book);
-                book = new Book("test111", null, 1234, "somedude", "a test book");
-                editBook(0, book);
+                book = new Book("test", null, 1234, "somedude", "a test book");
+                addBook(book);
+                //editBook(0, book);
                 Book.resetId();
                 Author.resetId();
                 viewBooks();

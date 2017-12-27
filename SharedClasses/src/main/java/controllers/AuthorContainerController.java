@@ -13,6 +13,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import models.BookAlreadyExistsException;
 import models.YearOutOfBoundsException;
 
 public class AuthorContainerController {
@@ -121,11 +122,11 @@ public class AuthorContainerController {
         return authorsContainer;
     }
 
-    public void addBook(Book book, int id) {
+    public void addBook(Book book, int id) throws BookAlreadyExistsException {
         Author author = authorsContainer.getAuthor(id);
-        book.dispatchId();
         book.setAuthor(author);
-        author.addBook(book);
+        if (!author.addBook(book))throw new BookAlreadyExistsException();
+        book.dispatchId();
     }
     
     public boolean existAlready(Author author, Book book){
@@ -137,13 +138,14 @@ public class AuthorContainerController {
         return false;
     }
     
-    public void changeBook(Book book, int bid, int naid) throws YearOutOfBoundsException{
+    public void changeBook(Book book, int bid, int naid) throws YearOutOfBoundsException, BookAlreadyExistsException{
         Book chBook = getBook(bid);
         Author author = getAuthor(naid);
         Author oldAuthor = chBook.getAuthor();
         chBook.getAuthor().getBooks().remove(chBook);
         if (existAlready(author,book)){
             oldAuthor.addBook(chBook);
+            throw new BookAlreadyExistsException();
         }//and throw Exception
         else{
             
