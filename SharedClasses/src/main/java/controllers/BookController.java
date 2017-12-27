@@ -26,9 +26,9 @@ public class BookController  {
             this.book.getPublisher().equals(book.getPublisher());
     }
     
-    public void modifyBook(Book book) throws YearOutOfBoundsException{
+    public void modifyBook(Book book, Author author) throws YearOutOfBoundsException{
         this.book.setPublishYear(book.getPublishYear());//так. так то должно работать. но лучше перестарховаться.
-        this.book.setAuthor(book.getAuthor());
+        this.book.setAuthor(author);
         this.book.setBrief(book.getBrief());
         this.book.setPublisher(book.getPublisher());
         this.book.setTitle(book.getTitle());
