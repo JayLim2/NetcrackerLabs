@@ -90,7 +90,7 @@ public class ClientInterface {
      * @throws JAXBException
      * @throws XMLStreamException
      */
-    public void addBook(Book book) throws JAXBException, XMLStreamException {
+    public boolean addBook(Book book) throws JAXBException, XMLStreamException {
         AddBookPacket currentCommand = new AddBookPacket(Commands.ADD_BOOK, 0, book);
 
         JAXBContext contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
@@ -110,12 +110,15 @@ public class ClientInterface {
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
             System.out.println("ОШИБКА: невозможно выполнить команду ADD BOOK.\n");
+            return false;
         }
 
         //Если всё ок
         if (response instanceof OkPacket) {
             System.out.println("Книга добавлена успешно.\n");
         }
+
+        return true;
     }
 
     /**
@@ -126,7 +129,7 @@ public class ClientInterface {
      * @throws JAXBException
      * @throws XMLStreamException
      */
-    public void editBook(int id, Book book) throws JAXBException, XMLStreamException {
+    public boolean editBook(int id, Book book) throws JAXBException, XMLStreamException {
         SetBookPacket currentCommand = new SetBookPacket(Commands.SET_BOOK, 0, 0, book);
 
         JAXBContext contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
@@ -147,12 +150,15 @@ public class ClientInterface {
         if (response instanceof ErrorPacket) {
             System.out.println("ОШИБКА: невозможно выполнить команду EDIT BOOK.\n");
             System.out.println(((ErrorPacket) response).getDescription());
+            return false;
         }
 
         //Если всё ок
         if (response instanceof OkPacket) {
             System.out.println("Книга изменена успешно.\n");
         }
+
+        return true;
     }
 
     /**
@@ -162,7 +168,7 @@ public class ClientInterface {
      * @throws JAXBException
      * @throws XMLStreamException
      */
-    public void deleteBook(int id) throws JAXBException, XMLStreamException {
+    public boolean deleteBook(int id) throws JAXBException, XMLStreamException {
         RemoveBookPacket currentCommand = new RemoveBookPacket(Commands.REMOVE_BOOK, id);
 
         JAXBContext contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
@@ -183,12 +189,16 @@ public class ClientInterface {
         if (response instanceof ErrorPacket) {
             System.out.println("ОШИБКА: невозможно выполнить команду DELETE BOOK.\n");
             System.out.println(((ErrorPacket) response).getDescription());
+
+            return false;
         }
 
         //Если всё ок
         if (response instanceof OkPacket) {
             System.out.println("Книга удалена успешно.\n");
         }
+
+        return true;
     }
 
     //-------------------------------
@@ -246,9 +256,7 @@ public class ClientInterface {
      * @throws JAXBException
      * @throws XMLStreamException
      */
-    public void addAuthor(String authorName) throws JAXBException, XMLStreamException {
-
-        System.out.println("111AAA?");
+    public boolean addAuthor(String authorName) throws JAXBException, XMLStreamException {
         Author author = new Author(authorName);
         AddAuthorPacket currentCommand = new AddAuthorPacket(Commands.ADD_AUTHOR, author);
 
@@ -270,12 +278,16 @@ public class ClientInterface {
         if (response instanceof ErrorPacket) {
             System.out.println("ОШИБКА: невозможно выполнить команду ADD AUTHOR.\n");
             System.out.println(((ErrorPacket) response).getDescription());
+
+            return false;
         }
 
         //Если всё ок
         if (response instanceof OkPacket) {
             System.out.println("Автор добавлен успешно.\n");
         }
+
+        return true;
     }
 
     /**
@@ -286,7 +298,7 @@ public class ClientInterface {
      * @throws JAXBException
      * @throws XMLStreamException
      */
-    public void editAuthor(int id, String authorName) throws JAXBException, XMLStreamException {
+    public boolean editAuthor(int id, String authorName) throws JAXBException, XMLStreamException {
         Author author = new Author(authorName);
         SetAuthorPacket currentCommand = new SetAuthorPacket(Commands.SET_AUTHOR, id, author);
 
@@ -308,12 +320,16 @@ public class ClientInterface {
         if (response instanceof ErrorPacket) {
             System.out.println("ОШИБКА: невозможно выполнить команду SET AUTHOR.\n");
             System.out.println(((ErrorPacket) response).getDescription());
+
+            return false;
         }
 
         //Если всё ок
         if (response instanceof OkPacket) {
             System.out.println("Автор изменен успешно.\n");
         }
+
+        return true;
     }
 
     /**
@@ -323,7 +339,7 @@ public class ClientInterface {
      * @throws JAXBException
      * @throws XMLStreamException
      */
-    public void deleteAuthor(int id) throws JAXBException, XMLStreamException {
+    public boolean deleteAuthor(int id) throws JAXBException, XMLStreamException {
         RemoveAuthorPacket currentCommand = new RemoveAuthorPacket(Commands.REMOVE_AUTHOR, id);
 
         JAXBContext contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
@@ -344,11 +360,15 @@ public class ClientInterface {
         if (response instanceof ErrorPacket) {
             System.out.println("ОШИБКА: невозможно выполнить команду REMOVE AUTHOR.\n");
             System.out.println(((ErrorPacket) response).getDescription());
+
+            return false;
         }
 
         //Если всё ок
         if (response instanceof OkPacket) {
             System.out.println("Автор удален успешно.\n");
         }
+
+        return true;
     }
 }
