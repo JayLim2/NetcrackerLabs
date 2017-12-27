@@ -56,18 +56,15 @@
         <Label layoutX="40.0" layoutY="451.0" prefHeight="17.0" prefWidth="72.0" text="Год:"/>
         <Label layoutX="40.0" layoutY="485.0" prefHeight="17.0" prefWidth="72.0" text="Издатель:"/>
         <Label layoutX="40.0" layoutY="527.0" prefHeight="17.0" prefWidth="72.0" text="Описание:"/>
-        <TextField fx:id="bookIdInp" disable="true" editable="false" layoutX="111.0" layoutY="348.0" prefHeight="25.0"
-                   prefWidth="84.0"/>
+        <TextField fx:id="bookIdInp" layoutX="111.0" layoutY="348.0" prefHeight="25.0" prefWidth="84.0"/>
         <TextField fx:id="bookTitleInp" layoutX="111.0" layoutY="381.0" prefHeight="25.0" prefWidth="269.0"/>
         <TextField fx:id="bookYearInp" layoutX="111.0" layoutY="447.0" prefHeight="25.0" prefWidth="94.0"/>
         <ComboBox fx:id="bookAuthorInp" layoutX="111.0" layoutY="414.0" prefHeight="25.0" prefWidth="158.0"
                   promptText="- Выберите автора -"/>
         <TextField fx:id="bookPublisherInp" layoutX="111.0" layoutY="481.0" prefHeight="25.0" prefWidth="158.0"/>
         <TextArea fx:id="bookBriefInp" layoutX="111.0" layoutY="527.0" prefHeight="64.0" prefWidth="269.0"/>
-        <TextField fx:id="authorNameInp" disable="true" layoutX="480.0" layoutY="379.0" prefHeight="25.0"
-                   prefWidth="214.0"/>
-        <TextField fx:id="authorIdInp" disable="true" editable="false" layoutX="480.0" layoutY="344.0" prefHeight="25.0"
-                   prefWidth="84.0"/>
+        <TextField fx:id="authorNameInp" layoutX="480.0" layoutY="379.0" prefHeight="25.0" prefWidth="214.0"/>
+        <TextField fx:id="authorIdInp" layoutX="480.0" layoutY="344.0" prefHeight="25.0" prefWidth="84.0"/>
         <Label layoutX="400.0" layoutY="383.0" prefHeight="17.0" prefWidth="72.0" text="Имя автора:"/>
         <Label layoutX="398.0" layoutY="348.0" prefHeight="17.0" prefWidth="72.0" text="id:"/>
         <RadioButton fx:id="selectBook" layoutX="38.0" layoutY="315.0" mnemonicParsing="false" onAction="#selectBook"
@@ -84,7 +81,7 @@
         <RadioButton fx:id="selectEditOperation" layoutX="409.0" layoutY="315.0" mnemonicParsing="false"
                      onAction="#selectEditOperation" text="Изменить"/>
         <RadioButton fx:id="selectAddOperation" layoutX="316.0" layoutY="316.0" mnemonicParsing="false"
-                     onAction="#selectAddOperation" text="Добавить"/>
+                     onAction="#selectAddOperation" selected="true" text="Добавить"/>
         <Button layoutX="38.0" layoutY="607.0" mnemonicParsing="false" onAction="#runModification" prefHeight="33.0"
                 prefWidth="658.0" text="Выполнить операцию"/>
     </children>
