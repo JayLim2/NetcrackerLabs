@@ -122,8 +122,10 @@ public class AuthorContainerController {
     }
 
     public void addBook(Book book, int id) {
+        Author author = authorsContainer.getAuthor(id);
         book.dispatchId();
-        book.setAuthor(authorsContainer.getAuthor(id));
+        book.setAuthor(author);
+        author.addBook(book);
     }
     
     public boolean existAlready(Author author, Book book){
@@ -138,8 +140,16 @@ public class AuthorContainerController {
     public void changeBook(Book book, int bid, int naid) throws YearOutOfBoundsException{
         Book chBook = getBook(bid);
         Author author = getAuthor(naid);
-        if (existAlready(author,book));//throw Exception
-        new BookController(chBook).modifyBook(book,author);
+        Author oldAuthor = chBook.getAuthor();
+        chBook.getAuthor().getBooks().remove(chBook);
+        if (existAlready(author,book)){
+            oldAuthor.addBook(chBook);
+        }//and throw Exception
+        else{
+            
+            new BookController(chBook).modifyBook(book,author);
+            author.addBook(chBook);
+        }
     }
 
     public void reInitAuthorsInBooks() {//если оставим эту штуку с xml наверное будет приватным и вызыватся только при десериализации
