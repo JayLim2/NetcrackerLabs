@@ -312,9 +312,17 @@ public class Controller {
             break;
             case SET_BOOK: {
                 if (book != null) {
-                    int bookId = book.getId();
+                    //int bookId = book.getId();
+                    int bookId = -1;
+                    try {
+                        bookId = Integer.parseInt(bookIdInp.getText());
+                    } catch (Exception e) {
+                        new Alert(Alert.AlertType.ERROR, "Уникальный индекс книги должен быть числом.");
+                    }
                     //bookRecord = new BookRecord(bookId, book.getTitle(), book.getAuthor().getName(), book.getPublishYear(), book.getPublisher(), book.getBrief());
-                    clientInterface.editBook(bookId, book);
+                    if (bookId != -1) {
+                        clientInterface.editBook(bookId, book);
+                    }
                     /*int recordsCount = bookRecords.size();
                     int i;
                     for (i = 0; i < recordsCount && bookRecords.get(i).getId() != bookId; i++) ;
@@ -348,9 +356,17 @@ public class Controller {
             break;
             case SET_AUTHOR: {
                 if (author != null) {
-                    int authorId = author.getId();
+                    //int authorId = author.getId();
+                    int authorId = -1;
+                    try {
+                        authorId = Integer.parseInt(authorIdInp.getText());
+                    } catch (Exception e) {
+                        new Alert(Alert.AlertType.ERROR, "Уникальный индекс автора должен быть числом.");
+                    }
                     //authorRecord = new AuthorRecord(authorId, author.getName(), author.getBooks().size());
-                    clientInterface.editAuthor(authorId, author.getName());
+                    if (authorId != -1) {
+                        clientInterface.editAuthor(authorId, author.getName());
+                    }
                     /*int recordsCount = authorRecords.size();
                     int i;
                     for (i = 0; i < recordsCount && authorRecords.get(i).getId() != authorId; i++) ;
