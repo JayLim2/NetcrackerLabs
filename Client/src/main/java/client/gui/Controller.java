@@ -209,10 +209,7 @@ public class Controller {
             //Создание объекта вспомогательного класса, созданного только для общения с сервером
             clientInterface = new ClientInterface(clientSocket, out, in, commandMarshaller, contextCommands, xmi);
 
-            AuthorsContainer authorsContainer = clientInterface.viewAuthors();
-            ObservableList<Author> authors = FXCollections.observableArrayList();
-            authors.addAll(authorsContainer.getAuthors());
-            bookAuthorInp.setItems(authors);
+            updateAuthorsCombobox();
         } catch (UnknownHostException e) {
             System.out.println("Неизвестный хост.");
         } catch (IOException e) {
@@ -255,6 +252,13 @@ public class Controller {
         //booksTable.setItems(bookRecords);
 
         //=================================
+    }
+
+    private void updateAuthorsCombobox() throws JAXBException, XMLStreamException {
+        AuthorsContainer authorsContainer = clientInterface.viewAuthors();
+        ObservableList<Author> authors = FXCollections.observableArrayList();
+        authors.addAll(authorsContainer.getAuthors());
+        bookAuthorInp.setItems(authors);
     }
 
     public void runModification(ActionEvent event) throws JAXBException, XMLStreamException {
@@ -300,21 +304,21 @@ public class Controller {
         switch (currentCommand) {
             case ADD_BOOK: {
                 if (book != null) {
-                    bookRecord = new BookRecord(book.getId(), book.getTitle(), book.getAuthor().getName(), book.getPublishYear(), book.getPublisher(), book.getBrief());
+                    //bookRecord = new BookRecord(book.getId(), book.getTitle(), book.getAuthor().getName(), book.getPublishYear(), book.getPublisher(), book.getBrief());
                     clientInterface.addBook(book);
-                    bookRecords.add(bookRecord);
+                    //bookRecords.add(bookRecord);
                 }
             }
             break;
             case SET_BOOK: {
                 if (book != null) {
                     int bookId = book.getId();
-                    bookRecord = new BookRecord(bookId, book.getTitle(), book.getAuthor().getName(), book.getPublishYear(), book.getPublisher(), book.getBrief());
+                    //bookRecord = new BookRecord(bookId, book.getTitle(), book.getAuthor().getName(), book.getPublishYear(), book.getPublisher(), book.getBrief());
                     clientInterface.editBook(bookId, book);
-                    int recordsCount = bookRecords.size();
+                    /*int recordsCount = bookRecords.size();
                     int i;
                     for (i = 0; i < recordsCount && bookRecords.get(i).getId() != bookId; i++) ;
-                    bookRecords.set(i, bookRecord);
+                    bookRecords.set(i, bookRecord);*/
                 }
             }
             break;
@@ -327,30 +331,30 @@ public class Controller {
                 }
                 if (id != -1) {
                     clientInterface.deleteBook(id);
-                    int i;
+                    /*int i;
                     int recordsCount = bookRecords.size();
                     for (i = 0; i < recordsCount && bookRecords.get(i).getId() != id; i++) ;
-                    bookRecords.remove(i);
+                    bookRecords.remove(i);*/
                 }
             }
             break;
             case ADD_AUTHOR: {
                 if (author != null) {
-                    authorRecord = new AuthorRecord(author.getId(), author.getName(), 0);
+                    //authorRecord = new AuthorRecord(author.getId(), author.getName(), 0);
                     clientInterface.addAuthor(author.getName());
-                    authorRecords.add(authorRecord);
+                    //authorRecords.add(authorRecord);
                 }
             }
             break;
             case SET_AUTHOR: {
                 if (author != null) {
                     int authorId = author.getId();
-                    authorRecord = new AuthorRecord(authorId, author.getName(), author.getBooks().size());
+                    //authorRecord = new AuthorRecord(authorId, author.getName(), author.getBooks().size());
                     clientInterface.editAuthor(authorId, author.getName());
-                    int recordsCount = authorRecords.size();
+                    /*int recordsCount = authorRecords.size();
                     int i;
                     for (i = 0; i < recordsCount && authorRecords.get(i).getId() != authorId; i++) ;
-                    authorRecords.set(i, authorRecord);
+                    authorRecords.set(i, authorRecord);*/
                 }
             }
             break;
@@ -363,10 +367,10 @@ public class Controller {
                 }
                 if (id != -1) {
                     clientInterface.deleteAuthor(id);
-                    int i;
+                    /*int i;
                     int recordsCount = authorRecords.size();
                     for (i = 0; i < recordsCount && authorRecords.get(i).getId() != id; i++) ;
-                    authorRecords.remove(i);
+                    authorRecords.remove(i);*/
                 }
             }
             break;
@@ -380,7 +384,7 @@ public class Controller {
     private Book getBookInfo() {
         Book book = null;
         try {
-            int id = Integer.parseInt(bookIdInp.getText());
+            //int id = Integer.parseInt(bookIdInp.getText());
             String title = bookTitleInp.getText();
             Author bookAuthor = bookAuthorInp.getValue();
             int year = Integer.parseInt(bookYearInp.getText());
@@ -398,7 +402,7 @@ public class Controller {
     private Author getAuthorInfo() {
         Author author = null;
         try {
-            int authorId = Integer.parseInt(authorIdInp.getText());
+            //int authorId = Integer.parseInt(authorIdInp.getText());
             String authorName = authorNameInp.getText();
             author = new Author(authorName);
         } catch (Exception ex) {
@@ -427,6 +431,8 @@ public class Controller {
             } else {
                 System.out.println("Список книг НЕ получен.");
             }
+
+            updateAuthorsCombobox();
 
             booksTable.setItems(bookRecords);
             authorsTable.setItems(authorRecords);

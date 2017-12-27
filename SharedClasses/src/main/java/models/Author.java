@@ -36,8 +36,9 @@ public class Author {
 
     public void dispatchId() {
         int nid = 0;
-        while (busyId.contains(id)) nid++;
+        while (busyId.contains(nid)) nid++;
         id = nid;
+        busyId.add(id);
     }
 
     public static void removeId(int id) {

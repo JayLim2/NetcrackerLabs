@@ -1,10 +1,12 @@
 package models;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.ValidationException;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
-import javax.xml.bind.ValidationException;
 
 
 @XmlRootElement
@@ -66,8 +68,9 @@ public class Book {
 	
 	public void dispatchId(){
 		int nid = 0;
-		while(busyId.contains(id)) nid++;
+        while (busyId.contains(nid)) nid++;
 		id = nid;
+        busyId.add(id);
 	}
 	
 	public static void removeId(int id){
