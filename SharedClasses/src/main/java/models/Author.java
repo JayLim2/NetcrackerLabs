@@ -125,4 +125,10 @@ public class Author {
 
         return false;
     }
+
+    //Author toString
+    @Override
+    public String toString() {
+        return name;
+    }
 }

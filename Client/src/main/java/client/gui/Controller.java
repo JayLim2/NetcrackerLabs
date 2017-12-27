@@ -208,6 +208,11 @@ public class Controller {
 
             //Создание объекта вспомогательного класса, созданного только для общения с сервером
             clientInterface = new ClientInterface(clientSocket, out, in, commandMarshaller, contextCommands, xmi);
+
+            AuthorsContainer authorsContainer = clientInterface.viewAuthors();
+            ObservableList<Author> authors = FXCollections.observableArrayList();
+            authors.addAll(authorsContainer.getAuthors());
+            bookAuthorInp.setItems(authors);
         } catch (UnknownHostException e) {
             System.out.println("Неизвестный хост.");
         } catch (IOException e) {
@@ -215,6 +220,9 @@ public class Controller {
             e.printStackTrace();
         } catch (JAXBException e) {
             System.out.println("Ошибка XML-сериализации.");
+            e.printStackTrace();
+        } catch (XMLStreamException e) {
+            System.out.println("Ошибка потока XML.");
             e.printStackTrace();
         }
 
@@ -245,6 +253,8 @@ public class Controller {
 
         //bookRecords.add(new BookRecord(0, "test", "author1", 2017, "EKSMO", "aaaa?"));
         //booksTable.setItems(bookRecords);
+
+        //=================================
     }
 
     public void runModification(ActionEvent event) throws JAXBException, XMLStreamException {
@@ -361,8 +371,10 @@ public class Controller {
             }
             break;
         }
-        authorsTable.setItems(authorRecords);
-        booksTable.setItems(bookRecords);
+        runViewBooks(event);
+        runViewAuthors(event);
+        //authorsTable.setItems(authorRecords);
+        //booksTable.setItems(bookRecords);
     }
 
     private Book getBookInfo() {
@@ -410,13 +422,14 @@ public class Controller {
                         bookRecords.add(new BookRecord(book.getId(), book.getTitle(), author.getName(), book.getPublishYear(), book.getPublisher(), book.getBrief()));
                     }
                 }
-                booksTable.setItems(bookRecords);
-                authorsTable.setItems(authorRecords);
 
                 System.out.println("Список книг получен.");
             } else {
                 System.out.println("Список книг НЕ получен.");
             }
+
+            booksTable.setItems(bookRecords);
+            authorsTable.setItems(authorRecords);
 
         } catch (XMLStreamException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -427,7 +440,7 @@ public class Controller {
     }
 
     public void runViewAuthors(ActionEvent event) {
-        try {
+        /*try {
             AuthorsContainer authorsContainer = clientInterface.viewAuthors();
             System.out.println("Список авторов получен.");
         } catch (XMLStreamException ex) {
@@ -435,7 +448,7 @@ public class Controller {
         } catch (JAXBException ex) {
             System.out.println("Ошибка XML-сериализаци.");
             ex.printStackTrace();
-        }
+        }*/
     }
 
     public void selectBook(ActionEvent event) {
