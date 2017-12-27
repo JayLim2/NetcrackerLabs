@@ -130,16 +130,23 @@ public class ClientInterface {
      * @throws XMLStreamException
      */
     public boolean editBook(int id, Book book) throws JAXBException, XMLStreamException {
-        SetBookPacket currentCommand = new SetBookPacket(Commands.SET_BOOK, 0, 0, book);
+        System.out.println("Index = " + id);
+        System.out.println("Index author = " + book.getAuthor().getId());
+        SetBookPacket currentCommand = new SetBookPacket(Commands.SET_BOOK, book.getAuthor().getId(), id, book);
 
+        System.out.println("Request sent.  0000");
         JAXBContext contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
         Unmarshaller unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
 
+        System.out.println("Request sent. 1111");
         commandMarshaller.marshal(currentCommand, out);
 
+        System.out.println("Request sent. 2222");
         xer = xmi.createXMLEventReader(in);
         xer.nextEvent();
         xer.peek();
+
+        System.out.println("Request sent. EEEEEEEEEEE");
         Book.resetId();
         Author.resetId();
 
