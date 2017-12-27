@@ -74,7 +74,7 @@ public class Book {
 	}
 	
 	public static void removeId(int id){
-		busyId.remove(new Integer(id));
+		//busyId.remove(new Integer(id));
 	}
     
     public static void resetId(){

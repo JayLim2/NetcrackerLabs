@@ -42,7 +42,7 @@ public class Author {
     }
 
     public static void removeId(int id) {
-        busyId.remove(new Integer(id));
+        //busyId.remove(new Integer(id));
     }
 
     @XmlElement
