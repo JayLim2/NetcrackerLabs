@@ -5,9 +5,10 @@
  */
 package protocol;
 
+import models.Book;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import models.Book;
 
 /**
  *
@@ -17,29 +18,29 @@ import models.Book;
 public class AddBookPacket extends CommandPacket{
     private Book book;
     private int id;
-    
+
     public AddBookPacket(){}
-    
-    public AddBookPacket(Commands command,int id, Book book){
+
+    public AddBookPacket(Commands command, int id, Book book) {
         super(command);
         this.book = book;
         this.id = id;
     }
-            
+
     public int getId(){
         return id;
     }
-    
+
     @XmlElement
     public void setId(int id){
         this.id = id;
     }
-    
+
     @XmlElement
     public void setBook(Book book){
         this.book = book;
     }
-    
+
     public Book getBook(){
         return book;
     }

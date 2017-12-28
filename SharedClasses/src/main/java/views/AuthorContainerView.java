@@ -8,6 +8,7 @@ package views;
 import controllers.AuthorContainerController;
 import models.Author;
 import models.Book;
+import models.BookAlreadyExistsException;
 import models.YearOutOfBoundsException;
 
 import javax.xml.bind.JAXBException;
@@ -233,7 +234,11 @@ public class AuthorContainerView {
                         int publishYear = new Integer(test1);
                         tempB = new Book(name, author, publishYear, "", "");
                         if(!isExists(tempB, author.getBooks())) {
-                            aCC.addBook(tempB, id);
+                            try {
+                                aCC.addBook(tempB, id);
+                            } catch (BookAlreadyExistsException e) {
+
+                            }
 
                             System.out.println("Book " + "\"" + tempB.getTitle() + "\"" + " added to author " + "\"" + author.getName() + "\"\n");
                             mark2 = true;
@@ -505,7 +510,11 @@ public class AuthorContainerView {
                                 Author author = aCC.getAuthor(id2);
                                 aCC.removeBook(id);
                                 cbook.setAuthor(author);
-                                aCC.addBook(cbook, id2);
+                                try {
+                                    aCC.addBook(cbook, id2);
+                                } catch (BookAlreadyExistsException e) {
+
+                                }
                                 System.out.println("Book " + "\"" + cbook.getTitle() + "\"" + " is moved to new author " + "\"" + aCC.getAuthor(id2).getName() + "\"" + " from old " + "\"" + aCC.getAuthor(id).getName() + "\"\n");
                                 try {
                                     aCC.save(new File("XML1.xml"));
