@@ -140,6 +140,8 @@ public class ClientInterface implements Runnable {
                             try {
                                 aCC.getAuthor(stap.getId()).setName(stap.getAuthor().getName());
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                            }catch (IndexOutOfBoundsException ex) {
+                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, "no Author with such index"), outp);
                             } finally {
                                 writeLock.unlock();
                             }
@@ -157,6 +159,7 @@ public class ClientInterface implements Runnable {
                                 writeLock.unlock();
                             }
                         }
+                        break;
                         case REMOVE_AUTHOR: {
                             RemoveAuthorPacket rmap = (RemoveAuthorPacket) command;
                             writeLock.lock();
@@ -169,6 +172,7 @@ public class ClientInterface implements Runnable {
                                 writeLock.unlock();
                             }
                         }
+                        break;
                         case BYE: {
                             marshResponse.marshal(new OkPacket(Responses.OK), outp);
                             break a;

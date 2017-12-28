@@ -61,7 +61,7 @@ public class ClientInterface {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШИБКА: невозможно выполнить команду VIEW BOOKS.");
+            System.out.println("ОШ�?БКА: невозможно выполнить команду VIEW BOOKS.");
         }
 
         //Если всё ок
@@ -90,13 +90,13 @@ public class ClientInterface {
      * @throws JAXBException
      * @throws XMLStreamException
      */
-    public boolean addBook(Book book) throws JAXBException, XMLStreamException {
+    public boolean addBook(Book book,Author author) throws JAXBException, XMLStreamException {
         //FIXME 28.12.17
         /* Проблема заключается в том, что пакет пересылается с неким номером, который
-        сервером магическим образом интерпретируется как указатель на автора. И этот НОМЕР
+        сервером магическим образом интерпретируется как указатель на автора. �? этот НОМЕР
         вообще говоря НЕ совпадает с айдишником автора.
          */
-        AddBookPacket currentCommand = new AddBookPacket(Commands.ADD_BOOK, 0, book);
+        AddBookPacket currentCommand = new AddBookPacket(Commands.ADD_BOOK, author.getId(), book);
 
         JAXBContext contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
         Unmarshaller unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
@@ -114,7 +114,7 @@ public class ClientInterface {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШИБКА: невозможно выполнить команду ADD BOOK.\n");
+            System.out.println("ОШ�?БКА: невозможно выполнить команду ADD BOOK.\n");
             return false;
         }
 
@@ -160,7 +160,7 @@ public class ClientInterface {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШИБКА: невозможно выполнить команду EDIT BOOK.\n");
+            System.out.println("ОШ�?БКА: невозможно выполнить команду EDIT BOOK.\n");
             System.out.println(((ErrorPacket) response).getDescription());
             return false;
         }
@@ -199,7 +199,7 @@ public class ClientInterface {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШИБКА: невозможно выполнить команду DELETE BOOK.\n");
+            System.out.println("ОШ�?БКА: невозможно выполнить команду DELETE BOOK.\n");
             System.out.println(((ErrorPacket) response).getDescription());
 
             return false;
@@ -242,7 +242,7 @@ public class ClientInterface {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШИБКА: невозможно выполнить команду VIEW BOOKS.");
+            System.out.println("ОШ�?БКА: невозможно выполнить команду VIEW BOOKS.");
         }
 
         //Если всё ок
@@ -288,7 +288,7 @@ public class ClientInterface {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШИБКА: невозможно выполнить команду ADD AUTHOR.\n");
+            System.out.println("ОШ�?БКА: невозможно выполнить команду ADD AUTHOR.\n");
             System.out.println(((ErrorPacket) response).getDescription());
 
             return false;
@@ -330,7 +330,7 @@ public class ClientInterface {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШИБКА: невозможно выполнить команду SET AUTHOR.\n");
+            System.out.println("ОШ�?БКА: невозможно выполнить команду SET AUTHOR.\n");
             System.out.println(((ErrorPacket) response).getDescription());
 
             return false;
@@ -370,7 +370,7 @@ public class ClientInterface {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШИБКА: невозможно выполнить команду REMOVE AUTHOR.\n");
+            System.out.println("ОШ�?БКА: невозможно выполнить команду REMOVE AUTHOR.\n");
             System.out.println(((ErrorPacket) response).getDescription());
 
             return false;

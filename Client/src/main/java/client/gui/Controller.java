@@ -308,7 +308,7 @@ public class Controller {
             case ADD_BOOK: {
                 if (book != null) {
                     //bookRecord = new BookRecord(book.getId(), book.getTitle(), book.getAuthor().getName(), book.getPublishYear(), book.getPublisher(), book.getBrief());
-                    clientInterface.addBook(book);
+                    clientInterface.addBook(book, book.getAuthor());
                     //bookRecords.add(bookRecord);
                 }
             }
