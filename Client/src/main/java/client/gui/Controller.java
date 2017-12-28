@@ -30,6 +30,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Controller {
+    //Ограничения ввода
+    private static final int BOOK_TITLE_CONSTRAINT = 50;
+    private static final int BOOK_YEAR_MIN = 0;
+    private static final int BOOK_YEAR_MAX = 2017;
+    private static final int BOOK_PUBLISHER_CONSTRAINT = 35;
+    private static final int BOOK_BRIEF_CONSTRAINT = 280;
+    private static final int AUTHOR_NAME_CONSTRAINT = 50;
+
     @FXML
     private TableView booksTable;
     @FXML
@@ -403,13 +411,29 @@ public class Controller {
     private Book getBookInfo() {
         Book book = null;
         try {
-            //int id = Integer.parseInt(bookIdInp.getText());
             String title = bookTitleInp.getText();
             Author bookAuthor = bookAuthorInp.getValue();
             int year = Integer.parseInt(bookYearInp.getText());
             String publisher = bookPublisherInp.getText();
             String brief = bookBriefInp.getText();
-            book = new Book(title, bookAuthor, year, publisher, brief);
+
+            if (title.length() <= BOOK_TITLE_CONSTRAINT &&
+                    publisher.length() <= BOOK_PUBLISHER_CONSTRAINT &&
+                    (year >= BOOK_YEAR_MIN && year <= BOOK_YEAR_MAX) &&
+                    brief.length() <= BOOK_BRIEF_CONSTRAINT) {
+                book = new Book(title, bookAuthor, year, publisher, brief);
+            } else {
+                String errorMsg = "";
+                if (title.length() > BOOK_TITLE_CONSTRAINT)
+                    errorMsg += "* Название книги превышает допустимое число символов.\n";
+                if (year < BOOK_YEAR_MIN || year > BOOK_YEAR_MAX)
+                    errorMsg += "* Год издания должен быть в диапазоне от " + BOOK_YEAR_MIN + " до " + BOOK_YEAR_MAX + "\n";
+                if (publisher.length() > BOOK_PUBLISHER_CONSTRAINT)
+                    errorMsg += "* Название издателя превышает допустимое число символов.\n";
+                if (brief.length() > BOOK_BRIEF_CONSTRAINT)
+                    errorMsg += "* Длина краткого описания превышает " + BOOK_BRIEF_CONSTRAINT + " символов.\n";
+                new Alert(Alert.AlertType.ERROR, errorMsg).show();
+            }
         } catch (YearOutOfBoundsException ex) {
 
         } catch (Exception ex) {
@@ -421,9 +445,11 @@ public class Controller {
     private Author getAuthorInfo() {
         Author author = null;
         try {
-            //int authorId = Integer.parseInt(authorIdInp.getText());
             String authorName = authorNameInp.getText();
-            author = new Author(authorName);
+            if (authorName.length() <= AUTHOR_NAME_CONSTRAINT)
+                author = new Author(authorName);
+            else
+                new Alert(Alert.AlertType.ERROR, "* Длина имени автора превышает допустимое число символов.").show();
         } catch (Exception ex) {
 
         }
