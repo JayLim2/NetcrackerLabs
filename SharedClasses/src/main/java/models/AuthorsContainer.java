@@ -30,7 +30,7 @@ public class AuthorsContainer {
 
     public void addAuthor(Author author) {
 
-        if (!isExists(author, authors) && isValid(author)) {
+       if (/*!isExists(author, authors) && */isValid(author)) {
             author.setName(author.getName().trim());
             authors.add(author);
             System.out.println("Author " + "\"" + author.getName() + "\"" + " added");

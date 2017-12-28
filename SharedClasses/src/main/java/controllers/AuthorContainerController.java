@@ -123,7 +123,7 @@ public class AuthorContainerController {
     }
 
     public void addBook(Book book, int id) throws BookAlreadyExistsException {
-        Author author = authorsContainer.getAuthor(id);
+        Author author = getAuthor(id);
         book.setAuthor(author);
         if (!author.addBook(book))throw new BookAlreadyExistsException();
         book.dispatchId();
