@@ -92,6 +92,9 @@ public class Controller {
     @FXML
     private RadioButton selectDelOperation;
 
+    @FXML
+    private Button runOperationBtn;
+
     public class BookRecord {
         private int id;
         private String title;
@@ -317,7 +320,7 @@ public class Controller {
                     try {
                         bookId = Integer.parseInt(bookIdInp.getText());
                     } catch (Exception e) {
-                        new Alert(Alert.AlertType.ERROR, "Уникальный индекс книги должен быть числом.");
+                        new Alert(Alert.AlertType.ERROR, "Уникальный индекс книги должен быть числом.").show();
                     }
                     //bookRecord = new BookRecord(bookId, book.getTitle(), book.getAuthor().getName(), book.getPublishYear(), book.getPublisher(), book.getBrief());
                     if (bookId != -1) {
@@ -335,7 +338,7 @@ public class Controller {
                 try {
                     id = Integer.parseInt(bookIdInp.getText());
                 } catch (Exception ex) {
-                    new Alert(Alert.AlertType.ERROR, "Уникальный Id книги должен быть числом.");
+                    new Alert(Alert.AlertType.ERROR, "Уникальный Id книги должен быть числом.").show();
                 }
                 if (id != -1) {
                     clientInterface.deleteBook(id);
@@ -361,7 +364,7 @@ public class Controller {
                     try {
                         authorId = Integer.parseInt(authorIdInp.getText());
                     } catch (Exception e) {
-                        new Alert(Alert.AlertType.ERROR, "Уникальный индекс автора должен быть числом.");
+                        new Alert(Alert.AlertType.ERROR, "Уникальный индекс автора должен быть числом.").show();
                     }
                     //authorRecord = new AuthorRecord(authorId, author.getName(), author.getBooks().size());
                     if (authorId != -1) {
@@ -379,7 +382,7 @@ public class Controller {
                 try {
                     id = Integer.parseInt(authorIdInp.getText());
                 } catch (Exception ex) {
-                    new Alert(Alert.AlertType.ERROR, "Уникальный Id автора должен быть числом.");
+                    new Alert(Alert.AlertType.ERROR, "Уникальный Id автора должен быть числом.").show();
                 }
                 if (id != -1) {
                     clientInterface.deleteAuthor(id);
@@ -453,6 +456,7 @@ public class Controller {
             booksTable.setItems(bookRecords);
             authorsTable.setItems(authorRecords);
 
+            enableModificationForm();
         } catch (XMLStreamException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         } catch (JAXBException ex) {
@@ -461,7 +465,31 @@ public class Controller {
         }
     }
 
+    private void enableModificationForm() {
+        selectBook.setDisable(false);
+        selectAuthor.setDisable(false);
+        selectAddOperation.setDisable(false);
+        selectEditOperation.setDisable(false);
+        selectDelOperation.setDisable(false);
+        enableBookMainInfo();
+        runOperationBtn.setDisable(false);
+    }
+
+    //Применится потом: в случае возникновения ошибки чтения с сервера (из файла), форма блокируется
+    private void disableModificationForm() {
+        selectBook.setDisable(true);
+        selectAuthor.setDisable(true);
+        selectAddOperation.setDisable(true);
+        selectEditOperation.setDisable(true);
+        selectDelOperation.setDisable(true);
+        bookIdInp.setDisable(true);
+        authorIdInp.setDisable(true);
+        disableBookMainInfo();
+        runOperationBtn.setDisable(true);
+    }
+
     public void runViewAuthors(ActionEvent event) {
+        runViewBooks(event);
         /*try {
             AuthorsContainer authorsContainer = clientInterface.viewAuthors();
             System.out.println("Список авторов получен.");
@@ -474,22 +502,98 @@ public class Controller {
     }
 
     public void selectBook(ActionEvent event) {
+        //Отключение формы с автором
+        authorIdInp.setDisable(true);
+        authorNameInp.setDisable(true);
+
+        if (selectDelOperation.isSelected() || selectEditOperation.isSelected())
+            bookIdInp.setDisable(false);
+        else
+            bookIdInp.setDisable(true);
+
+        if (!selectDelOperation.isSelected()) {
+            enableBookMainInfo();
+        } else {
+            disableBookMainInfo();
+        }
+
         System.out.println("Operand type Book is selected.");
     }
 
     public void selectAuthor(ActionEvent event) {
+        if (selectEditOperation.isSelected() || selectDelOperation.isSelected())
+            authorIdInp.setDisable(false);
+        else
+            authorIdInp.setDisable(true);
+
+        if (!selectDelOperation.isSelected())
+            authorNameInp.setDisable(false);
+        else
+            authorNameInp.setDisable(true);
+
+        //Отключение формы с книгой
+        bookIdInp.setDisable(true);
+        disableBookMainInfo();
+
         System.out.println("Operand type Author is selected.");
     }
 
+    private void enableBookMainInfo() {
+        bookTitleInp.setDisable(false);
+        bookAuthorInp.setDisable(false);
+        bookYearInp.setDisable(false);
+        bookPublisherInp.setDisable(false);
+        bookBriefInp.setDisable(false);
+    }
+
+    private void disableBookMainInfo() {
+        bookTitleInp.setDisable(true);
+        bookAuthorInp.setDisable(true);
+        bookYearInp.setDisable(true);
+        bookPublisherInp.setDisable(true);
+        bookBriefInp.setDisable(true);
+    }
+
+    private void disableAllInfo() {
+        disableBookMainInfo();
+        bookIdInp.setDisable(true);
+        authorIdInp.setDisable(true);
+        authorNameInp.setDisable(true);
+    }
+
     public void selectAddOperation(ActionEvent event) {
+        if (selectBook.isSelected()) {
+            bookIdInp.setDisable(true);
+            enableBookMainInfo();
+        } else if (selectAuthor.isSelected()) {
+            authorIdInp.setDisable(true);
+            authorNameInp.setDisable(false);
+        }
+
         System.out.println("Operation Add is selected.");
     }
 
     public void selectEditOperation(ActionEvent event) {
+        if (selectBook.isSelected()) {
+            bookIdInp.setDisable(false);
+            enableBookMainInfo();
+        } else if (selectAuthor.isSelected()) {
+            authorIdInp.setDisable(false);
+            authorNameInp.setDisable(false);
+        }
+
         System.out.println("Operation Edit is selected.");
     }
 
     public void selectDelOperation(ActionEvent event) {
+        if (selectBook.isSelected()) {
+            bookIdInp.setDisable(false);
+            disableBookMainInfo();
+        } else if (selectAuthor.isSelected()) {
+            authorIdInp.setDisable(false);
+            authorNameInp.setDisable(true);
+        }
+
         System.out.println("Operation Delete is selected.");
     }
 

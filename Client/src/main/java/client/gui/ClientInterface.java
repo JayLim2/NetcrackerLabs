@@ -91,6 +91,11 @@ public class ClientInterface {
      * @throws XMLStreamException
      */
     public boolean addBook(Book book) throws JAXBException, XMLStreamException {
+        //FIXME 28.12.17
+        /* Проблема заключается в том, что пакет пересылается с неким номером, который
+        сервером магическим образом интерпретируется как указатель на автора. И этот НОМЕР
+        вообще говоря НЕ совпадает с айдишником автора.
+         */
         AddBookPacket currentCommand = new AddBookPacket(Commands.ADD_BOOK, 0, book);
 
         JAXBContext contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
