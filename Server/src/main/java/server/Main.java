@@ -30,7 +30,8 @@ public class Main {
                 JAXBContext context = JAXBContext.newInstance(AuthorsContainer.class);
                 Unmarshaller unmarsh = context.createUnmarshaller();
                 AuthorsContainer authors;
-                authors = (AuthorsContainer)unmarsh.unmarshal(new File("XML1.xml"));
+//                new File("XML1.xml")
+                authors = (AuthorsContainer)unmarsh.unmarshal(Main.class.getResourceAsStream("XML1.xml"));
                 aCC = new AuthorContainerController(authors);
                 aCC.reInitAuthorsInBooks();
             } catch (JAXBException ex) {
