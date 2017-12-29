@@ -94,6 +94,9 @@ public class ClientInterface implements Runnable {
                             try {
                                 aCC.addBook(book, id);
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                            }
+                            catch (IndexOutOfBoundsException ex) {
+                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Index error"), outp);    
                             } catch (BookAlreadyExistsException ex) {
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Duplicate Book error"), outp);
                         } finally {
