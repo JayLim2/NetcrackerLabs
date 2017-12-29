@@ -25,6 +25,17 @@
 				  <descriptorRefs>
 					<descriptorRef>jar-with-dependencies</descriptorRef>
 				  </descriptorRefs>
+                                 
+                    <!--useDefaultManifestFile>true</useDefaultManifestFile-->
+                    <archive>      
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>client.gui.Main</mainClass>
+                            <!--packageName>com.alenag.client</packageName-->
+                        </manifest>
+                        <addMavenDescriptor>false</addMavenDescriptor>
+                    </archive>
+  
 				</configuration>
 			  </plugin>		
             <plugin>
@@ -50,7 +61,7 @@
                     <archive>      
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>Main</mainClass>
+                            <mainClass>client.gui.Main</mainClass>
                             <!--packageName>com.alenag.client</packageName-->
                         </manifest>
                         <addMavenDescriptor>false</addMavenDescriptor>
@@ -58,6 +69,14 @@
                 </configuration>
             </plugin> 
         </plugins>
+		<resources>
+            <resource>
+                <directory>src/main/java/client/gui</directory>
+                <includes>
+                    <include>*.fxml</include>
+                </includes>
+            </resource>
+        </resources>
     </build>   
 	
         <dependencies>
