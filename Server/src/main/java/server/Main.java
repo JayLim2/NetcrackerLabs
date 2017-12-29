@@ -31,7 +31,7 @@ public class Main {
                 Unmarshaller unmarsh = context.createUnmarshaller();
                 AuthorsContainer authors;
 //                new File("XML1.xml")
-                authors = (AuthorsContainer)unmarsh.unmarshal(Main.class.getResourceAsStream("XML1.xml"));
+                authors = (AuthorsContainer)unmarsh.unmarshal(Main.class.getResourceAsStream("/XML1.xml"));
                 aCC = new AuthorContainerController(authors);
                 aCC.reInitAuthorsInBooks();
             } catch (JAXBException ex) {
