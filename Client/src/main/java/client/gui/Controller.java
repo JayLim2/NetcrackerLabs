@@ -37,6 +37,7 @@ public class Controller {
     private static final int BOOK_PUBLISHER_CONSTRAINT = 35;
     private static final int BOOK_BRIEF_CONSTRAINT = 280;
     private static final int AUTHOR_NAME_CONSTRAINT = 50;
+    private Client client;
 
     @FXML
     private TableView booksTable;
@@ -219,6 +220,9 @@ public class Controller {
 
             //Создание объекта вспомогательного класса, созданного только для общения с сервером
             clientInterface = new ClientInterface(clientSocket, out, in, commandMarshaller, contextCommands, xmi);
+           // client = Client.getInstance();
+         //   if(client.connect()==1) System.out.println("error connect to server");
+
 
             updateAuthorsCombobox();
         } catch (UnknownHostException e) {
@@ -529,6 +533,7 @@ public class Controller {
 
     public void selectBook(ActionEvent event) {
         //Отключение формы с автором
+
         authorIdInp.setDisable(true);
         authorNameInp.setDisable(true);
 
@@ -547,6 +552,7 @@ public class Controller {
     }
 
     public void selectAuthor(ActionEvent event) {
+
         if (selectEditOperation.isSelected() || selectDelOperation.isSelected())
             authorIdInp.setDisable(false);
         else
@@ -560,6 +566,7 @@ public class Controller {
         //Отключение формы с книгой
         bookIdInp.setDisable(true);
         disableBookMainInfo();
+
 
         System.out.println("Operand type Author is selected.");
     }

@@ -1,5 +1,7 @@
 package models;
 
+import exceptions.InvalidCommandAction;
+
 import java.util.LinkedList;
 import java.util.List;
 import javax.xml.bind.annotation.*;
@@ -28,15 +30,19 @@ public class AuthorsContainer {
         return authors.get(id);
     }
 
-    public void addAuthor(Author author) {
+    public void addAuthor(Author author) throws InvalidCommandAction {
 
-       if (/*!isExists(author, authors) && */isValid(author)) {
+       if (!isExists(author, authors) && isValid(author)) {
             author.setName(author.getName().trim());
             authors.add(author);
             System.out.println("Author " + "\"" + author.getName() + "\"" + " added");
             sort();
-        } else
-            System.out.println("Authors name is not correct");
+        } else {
+
+           System.out.println("Authors name is not correct");
+           throw new InvalidCommandAction("This author is already exist");
+
+       }
 
     }
 

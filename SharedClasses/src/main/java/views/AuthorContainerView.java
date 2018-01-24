@@ -6,6 +6,7 @@
 package views;
 
 import controllers.AuthorContainerController;
+import exceptions.InvalidCommandAction;
 import models.Author;
 import models.Book;
 import models.BookAlreadyExistsException;
@@ -295,7 +296,12 @@ public class AuthorContainerView {
 
         Author author = new Author(name);
         if(!isExists(author, aCC.getAuthorsContainer().getAuthors())&& isValid(author)) {
-            aCC.addAuthor(author);
+            try {
+                aCC.addAuthor(author);
+            }
+            catch (InvalidCommandAction e){
+                e.getMessage();
+            }
 
             try{
                 aCC.save(new File("XML1.xml"));
