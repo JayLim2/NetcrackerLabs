@@ -1,12 +1,12 @@
 package controllers;
 
+import exceptions.InvalidCommandAction;
 import models.Author;
 import models.AuthorsContainer;
 import models.Book;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 
 import java.util.List;
 import javax.xml.bind.JAXBContext;
@@ -23,7 +23,7 @@ public class AuthorContainerController {
         this.authorsContainer = authorsContainer;
     }
 
-    public void addAuthor(Author author) {
+    public void addAuthor(Author author) throws InvalidCommandAction {
         authorsContainer.addAuthor(author);
         author.dispatchId();
     }

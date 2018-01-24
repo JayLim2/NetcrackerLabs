@@ -40,6 +40,7 @@ public class Main {
                 aCC = new AuthorContainerController(empty);
             }
             ReadWriteLock rwl = new ReentrantReadWriteLock() ;
+
             while(true){
                 exec.submit(new ClientInterface(serverSocket.accept(), aCC, rwl));
             }

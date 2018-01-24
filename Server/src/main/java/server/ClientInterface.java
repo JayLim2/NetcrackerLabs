@@ -6,6 +6,7 @@
 package server;
 
 import controllers.AuthorContainerController;
+import exceptions.InvalidCommandAction;
 import models.Author;
 import models.Book;
 import models.YearOutOfBoundsException;
@@ -26,6 +27,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import models.BookAlreadyExistsException;
 
 /**
@@ -48,6 +50,7 @@ public class ClientInterface implements Runnable {
     public void run() {
         try {
             OutputStream outp = clientSocket.getOutputStream();
+            StreamContainer.getInstance().addStream(outp);
             XMLInputFactory xmi = XMLInputFactory.newFactory();
             InputStream inp = clientSocket.getInputStream();
             XMLEventReader xer;
@@ -94,12 +97,14 @@ public class ClientInterface implements Runnable {
                             try {
                                 aCC.addBook(book, id);
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
-                            }
-                            catch (IndexOutOfBoundsException ex) {
-                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Index error"), outp);    
+                                /*for (OutputStream stream : StreamContainer.getInstance().getStreams())
+                                    marshResponse.marshal(new ViewBooksResponsePacket(Responses.OK, aCC.getAuthorsContainer()), outp);*/
+                                marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                            } catch (IndexOutOfBoundsException ex) {
+                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Index error"), outp);
                             } catch (BookAlreadyExistsException ex) {
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Duplicate Book error"), outp);
-                        } finally {
+                            } finally {
                                 writeLock.unlock();
                             }
                         }
@@ -111,6 +116,8 @@ public class ClientInterface implements Runnable {
                                 Author author = abap.getAuthor();
                                 aCC.addAuthor(author);
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                            } catch (InvalidCommandAction e) {
+                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, e.getMessage()), outp);
                             } finally {
                                 writeLock.unlock();
                             }
@@ -132,7 +139,7 @@ public class ClientInterface implements Runnable {
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Index error"), outp);
                             } catch (BookAlreadyExistsException ex) {
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Duplicate Book error"), outp);
-                        } finally {
+                            } finally {
                                 writeLock.unlock();
                             }
                         }
@@ -143,7 +150,7 @@ public class ClientInterface implements Runnable {
                             try {
                                 aCC.getAuthor(stap.getId()).setName(stap.getAuthor().getName());
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
-                            }catch (IndexOutOfBoundsException ex) {
+                            } catch (IndexOutOfBoundsException ex) {
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "no Author with such index"), outp);
                             } finally {
                                 writeLock.unlock();
