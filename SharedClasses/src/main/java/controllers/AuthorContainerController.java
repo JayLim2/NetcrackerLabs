@@ -9,11 +9,14 @@ import java.io.File;
 import java.io.FileInputStream;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import models.BookAlreadyExistsException;
+import models.BookFilter;
 import models.YearOutOfBoundsException;
 
 public class AuthorContainerController {
@@ -169,5 +172,32 @@ public class AuthorContainerController {
                 return true;
         }
         return false;
+    }
+    
+    public AuthorsContainer search(BookFilter filter){
+        AuthorsContainer result = new AuthorsContainer();
+        for(Author tempAuthor : authorsContainer.getAuthors()){
+            Author copyAuthor = new Author(tempAuthor.getName());
+            copyAuthor.setId(tempAuthor.getId());
+            try {
+                result.addAuthor(copyAuthor);
+            } catch (InvalidCommandAction ex) {
+                System.out.println("cant happen");//placeholders. replace
+                    // cant happen normally
+            }
+            for(Book tempBook : tempAuthor.getBooks()){
+                try {
+                    Book copyBook = new Book(tempBook.getTitle(), tempBook.getAuthor(), tempBook.getPublishYear(), tempBook.getPublisher(), tempBook.getBrief());
+                    copyBook.setId(tempBook.getId());
+                    if (filter.accept(copyBook))
+                        copyAuthor.addBook(copyBook);
+                } catch (YearOutOfBoundsException ex) {
+                    System.out.println("cant happen");
+                    // cant happen normally
+                }
+                
+            }
+        }
+        return result;
     }
 }

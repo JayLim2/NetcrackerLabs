@@ -54,12 +54,12 @@ public class Book {
         return id;
     }
     
-    public void setId(int val) throws ValidationException {
+    public void setId(int val) {//throws ValidationException {
 		if (val != -1){
 			busyId.remove(new Integer(id));
 			if (busyId.contains(val)) {
 				busyId.add(id);
-				throw new ValidationException("busy id");
+				//throw new ValidationException("busy id");
 			}
 			id = val;
 			busyId.add(id);

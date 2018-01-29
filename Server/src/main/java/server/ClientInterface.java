@@ -27,6 +27,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import models.AuthorsContainer;
 
 import models.BookAlreadyExistsException;
 
@@ -180,6 +181,18 @@ public class ClientInterface implements Runnable {
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "no Author with such index"), outp);
                             } finally {
                                 writeLock.unlock();
+                            }
+                        }
+                        break;
+                        case SEARCH:{
+                            SearchPacket searchPacket = (SearchPacket)command;
+                            readLock.lock();
+                            try{
+                                AuthorsContainer resp = aCC.search(searchPacket.getBookFilter());
+                                marshResponse.marshal(new ViewBooksResponsePacket(Responses.OK,resp), outp);
+                            }
+                            finally{
+                                readLock.unlock();
                             }
                         }
                         break;

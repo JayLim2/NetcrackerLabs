@@ -34,5 +34,5 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlEnum(String.class)
 public enum Commands {
-    ADD_AUTHOR, ADD_BOOK, SET_AUTHOR, SET_BOOK, REMOVE_BOOK, REMOVE_AUTHOR, VIEW_BOOKS, VIEW_AUTHORS, BYE
+    ADD_AUTHOR, ADD_BOOK, SET_AUTHOR, SET_BOOK, REMOVE_BOOK, REMOVE_AUTHOR, VIEW_BOOKS, VIEW_AUTHORS, BYE, SEARCH
 }
