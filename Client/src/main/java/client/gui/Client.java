@@ -37,7 +37,7 @@ public class Client {
                 }
             }
             id = in.read();
-            System.out.println(id);
+            System.out.println("Your id: "+id);
             clientListener = new ClientListener(in);
             clientListener.start();
             return 0;

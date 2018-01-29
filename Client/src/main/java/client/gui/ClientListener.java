@@ -47,6 +47,7 @@ public class ClientListener extends Thread {
                     ResponsePacket response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
                     System.out.println("Response accepted.\n");
                     //todo response action, call ClientResponsePacketParser
+                    System.out.println(response);
                 }
             }
         } catch (IOException e) {

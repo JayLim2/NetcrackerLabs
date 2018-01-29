@@ -1,13 +1,18 @@
 package server;
 
+import com.sun.deploy.util.SessionState;
+import com.sun.xml.internal.ws.assembler.dev.ClientTubelineAssemblyContext;
+
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class StreamContainer {
     private ArrayList <OutputStream> clientOutputStreams;
     private static StreamContainer instance;
+    //private Map<Integer, > streamMap;
 
     private StreamContainer() {
         this.clientOutputStreams = new ArrayList<>();
