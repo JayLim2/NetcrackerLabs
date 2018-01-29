@@ -26,8 +26,9 @@ public class NewConnection extends Thread {
         try {
             out = socket.getOutputStream();
             in = socket.getInputStream();
-            StreamContainer.getInstance().addStream(out);
             clientId = IdGenerator.getInstance().createId();
+            StreamContainer.getInstance().addStream(clientId, out);
+            StreamContainer.getInstance().View();
             out.write(clientId);
             out.flush();
             System.out.println("New client # "+ clientId + " connected");

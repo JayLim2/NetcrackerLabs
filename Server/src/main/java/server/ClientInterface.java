@@ -50,7 +50,7 @@ public class ClientInterface implements Runnable {
     public void run() {
         try {
             OutputStream outp = clientSocket.getOutputStream();
-            StreamContainer.getInstance().addStream(outp);
+//            StreamContainer.getInstance().addStream(outp);
             XMLInputFactory xmi = XMLInputFactory.newFactory();
             InputStream inp = clientSocket.getInputStream();
             XMLEventReader xer;
