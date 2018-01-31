@@ -7,6 +7,7 @@ import models.Book;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -27,6 +28,7 @@ public class AuthorContainerController {
     }
 
     public void addAuthor(Author author) throws InvalidCommandAction {
+        if (authorExistsAlready(author)) throw new InvalidCommandAction("an author with this name already exists");
         authorsContainer.addAuthor(author);
         author.dispatchId();
     }
@@ -199,5 +201,62 @@ public class AuthorContainerController {
             }
         }
         return result;
+    }
+    
+    public boolean authorExistsAlready(Author checkAuthor){
+        for(Author author: authorsContainer.getAuthors()){
+            if (author.getName().equals(checkAuthor.getName())) return true;
+        }
+        return false;
+    }
+    
+    public Author getAuthorByName(String name){
+        for(Author author: authorsContainer.getAuthors()){
+            if (author.getName().equals(name)) return author;
+        }
+        return null;
+    }
+    
+    public void merge(AuthorsContainer anotherAuthorsContainer){
+        for(Author author:anotherAuthorsContainer.getAuthors()){
+            Author tempAuthor = getAuthorByName(author.getName());
+            if(tempAuthor == null){
+                tempAuthor = new Author(author.getName());
+                tempAuthor.setId(author.getId());
+                try {
+                    addAuthor(tempAuthor);
+                } catch (InvalidCommandAction ex) {
+                    //cant happen
+                }
+            }
+            for(Book book: author.getBooks()){
+                if (!existAlready(tempAuthor, book)){
+                    try {
+                        Book tempBook = new Book(book.getTitle(), tempAuthor, book.getPublishYear(), book.getPublisher(), book.getBrief());
+                        tempBook.setId(book.getId());
+                        tempAuthor.addBook(tempBook);
+                    } catch (YearOutOfBoundsException ex) {
+                        //cant happen
+                    }
+                }
+            }    
+        }
+    }
+    
+    public void resolveIds(){
+        List<Integer> bookIds = new ArrayList<>();
+        List<Integer> authorIds = new ArrayList<>();
+        for(Author author:authorsContainer.getAuthors()){
+            if (authorIds.contains(author.getId())){
+                author.dispatchId();
+            }
+            else authorIds.add(author.getId());
+            for(Book book:author.getBooks()){
+                if (bookIds.contains(book.getId())){
+                    book.dispatchId();
+                }
+                else bookIds.add(book.getId());
+            }
+        }
     }
 }

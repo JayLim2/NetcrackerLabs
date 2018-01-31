@@ -34,6 +34,7 @@ public class Main {
                 authors = (AuthorsContainer)unmarsh.unmarshal(Main.class.getResourceAsStream("/XML1.xml"));
                 aCC = new AuthorContainerController(authors);
                 aCC.reInitAuthorsInBooks();
+                aCC.resolveIds();
             } catch (JAXBException ex) {
                 System.out.println("Default File not found, or corrupted.");
                 AuthorsContainer empty = new AuthorsContainer();
@@ -41,6 +42,7 @@ public class Main {
             }
             ReadWriteLock rwl = new ReentrantReadWriteLock() ;
 
+            exec.submit(new ServerControl(aCC, rwl));
             while(true){
                 exec.submit(new ClientInterface(serverSocket.accept(), aCC, rwl));
             }
