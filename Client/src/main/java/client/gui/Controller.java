@@ -37,7 +37,8 @@ public class Controller {
     private static final int BOOK_PUBLISHER_CONSTRAINT = 35;
     private static final int BOOK_BRIEF_CONSTRAINT = 280;
     private static final int AUTHOR_NAME_CONSTRAINT = 50;
-    private Client client;
+    private ClientInterface clientInterface;
+
 
     @FXML
     private TableView booksTable;
@@ -206,8 +207,6 @@ public class Controller {
         }
     }
 
-    private ClientInterface clientInterface;
-
     public void initialize() {
         try {
             Socket clientSocket = new Socket(InetAddress.getLocalHost(), 4444);
@@ -220,8 +219,8 @@ public class Controller {
 
             //Создание объекта вспомогательного класса, созданного только для общения с сервером
             clientInterface = new ClientInterface(clientSocket, out, in, commandMarshaller, contextCommands, xmi);
-           // client = Client.getInstance();
-         //   if(client.connect()==1) System.out.println("error connect to server");
+            // client = Client.getInstance();
+            //   if(client.connect()==1) System.out.println("error connect to server");
 
 
             updateAuthorsCombobox();
@@ -269,6 +268,12 @@ public class Controller {
         //=================================
     }
 
+    /**
+     * Updates the authors list
+     *
+     * @throws JAXBException
+     * @throws XMLStreamException
+     */
     private void updateAuthorsCombobox() throws JAXBException, XMLStreamException {
         AuthorsContainer authorsContainer = clientInterface.viewAuthors();
         ObservableList<Author> authors = FXCollections.observableArrayList();
@@ -412,6 +417,11 @@ public class Controller {
         //booksTable.setItems(bookRecords);
     }
 
+    /**
+     * Creates a new BOOK by the parameters received from the form
+     *
+     * @return book
+     */
     private Book getBookInfo() {
         Book book = null;
         try {
@@ -446,6 +456,11 @@ public class Controller {
         return book;
     }
 
+    /**
+     * Creates new AUTHOR by the parameters received from the form
+     *
+     * @return
+     */
     private Author getAuthorInfo() {
         Author author = null;
         try {
@@ -453,7 +468,7 @@ public class Controller {
             if (authorName.length() <= AUTHOR_NAME_CONSTRAINT)
                 author = new Author(authorName);
             else
-                new Alert(Alert.AlertType.ERROR, "* Длина имени автора превышает допустимое число символов.").show();
+                new Alert(Alert.AlertType.ERROR, "* Author name length exceeds the allowed number of characters.").show();
         } catch (Exception ex) {
 
         }

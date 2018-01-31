@@ -19,7 +19,7 @@ import models.Book;
 
 /**
  *
- * @author Алескандр
+ * @author РђР»РµСЃРєР°РЅРґСЂ
  */
 public class ServerControl implements Runnable{
     

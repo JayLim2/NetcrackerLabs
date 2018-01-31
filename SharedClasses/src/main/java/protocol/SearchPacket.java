@@ -11,7 +11,7 @@ import models.BookFilter;
 
 /**
  *
- * @author Алескандр
+ * @author РђР»РµСЃРєР°РЅРґСЂ
  */
 @XmlRootElement
 public class SearchPacket extends CommandPacket{

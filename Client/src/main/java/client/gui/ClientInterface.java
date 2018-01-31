@@ -25,6 +25,9 @@ public class ClientInterface {
     private JAXBContext contextCommands;
     private XMLInputFactory xmi;
     private XMLEventReader xer;
+    private ResponsePacket response;
+    JAXBContext contextResponsePacket;
+    Unmarshaller unmarshResponsePacket;
 
     public ClientInterface(Socket clientSocket, OutputStream out, InputStream in, Marshaller commandMarshaller,
                            JAXBContext contextCommands, XMLInputFactory xmi) {
@@ -37,7 +40,7 @@ public class ClientInterface {
     }
 
     /**
-     * Отправка из клиента команды VIEW_BOOKS
+     * Sending VIEW_BOOKS command from the client
      *
      * @throws JAXBException
      * @throws XMLStreamException
@@ -48,8 +51,8 @@ public class ClientInterface {
         //====================== VIEW BOOKS ==============================
         ViewBooksPacket currentCommand = new ViewBooksPacket(Commands.VIEW_BOOKS);
 
-        JAXBContext contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class, ViewBooksResponsePacket.class);
-        Unmarshaller unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
+        contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class, ViewBooksResponsePacket.class);
+        unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
 
         commandMarshaller.marshal(currentCommand, out);
 
@@ -57,12 +60,12 @@ public class ClientInterface {
         xer.nextEvent();
         xer.peek();
 
-        ResponsePacket response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
+        response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
         System.out.println("Response accepted.\n");
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШ�?БКА: невозможно выполнить команду VIEW BOOKS.");
+            System.out.println("ERROR: command VIEW BOOKS can not be executed.\n");
         }
 
         //Если всё ок
@@ -85,9 +88,10 @@ public class ClientInterface {
     }
 
     /**
-     * Отправка из клиента команды ADD_BOOK [DATA]
+     * Sending the ADD_BOOK [DATA] command from the client
      *
      * @param book
+     * @param author
      * @throws JAXBException
      * @throws XMLStreamException
      */
@@ -99,8 +103,8 @@ public class ClientInterface {
          */
         AddBookPacket currentCommand = new AddBookPacket(Commands.ADD_BOOK, author.getId(), book);
 
-        JAXBContext contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
-        Unmarshaller unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
+        contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
+        unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
 
         commandMarshaller.marshal(currentCommand, out);
 
@@ -110,25 +114,25 @@ public class ClientInterface {
         Book.resetId();
         Author.resetId();
 
-        ResponsePacket response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
+        response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
         System.out.println("Response accepted.\n");
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШ�?БКА: невозможно выполнить команду ADD BOOK.\n");
+            System.out.println("ERROR: command ADD BOOK can not be executed.\n");
             return false;
         }
 
         //Если всё ок
         if (response instanceof OkPacket) {
-            System.out.println("Книга добавлена успешно.\n");
+            System.out.println("Book added.\n");
         }
 
         return true;
     }
 
     /**
-     * Отправка из клиента команды SET_BOOK [DATA] by ID
+     * Sending the SET_BOOK [DATA] command from the client by ID
      *
      * @param id
      * @param book
@@ -141,8 +145,8 @@ public class ClientInterface {
         SetBookPacket currentCommand = new SetBookPacket(Commands.SET_BOOK, book.getAuthor().getId(), id, book);
 
         System.out.println("Request sent.  0000");
-        JAXBContext contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
-        Unmarshaller unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
+        contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
+        unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
 
         System.out.println("Request sent. 1111");
         commandMarshaller.marshal(currentCommand, out);
@@ -156,26 +160,26 @@ public class ClientInterface {
         Book.resetId();
         Author.resetId();
 
-        ResponsePacket response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
+        response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
         System.out.println("Response accepted.\n");
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШ�?БКА: невозможно выполнить команду EDIT BOOK.\n");
+            System.out.println("ERROR: command SET_BOOK can not be executed.\n");
             System.out.println(((ErrorPacket) response).getDescription());
             return false;
         }
 
         //Если всё ок
         if (response instanceof OkPacket) {
-            System.out.println("Книга изменена успешно.\n");
+            System.out.println("The book was changed successfully.\n");
         }
 
         return true;
     }
 
     /**
-     * Отправка из клиента команды REMOVE_BOOK by ID
+     * Sending the REMOVE BOOK command from the client by ID
      *
      * @param id
      * @throws JAXBException
@@ -184,8 +188,8 @@ public class ClientInterface {
     public boolean deleteBook(int id) throws JAXBException, XMLStreamException {
         RemoveBookPacket currentCommand = new RemoveBookPacket(Commands.REMOVE_BOOK, id);
 
-        JAXBContext contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
-        Unmarshaller unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
+        contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
+        unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
 
         commandMarshaller.marshal(currentCommand, out);
 
@@ -195,12 +199,12 @@ public class ClientInterface {
         Book.resetId();
         Author.resetId();
 
-        ResponsePacket response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
+        response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
         System.out.println("Response accepted.\n");
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШ�?БКА: невозможно выполнить команду DELETE BOOK.\n");
+            System.out.println("ERROR: command REMOVE BOOK can not be executed.\n");
             System.out.println(((ErrorPacket) response).getDescription());
 
             return false;
@@ -208,7 +212,7 @@ public class ClientInterface {
 
         //Если всё ок
         if (response instanceof OkPacket) {
-            System.out.println("Книга удалена успешно.\n");
+            System.out.println("Book has been removed successfully\n");
         }
 
         return true;
@@ -217,8 +221,7 @@ public class ClientInterface {
     //-------------------------------
 
     /**
-     * FIXME 25.12.17
-     * Отправка из клиента команды VIEW_AUTHORS
+     * Sending the VIEW_AUTHORS command from the client
      *
      * @throws JAXBException
      * @throws XMLStreamException
@@ -229,8 +232,8 @@ public class ClientInterface {
         //пока реализована точно так же как VIEW_BOOKS
         ViewBooksPacket currentCommand = new ViewBooksPacket(Commands.VIEW_BOOKS);
 
-        JAXBContext contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class, ViewBooksResponsePacket.class);
-        Unmarshaller unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
+        contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class, ViewBooksResponsePacket.class);
+        unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
 
         commandMarshaller.marshal(currentCommand, out);
 
@@ -238,12 +241,12 @@ public class ClientInterface {
         xer.nextEvent();
         xer.peek();
 
-        ResponsePacket response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
+        response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
         System.out.println("Response accepted.\n");
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШ�?БКА: невозможно выполнить команду VIEW BOOKS.");
+            System.out.println("ERROR: command VIEW AUTHORS can not be executed.\n");
         }
 
         //Если всё ок
@@ -263,7 +266,7 @@ public class ClientInterface {
     }
 
     /**
-     * Отправка из клиента команды ADD_AUTHOR [DATA]
+     * Sending the ADD_AUTHOR [DATA] command from the client
      *
      * @param authorName
      * @throws JAXBException
@@ -273,8 +276,8 @@ public class ClientInterface {
         Author author = new Author(authorName);
         AddAuthorPacket currentCommand = new AddAuthorPacket(Commands.ADD_AUTHOR, author);
 
-        JAXBContext contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
-        Unmarshaller unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
+        contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
+        unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
 
         commandMarshaller.marshal(currentCommand, out);
 
@@ -284,28 +287,28 @@ public class ClientInterface {
         Book.resetId();
         Author.resetId();
 
-        ResponsePacket response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
+        response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
         System.out.println("Response accepted.\n");
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШ�?БКА: невозможно выполнить команду ADD AUTHOR.\n");
+            System.out.println("ERROR: command ADD_AUTHOR can not be executed.\n");
             System.out.println(((ErrorPacket) response).getDescription());
-            new Alert(Alert.AlertType.ERROR,((ErrorPacket) response).getDescription() ).show();
+            new Alert(Alert.AlertType.ERROR, ((ErrorPacket) response).getDescription()).show();
 
             return false;
         }
 
         //Если всё ок
         if (response instanceof OkPacket) {
-            System.out.println("Автор добавлен успешно.\n");
+            System.out.println("Author added successfully\n");
         }
 
         return true;
     }
 
     /**
-     * Отправка из клиента команды SET_AUTHOR [NEW_DATA] by ID
+     * Sending the SET_AUTHOR [NEW_DATA] command from the client by ID
      *
      * @param id
      * @param authorName
@@ -316,8 +319,8 @@ public class ClientInterface {
         Author author = new Author(authorName);
         SetAuthorPacket currentCommand = new SetAuthorPacket(Commands.SET_AUTHOR, id, author);
 
-        JAXBContext contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
-        Unmarshaller unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
+        contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
+        unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
 
         commandMarshaller.marshal(currentCommand, out);
 
@@ -327,12 +330,12 @@ public class ClientInterface {
         //Book.resetId();
         //Author.resetId();
 
-        ResponsePacket response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
+        response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
         System.out.println("Response accepted.\n");
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШ�?БКА: невозможно выполнить команду SET AUTHOR.\n");
+            System.out.println("ERROR: command SET_AUTHOR can not be executed.\n\n");
             System.out.println(((ErrorPacket) response).getDescription());
 
             return false;
@@ -340,14 +343,14 @@ public class ClientInterface {
 
         //Если всё ок
         if (response instanceof OkPacket) {
-            System.out.println("Автор изменен успешно.\n");
+            System.out.println("The author has changed successfully.\n");
         }
 
         return true;
     }
 
     /**
-     * Отправка из клиента команды REMOVE_AUTHOR by ID
+     * Sending the REMOVE_AUTHOR command from the client by ID
      *
      * @param id
      * @throws JAXBException
@@ -356,8 +359,8 @@ public class ClientInterface {
     public boolean deleteAuthor(int id) throws JAXBException, XMLStreamException {
         RemoveAuthorPacket currentCommand = new RemoveAuthorPacket(Commands.REMOVE_AUTHOR, id);
 
-        JAXBContext contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
-        Unmarshaller unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
+        contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
+        unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
 
         commandMarshaller.marshal(currentCommand, out);
 
@@ -367,12 +370,12 @@ public class ClientInterface {
         //Book.resetId();
         //Author.resetId();
 
-        ResponsePacket response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
+        response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
         System.out.println("Response accepted.\n");
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ОШ�?БКА: невозможно выполнить команду REMOVE AUTHOR.\n");
+            System.out.println("ERROR: command REMOVE AUTHOR can not be executed.\n");
             System.out.println(((ErrorPacket) response).getDescription());
 
             return false;
@@ -380,7 +383,7 @@ public class ClientInterface {
 
         //Если всё ок
         if (response instanceof OkPacket) {
-            System.out.println("Автор удален успешно.\n");
+            System.out.println("Author has been removed successfully\n");
         }
 
         return true;
