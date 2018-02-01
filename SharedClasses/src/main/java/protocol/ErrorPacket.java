@@ -9,8 +9,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
- * @author Алескандр
+ * @see ResponsePacket
+ * @see Responses
+ * @author Alexander
  */
 @XmlRootElement
 public class ErrorPacket extends ResponsePacket{

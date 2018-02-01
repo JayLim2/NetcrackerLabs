@@ -10,8 +10,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import models.BookFilter;
 
 /**
- *
- * @author Алескандр
+ * @see Commands
+ * @see CommandPacket
+ * @author Alexander
  */
 @XmlRootElement
 public class SearchPacket extends CommandPacket{

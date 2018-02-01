@@ -8,8 +8,9 @@ package protocol;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- *
- * @author Алескандр
+ * Response packet superclass
+ * @see Responses
+ * @author Alexander
  */
 public class ResponsePacket {
     private Responses response;

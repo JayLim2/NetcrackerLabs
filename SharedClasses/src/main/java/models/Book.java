@@ -8,7 +8,12 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
-
+/**
+ * the book model class
+ * book consists of title(String), auhtor(Author),
+ * publishYear(int), publisher(String), breif(String)
+ * @author Alexander,Korostelev, Komarov
+ */
 @XmlRootElement
 public class Book {
     private String title;
@@ -24,9 +29,21 @@ public class Book {
         busyId = new LinkedList<>();
     }
     
+    /**
+     * empty constructor for serialization
+     */
     public Book() {
     }
 
+    /**
+     * 
+     * @param title book's title
+     * @param author Author of the book
+     * @param publishYear publush year. cant be bigger than current
+     * @param publisher 
+     * @param brief
+     * @throws YearOutOfBoundsException if publish year bigger than current one  
+     */
     public Book(String title, Author author, int publishYear, String publisher, String brief) throws YearOutOfBoundsException {
         this.title = title.trim();
         this.author = author;
@@ -65,13 +82,16 @@ public class Book {
 			busyId.add(id);
 		}
     }
-	
-	public void dispatchId(){
-		int nid = 0;
+
+    /**
+     * id dispatcher.to be ivoked upon addition to a container 
+     */
+    public void dispatchId(){
+	int nid = 0;
         while (busyId.contains(nid)) nid++;
 		id = nid;
         busyId.add(id);
-	}
+    }
 	
 	public static void removeId(int id){
 		//busyId.remove(new Integer(id));

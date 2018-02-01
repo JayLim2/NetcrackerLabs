@@ -19,13 +19,18 @@ import models.Book;
 
 /**
  *
- * @author Алескандр
+ * @author Alexander
+ * used specifically in order to implement file interactions
  */
 public class ServerControl implements Runnable{
-    
     private AuthorContainerController aCC;
     private ReadWriteLock rwl;
 
+    /**
+     * main contructor for the thread
+     * @param aCC the database container to be used in these interactions
+     * @param rwl ReadWriteLock must be the same in all thread where aCC is the same
+     */
     public ServerControl(AuthorContainerController aCC, ReadWriteLock rwl){
         this.aCC = aCC;
         this.rwl = rwl;
@@ -55,20 +60,32 @@ public class ServerControl implements Runnable{
             }
     }
     
+    
+    /**
+     * Simple text menu output
+     */
     private void viewMenu() {
         System.out.println("Main menu\n================");
-        System.out.println("1. Load from file(not implemented)");
+        System.out.println("1. View data");
         System.out.println("2. Merge with another file");
         System.out.println();
         System.out.print("Input menu command id: ");
     }
     
+    
+    /**
+     * this function loads another database container from a file
+     * then merges it with the main(passed in constructor to this instance) 
+     * container using merge method implemented in 
+     * @see controllers.AuthorContainerController
+     * @param in input source for filename
+     */
     private void merge(Scanner in){
         try {   
                 JAXBContext context = JAXBContext.newInstance(AuthorsContainer.class);
                 Unmarshaller unmarsh = context.createUnmarshaller();
                 AuthorsContainer authors;
-//                new File("XML1.xml")
+                System.out.print("Input file to merge with: ");
                 String str = in.nextLine();
                 authors = (AuthorsContainer)unmarsh.unmarshal(new File(str));
                 AuthorContainerController aCC2 = new AuthorContainerController(authors);
@@ -77,6 +94,7 @@ public class ServerControl implements Runnable{
                 try{
                     aCC.merge(aCC2.getAuthorsContainer());
                     aCC.resolveIds();
+                    System.out.println("merge successfull");
                 }
                 finally{
                     rwl.writeLock().unlock();
@@ -86,6 +104,9 @@ public class ServerControl implements Runnable{
             }
     }
     
+    /**
+     * Simple databse console output
+     */
     public void viewAll(){
         rwl.readLock().lock();
         try{

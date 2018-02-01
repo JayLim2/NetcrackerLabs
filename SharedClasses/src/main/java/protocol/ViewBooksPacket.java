@@ -8,8 +8,9 @@ package protocol;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
- * @author Алескандр
+ * @see Commands
+ * @see CommandPacket
+ * @author Alexander
  */
 @XmlRootElement
 public class ViewBooksPacket extends CommandPacket {

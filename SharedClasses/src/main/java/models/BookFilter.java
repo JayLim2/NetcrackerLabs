@@ -8,13 +8,27 @@ package models;
 import java.util.regex.*;
 
 /**
- *
+ * book filter class.
+ * Contains Pattern objects corresponding to book's fields
  * @author Алескандр
  */
 public class BookFilter {
     private Pattern title,author,publishYear,brief,publisher;
     
     //wasteful string usage
+    /**
+     * BookFilter Constructor
+     * all parameters must be Strings with * for any number of undefined symbols
+     * and ? for one undefined symbol 
+     * they are then converted into appropriate regexes
+     * and then pattens are constructed based on said regexes
+     * and these patterns are stored for later use
+     * @param title
+     * @param author
+     * @param publishYear
+     * @param brief
+     * @param publisher 
+     */
     public BookFilter(String title, String author, String publishYear, String brief, String publisher){
        String temp1 = title.replaceAll("\\*", ".*");
        String temp2 = temp1.replaceAll("\\?", ".");
@@ -33,6 +47,11 @@ public class BookFilter {
        this.publisher =  Pattern.compile(temp2);
     }
     
+    /**
+     * Checks if book fullfills the generatedd criteria
+     * @param book
+     * @return true if does, false if does not
+     */
     public boolean accept(Book book){
         Matcher titleM = title.matcher(book.getTitle());
         Matcher authorM =  author.matcher(book.getAuthor().getName());

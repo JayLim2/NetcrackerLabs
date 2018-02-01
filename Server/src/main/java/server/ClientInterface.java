@@ -32,7 +32,12 @@ import models.AuthorsContainer;
 import models.BookAlreadyExistsException;
 
 /**
- * @author Алескандр
+ * Client dialog class.
+ * Used for communication with a client. 
+ * Accepts command packets, parses them and then 
+ * constructs and sends an appropriate response packet.
+ * packets are xml formatted
+ * @author Alexander
  */
 public class ClientInterface implements Runnable {
     private final Socket clientSocket;
@@ -40,6 +45,13 @@ public class ClientInterface implements Runnable {
     private Lock readLock;
     private Lock writeLock;
 
+    /**
+     * Main constructor for the class
+     * @param clientSocket the socket to be used in this instance
+     * @param aCC the main database container
+     * @param rwl synchronisation read/write lock. all instances working with the same aCC are to receve 
+     * the same lock as well
+     */
     public ClientInterface(Socket clientSocket, AuthorContainerController aCC, ReadWriteLock rwl) {
         this.clientSocket = clientSocket;
         this.aCC = aCC;
@@ -47,6 +59,16 @@ public class ClientInterface implements Runnable {
         writeLock = rwl.writeLock();
     }
 
+    /**
+     * the main dialog.
+     * infinite loop until BYE or disconnect.
+     * uses JAXB annotations to pass packets to client
+     * currently implemented commands are:
+     * ADD_AUTHOR, ADD_BOOK, SET_AUTHOR, SET_BOOK, REMOVE_BOOK, 
+     * REMOVE_AUTHOR, VIEW_BOOKS, VIEW_AUTHORS, BYE, SEARCH
+     * to know more about their format and functionality
+     * @see protocol
+     */
     @Override
     public void run() {
         try {
@@ -55,26 +77,17 @@ public class ClientInterface implements Runnable {
             XMLInputFactory xmi = XMLInputFactory.newFactory();
             InputStream inp = clientSocket.getInputStream();
             XMLEventReader xer;
-            JAXBContext contextPacket = JAXBContext.newInstance(CommandPacket.class, AddBookPacket.class, ViewBooksPacket.class,
-                    AddAuthorPacket.class, RemoveBookPacket.class, RemoveAuthorPacket.class, SetAuthorPacket.class, SetBookPacket.class);
+            JAXBContext contextPacket = JAXBContext.newInstance(CommandPacket.class, AddBookPacket.class, 
+                    ViewBooksPacket.class,AddAuthorPacket.class, RemoveBookPacket.class,
+                    RemoveAuthorPacket.class, SetAuthorPacket.class, SetBookPacket.class);
             Unmarshaller unmarshPacket = contextPacket.createUnmarshaller();
-//            JAXBContext contextCommands = JAXBContext.newInstance(Commands.class);
-            JAXBContext contextResponse = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class,
-                    ViewBooksResponsePacket.class);
-//            JAXBContext contextBook = JAXBContext.newInstance(Book.class);
-//            JAXBContext contextAuthor = JAXBContext.newInstance(Author.class);
-//            JAXBContext contextIndex = JAXBContext.newInstance(Index.class);
-            //JAXBContext contextAuthorsContainer = JAXBContext.newInstance(AuthorsContainer.class);
-//            Unmarshaller unmarshCommands = contextCommands.createUnmarshaller();
-//            Unmarshaller unmarshIndex = contextIndex.createUnmarshaller();
-//            Unmarshaller unmarshBook = contextBook.createUnmarshaller();
-//            Unmarshaller unmarshAuthor = contextAuthor.createUnmarshaller();
+            JAXBContext contextResponse = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, 
+                    ErrorPacket.class,ViewBooksResponsePacket.class);
             Marshaller marshResponse = contextResponse.createMarshaller();
-            //Marshaller marshAuthorsContainer = contextAuthorsContainer.createMarshaller();
             a:
             {
                 while (true) {
-                    CommandPacket command = new CommandPacket();
+                    CommandPacket command;
                     xer = xmi.createXMLEventReader(inp);
                     xer.nextEvent();
                     xer.peek();
@@ -84,7 +97,6 @@ public class ClientInterface implements Runnable {
                         case VIEW_BOOKS:
                             readLock.lock();
                             try {
-                                //marshResponses.marshal(Responses.OK, outp);
                                 marshResponse.marshal(new ViewBooksResponsePacket(Responses.OK, aCC.getAuthorsContainer()), outp);
                             } finally {
                                 readLock.unlock();
@@ -131,7 +143,7 @@ public class ClientInterface implements Runnable {
                             int id2 = stbp.getNewAuthorId();
                             writeLock.lock();
                             try {
-                                aCC.changeBook(book, id, id2);//мб предварительную валидацию года приписать
+                                aCC.changeBook(book, id, id2);
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
                             } catch (YearOutOfBoundsException ex) {
                                 //вообще произойти не должно. валидация года в клиенте должна быть

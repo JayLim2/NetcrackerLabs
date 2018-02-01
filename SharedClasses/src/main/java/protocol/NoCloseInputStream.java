@@ -9,7 +9,7 @@ import java.io.FilterInputStream;
 import java.io.InputStream;
 
 /**
- *
+ * @deprecated 
  * @author Алескандр
  */
 public class NoCloseInputStream extends FilterInputStream {

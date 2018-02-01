@@ -10,8 +10,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import models.Book;
 
 /**
- *
- * @author Алескандр
+ * @see Commands
+ * @see CommandPacket
+ * @author Alexander
  */
 @XmlRootElement
 public class SetBookPacket extends CommandPacket{

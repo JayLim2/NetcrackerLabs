@@ -4,11 +4,15 @@ import models.Author;
 import models.AuthorsContainer;
 import models.Book;
 
+/**
+ * not used anywhere
+ * @author Àlexander
+ */
 public class AuthorController {
     private Author author;
 
     public AuthorController() {
-        author = null;
+        author = null;//pointless
     }
 
     public AuthorController(Author author) {

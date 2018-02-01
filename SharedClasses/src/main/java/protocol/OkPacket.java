@@ -8,8 +8,9 @@ package protocol;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
- * @author Алескандр
+ * @see ResponsePacket
+ * @see Responses
+ * @author Alexander
  */
 @XmlRootElement
 public class OkPacket extends ResponsePacket{
