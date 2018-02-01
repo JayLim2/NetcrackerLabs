@@ -19,8 +19,12 @@ import models.Book;
 
 /**
  *
+<<<<<<< HEAD
  * @author Alexander
  * used specifically in order to implement file interactions
+=======
+ * @author Алескандр
+>>>>>>> 312a3f2bb90cd8aad3bbea1dded32d9dfe1b3b45
  */
 public class ServerControl implements Runnable{
     private AuthorContainerController aCC;
