@@ -101,9 +101,14 @@ public class Controller {
     private RadioButton selectEditOperation;
     @FXML
     private RadioButton selectDelOperation;
+    @FXML
+    private RadioButton selectSearchOperation;
+    @FXML
+    private CheckBox anyAuthorCheckBox;
 
     @FXML
     private Button runOperationBtn;
+
 
     public class BookRecord {
         private int id;
@@ -245,6 +250,7 @@ public class Controller {
         selectAddOperation.setToggleGroup(group2);
         selectEditOperation.setToggleGroup(group2);
         selectDelOperation.setToggleGroup(group2);
+        selectSearchOperation.setToggleGroup(group2);
 
         bookRecords = FXCollections.observableArrayList();
         authorRecords = FXCollections.observableArrayList();
@@ -292,6 +298,9 @@ public class Controller {
             }
             if (selectDelOperation.isSelected()) {
                 currentCommand = Commands.REMOVE_BOOK;
+            }
+            if (selectSearchOperation.isSelected()) {
+                currentCommand = Commands.SEARCH;
             }
         } else if (selectAuthor.isSelected()) {
             if (selectAddOperation.isSelected()) {
@@ -410,6 +419,21 @@ public class Controller {
                 }
             }
             break;
+
+            case SEARCH: {
+                String authorName;
+                if (anyAuthorCheckBox.isSelected()) {
+                    authorName = "*";
+                } else {
+                    authorName = bookAuthorInp.getValue().getName();
+                }
+                String title = bookTitleInp.getText();
+                String publishYear = bookYearInp.getText();
+                String brief = bookBriefInp.getText();
+                String publisher = bookPublisherInp.getText();
+                clientInterface.searchBook(title, authorName, publishYear, brief, publisher);
+
+            }
         }
         runViewBooks(event);
         runViewAuthors(event);
@@ -516,6 +540,7 @@ public class Controller {
         selectAddOperation.setDisable(false);
         selectEditOperation.setDisable(false);
         selectDelOperation.setDisable(false);
+        selectSearchOperation.setVisible(true);
         enableBookMainInfo();
         runOperationBtn.setDisable(false);
     }
@@ -527,6 +552,7 @@ public class Controller {
         selectAddOperation.setDisable(true);
         selectEditOperation.setDisable(true);
         selectDelOperation.setDisable(true);
+        selectSearchOperation.setVisible(false);
         bookIdInp.setDisable(true);
         authorIdInp.setDisable(true);
         disableBookMainInfo();
@@ -549,19 +575,27 @@ public class Controller {
     public void selectBook(ActionEvent event) {
         //Отключение формы с автором
 
+        selectSearchOperation.setVisible(true);
+
         authorIdInp.setDisable(true);
         authorNameInp.setDisable(true);
 
-        if (selectDelOperation.isSelected() || selectEditOperation.isSelected())
+        if (selectDelOperation.isSelected() || selectEditOperation.isSelected()) {
             bookIdInp.setDisable(false);
-        else
+            anyAuthorCheckBox.setVisible(false);
+        } else
             bookIdInp.setDisable(true);
 
         if (!selectDelOperation.isSelected()) {
             enableBookMainInfo();
+            anyAuthorCheckBox.setVisible(false);
         } else {
             disableBookMainInfo();
         }
+
+        if (selectSearchOperation.isSelected()) {
+            anyAuthorCheckBox.setVisible(true);
+        } else anyAuthorCheckBox.setVisible(false);
 
         System.out.println("Operand type Book is selected.");
     }
@@ -581,6 +615,8 @@ public class Controller {
         //Отключение формы с книгой
         bookIdInp.setDisable(true);
         disableBookMainInfo();
+        selectSearchOperation.setVisible(false);
+        anyAuthorCheckBox.setVisible(false);
 
 
         System.out.println("Operand type Author is selected.");
@@ -643,6 +679,21 @@ public class Controller {
         }
 
         System.out.println("Operation Delete is selected.");
+    }
+
+    //todo select in controller
+    public void selectSearchOperation(ActionEvent event) {
+        if (selectBook.isSelected()) {
+            bookIdInp.setDisable(true);
+            enableBookMainInfo();
+        } else if (selectAuthor.isSelected()) {
+            authorIdInp.setDisable(false);
+            authorNameInp.setDisable(true);
+        }
+        anyAuthorCheckBox.setVisible(true);
+
+
+        System.out.println("Operation Search is selected.");
     }
 
     //==================== Функции меню =====================

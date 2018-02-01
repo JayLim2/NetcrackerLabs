@@ -4,6 +4,7 @@ import javafx.scene.control.Alert;
 import models.Author;
 import models.AuthorsContainer;
 import models.Book;
+import models.BookFilter;
 import protocol.*;
 
 import javax.xml.bind.JAXBContext;
@@ -387,5 +388,32 @@ public class ClientInterface {
         }
 
         return true;
+    }
+
+    public AuthorsContainer searchBook(String title, String author, String publishYear, String brief, String publisher) throws JAXBException, XMLStreamException {
+        BookFilter bookFilter = new BookFilter(title, author, publishYear, brief, publisher);
+        SearchPacket currentCommand = new SearchPacket(bookFilter);
+
+        contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class, ViewBooksResponsePacket.class);
+        unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
+
+        commandMarshaller.marshal(currentCommand, out);
+
+        xer = xmi.createXMLEventReader(in);
+        xer.nextEvent();
+        xer.peek();
+        Book.resetId();
+        Author.resetId();
+
+
+        ViewBooksResponsePacket response = (ViewBooksResponsePacket) unmarshResponsePacket.unmarshal(xer);
+        System.out.println("Response accepted.\n");
+
+        //Если произошла ошибка при выполнении команды
+        if (response instanceof ViewBooksResponsePacket) {
+            ViewBooksResponsePacket viewBooksResponsePacket = response;
+            return viewBooksResponsePacket.getAuthorsContainer();
+        }
+        return null;
     }
 }

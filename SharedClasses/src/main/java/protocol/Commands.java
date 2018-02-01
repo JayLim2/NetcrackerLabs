@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlRootElement;
 /**
- * commamds in coommand packet 
+ * commands in command packet
  * all packets possess a command field which is used to determine its type
  * based on type the packet has additional arguments
  * packet - command - args

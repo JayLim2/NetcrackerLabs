@@ -51,7 +51,7 @@ public class AuthorContainerController {
     }
 
     /**
-     * retrives an author based on its index
+     * retrieves an author based on its index
      * index in this case means unique index dispatched to a
      * model upon addition to the container
      * @param id index used for identifying the author needed
@@ -71,7 +71,7 @@ public class AuthorContainerController {
     }
 
     /**
-     * retrives a book based on its index
+     * retrieves a book based on its index
      * index in this case means unique index dispatched to a
      * model upon addition to the container
      * @param id index used for identifying the author needed

@@ -10,7 +10,7 @@ import java.util.regex.*;
 /**
  * book filter class.
  * Contains Pattern objects corresponding to book's fields
- * @author Алескандр
+ * @author РђР»РµСЃРєР°РЅРґСЂ
  */
 public class BookFilter {
     private Pattern title,author,publishYear,brief,publisher;

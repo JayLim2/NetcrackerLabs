@@ -98,7 +98,7 @@ public class ServerControl implements Runnable{
                 try{
                     aCC.merge(aCC2.getAuthorsContainer());
                     aCC.resolveIds();
-                    System.out.println("merge successfull");
+                    System.out.println("merge successful");
                 }
                 finally{
                     rwl.writeLock().unlock();
