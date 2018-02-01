@@ -79,6 +79,6 @@
         <RadioButton fx:id="selectAddOperation" disable="true" layoutX="316.0" layoutY="316.0" mnemonicParsing="false" onAction="#selectAddOperation" selected="true" text="Добавить" />
         <Button fx:id="runOperationBtn" disable="true" layoutX="38.0" layoutY="607.0" mnemonicParsing="false" onAction="#runModification" prefHeight="33.0" prefWidth="658.0" text="Выполнить операцию" />
       <RadioButton fx:id="selectSearchOperation" layoutX="595.0" layoutY="316.0" mnemonicParsing="false" onAction="#selectSearchOperation" text="Поиск" visible="false" />
-      <CheckBox fx:id="anyAuthorCheckBox" layoutX="282.0" layoutY="418.0" mnemonicParsing="false" text="Любой автор" visible="false" />
+      <TextField fx:id="anyAuthorTextField" layoutX="293.0" layoutY="414.0" prefHeight="25.0" prefWidth="84.0" visible="false" />
     </children>
 </AnchorPane>

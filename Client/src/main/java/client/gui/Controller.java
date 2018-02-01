@@ -104,7 +104,7 @@ public class Controller {
     @FXML
     private RadioButton selectSearchOperation;
     @FXML
-    private CheckBox anyAuthorCheckBox;
+    private TextField anyAuthorTextField;
 
     @FXML
     private Button runOperationBtn;
@@ -421,12 +421,7 @@ public class Controller {
             break;
 
             case SEARCH: {
-                String authorName;
-                if (anyAuthorCheckBox.isSelected()) {
-                    authorName = "*";
-                } else {
-                    authorName = bookAuthorInp.getValue().getName();
-                }
+                String authorName = anyAuthorTextField.getText();
                 String title = bookTitleInp.getText();
                 String publishYear = bookYearInp.getText();
                 String brief = bookBriefInp.getText();
@@ -582,20 +577,20 @@ public class Controller {
 
         if (selectDelOperation.isSelected() || selectEditOperation.isSelected()) {
             bookIdInp.setDisable(false);
-            anyAuthorCheckBox.setVisible(false);
+            anyAuthorTextField.setVisible(false);
         } else
             bookIdInp.setDisable(true);
 
         if (!selectDelOperation.isSelected()) {
             enableBookMainInfo();
-            anyAuthorCheckBox.setVisible(false);
+            anyAuthorTextField.setVisible(false);
         } else {
             disableBookMainInfo();
         }
 
         if (selectSearchOperation.isSelected()) {
-            anyAuthorCheckBox.setVisible(true);
-        } else anyAuthorCheckBox.setVisible(false);
+            anyAuthorTextField.setVisible(true);
+        } else anyAuthorTextField.setVisible(false);
 
         System.out.println("Operand type Book is selected.");
     }
@@ -616,7 +611,7 @@ public class Controller {
         bookIdInp.setDisable(true);
         disableBookMainInfo();
         selectSearchOperation.setVisible(false);
-        anyAuthorCheckBox.setVisible(false);
+        anyAuthorTextField.setVisible(false);
 
 
         System.out.println("Operand type Author is selected.");
@@ -690,7 +685,7 @@ public class Controller {
             authorIdInp.setDisable(false);
             authorNameInp.setDisable(true);
         }
-        anyAuthorCheckBox.setVisible(true);
+        anyAuthorTextField.setVisible(true);
 
 
         System.out.println("Operation Search is selected.");
