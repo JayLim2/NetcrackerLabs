@@ -111,7 +111,7 @@ public class ClientInterface {
          */
         AddBookPacket currentCommand = new AddBookPacket(Commands.ADD_BOOK, author.getId(), book);
 
-        contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
+        contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class, ViewBooksResponsePacket.class);
         unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
 
         commandMarshaller.marshal(currentCommand, out);
@@ -153,7 +153,7 @@ public class ClientInterface {
         SetBookPacket currentCommand = new SetBookPacket(Commands.SET_BOOK, book.getAuthor().getId(), id, book);
 
         System.out.println("Request sent.  0000");
-        contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
+        contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class,ViewBooksResponsePacket.class);
         unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
 
         System.out.println("Request sent. 1111");
@@ -196,7 +196,7 @@ public class ClientInterface {
     public boolean deleteBook(int id) throws JAXBException, XMLStreamException {
         RemoveBookPacket currentCommand = new RemoveBookPacket(Commands.REMOVE_BOOK, id);
 
-        contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
+        contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class,ViewBooksResponsePacket.class);
         unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
 
         commandMarshaller.marshal(currentCommand, out);
@@ -284,7 +284,7 @@ public class ClientInterface {
         Author author = new Author(authorName);
         AddAuthorPacket currentCommand = new AddAuthorPacket(Commands.ADD_AUTHOR, author);
 
-        contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
+        contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class,ViewBooksResponsePacket.class);
         unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
 
         commandMarshaller.marshal(currentCommand, out);
@@ -327,7 +327,7 @@ public class ClientInterface {
         Author author = new Author(authorName);
         SetAuthorPacket currentCommand = new SetAuthorPacket(Commands.SET_AUTHOR, id, author);
 
-        contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
+        contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class,ViewBooksResponsePacket.class);
         unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
 
         commandMarshaller.marshal(currentCommand, out);
@@ -367,7 +367,7 @@ public class ClientInterface {
     public boolean deleteAuthor(int id) throws JAXBException, XMLStreamException {
         RemoveAuthorPacket currentCommand = new RemoveAuthorPacket(Commands.REMOVE_AUTHOR, id);
 
-        contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
+        contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class,ViewBooksResponsePacket.class);
         unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
 
         commandMarshaller.marshal(currentCommand, out);

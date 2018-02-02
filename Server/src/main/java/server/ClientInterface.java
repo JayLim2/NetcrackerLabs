@@ -117,7 +117,7 @@ public class ClientInterface implements Runnable {
                                 /*for (OutputStream stream : StreamContainer.getInstance().getStreams())
                                     marshResponse.marshal(new ViewBooksResponsePacket(Responses.OK, aCC.getAuthorsContainer()), outp);*/
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
-                                marshAC.marshal(aCC.getAuthorsContainer(), new File("XML1.xml"));
+                                marshAC.marshal(aCC.getAuthorsContainer(), new File("savedata/XML1.xml"));
                             } catch (IndexOutOfBoundsException ex) {
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Index error"), outp);
                             } catch (BookAlreadyExistsException ex) {
@@ -134,7 +134,7 @@ public class ClientInterface implements Runnable {
                                 Author author = abap.getAuthor();
                                 aCC.addAuthor(author);
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
-                                marshAC.marshal(aCC.getAuthorsContainer(), new File("XML1.xml"));
+                                marshAC.marshal(aCC.getAuthorsContainer(), new File("savedata/XML1.xml"));
                             } catch (InvalidCommandAction e) {
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, e.getMessage()), outp);
                             } finally {
@@ -151,7 +151,7 @@ public class ClientInterface implements Runnable {
                             try {
                                 aCC.changeBook(book, id, id2);
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
-                                marshAC.marshal(aCC.getAuthorsContainer(), new File("XML1.xml"));
+                                marshAC.marshal(aCC.getAuthorsContainer(), new File("savedata/XML1.xml"));
                             } catch (YearOutOfBoundsException ex) {
                                 //вообще произойти не должно. валидация года в клиенте должна быть
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Year error"), outp);
@@ -170,7 +170,7 @@ public class ClientInterface implements Runnable {
                             try {
                                 aCC.getAuthor(stap.getId()).setName(stap.getAuthor().getName());
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
-                                marshAC.marshal(aCC.getAuthorsContainer(), new File("XML1.xml"));
+                                marshAC.marshal(aCC.getAuthorsContainer(), new File("savedata/XML1.xml"));
                             } catch (IndexOutOfBoundsException ex) {
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "no Author with such index"), outp);
                             } finally {
@@ -184,7 +184,7 @@ public class ClientInterface implements Runnable {
                             try {
                                 aCC.removeBook(rmbp.getId());
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
-                                marshAC.marshal(aCC.getAuthorsContainer(), new File("XML1.xml"));
+                                marshAC.marshal(aCC.getAuthorsContainer(), new File("savedata/XML1.xml"));
                             } catch (IndexOutOfBoundsException ex) {
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "no Author with such index"), outp);
                             } finally {
@@ -198,7 +198,7 @@ public class ClientInterface implements Runnable {
                             try {
                                 aCC.removeAuthor(rmap.getId());
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
-                                marshAC.marshal(aCC.getAuthorsContainer(), new File("XML1.xml"));
+                                marshAC.marshal(aCC.getAuthorsContainer(), new File("savedata/XML1.xml"));
                             } catch (IndexOutOfBoundsException ex) {
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "no Author with such index"), outp);
                             } finally {
