@@ -7,6 +7,7 @@ package server;
 
 import controllers.AuthorContainerController;
 import exceptions.InvalidCommandAction;
+import java.io.File;
 import models.Author;
 import models.Book;
 import models.YearOutOfBoundsException;
@@ -77,9 +78,11 @@ public class ClientInterface implements Runnable {
             XMLInputFactory xmi = XMLInputFactory.newFactory();
             InputStream inp = clientSocket.getInputStream();
             XMLEventReader xer;
+            JAXBContext contextAC = JAXBContext.newInstance(AuthorsContainer.class);
+            Marshaller marshAC = contextAC.createMarshaller();
             JAXBContext contextPacket = JAXBContext.newInstance(CommandPacket.class, AddBookPacket.class, 
                     ViewBooksPacket.class,AddAuthorPacket.class, RemoveBookPacket.class,
-                    RemoveAuthorPacket.class, SetAuthorPacket.class, SetBookPacket.class);
+                    RemoveAuthorPacket.class, SetAuthorPacket.class, SetBookPacket.class, SearchPacket.class);
             Unmarshaller unmarshPacket = contextPacket.createUnmarshaller();
             JAXBContext contextResponse = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, 
                     ErrorPacket.class,ViewBooksResponsePacket.class);
@@ -91,6 +94,7 @@ public class ClientInterface implements Runnable {
                     xer = xmi.createXMLEventReader(inp);
                     xer.nextEvent();
                     xer.peek();
+                    String res = xer.toString();
                     command = (CommandPacket) unmarshPacket.unmarshal(xer);
                     switch (command.getCommand()) {
                         case VIEW_AUTHORS:
@@ -113,6 +117,7 @@ public class ClientInterface implements Runnable {
                                 /*for (OutputStream stream : StreamContainer.getInstance().getStreams())
                                     marshResponse.marshal(new ViewBooksResponsePacket(Responses.OK, aCC.getAuthorsContainer()), outp);*/
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                                marshAC.marshal(aCC.getAuthorsContainer(), new File("XML1.xml"));
                             } catch (IndexOutOfBoundsException ex) {
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Index error"), outp);
                             } catch (BookAlreadyExistsException ex) {
@@ -129,6 +134,7 @@ public class ClientInterface implements Runnable {
                                 Author author = abap.getAuthor();
                                 aCC.addAuthor(author);
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                                marshAC.marshal(aCC.getAuthorsContainer(), new File("XML1.xml"));
                             } catch (InvalidCommandAction e) {
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, e.getMessage()), outp);
                             } finally {
@@ -145,6 +151,7 @@ public class ClientInterface implements Runnable {
                             try {
                                 aCC.changeBook(book, id, id2);
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                                marshAC.marshal(aCC.getAuthorsContainer(), new File("XML1.xml"));
                             } catch (YearOutOfBoundsException ex) {
                                 //вообще произойти не должно. валидация года в клиенте должна быть
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Year error"), outp);
@@ -163,6 +170,7 @@ public class ClientInterface implements Runnable {
                             try {
                                 aCC.getAuthor(stap.getId()).setName(stap.getAuthor().getName());
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                                marshAC.marshal(aCC.getAuthorsContainer(), new File("XML1.xml"));
                             } catch (IndexOutOfBoundsException ex) {
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "no Author with such index"), outp);
                             } finally {
@@ -176,6 +184,7 @@ public class ClientInterface implements Runnable {
                             try {
                                 aCC.removeBook(rmbp.getId());
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                                marshAC.marshal(aCC.getAuthorsContainer(), new File("XML1.xml"));
                             } catch (IndexOutOfBoundsException ex) {
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "no Author with such index"), outp);
                             } finally {
@@ -189,6 +198,7 @@ public class ClientInterface implements Runnable {
                             try {
                                 aCC.removeAuthor(rmap.getId());
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                                marshAC.marshal(aCC.getAuthorsContainer(), new File("XML1.xml"));
                             } catch (IndexOutOfBoundsException ex) {
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "no Author with such index"), outp);
                             } finally {

@@ -1,5 +1,8 @@
 package client.gui;
 
+import controllers.AuthorContainerController;
+import java.io.File;
+import java.io.IOException;
 import javafx.scene.control.Alert;
 import models.Author;
 import models.AuthorsContainer;
@@ -16,7 +19,11 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ClientInterface {
     private Socket clientSocket;
@@ -397,8 +404,10 @@ public class ClientInterface {
         contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class, ViewBooksResponsePacket.class);
         unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
 
-        commandMarshaller.marshal(currentCommand, out);
-
+        JAXBContext contextCommands1 = JAXBContext.newInstance(CommandPacket.class, ViewBooksPacket.class, AddBookPacket.class, SetBookPacket.class, RemoveBookPacket.class, AddAuthorPacket.class, SetAuthorPacket.class, RemoveAuthorPacket.class, SearchPacket.class);
+        Marshaller commandMarshaller1 = contextCommands1.createMarshaller();
+        commandMarshaller1.marshal(currentCommand, out);
+        
         xer = xmi.createXMLEventReader(in);
         xer.nextEvent();
         xer.peek();
@@ -412,6 +421,8 @@ public class ClientInterface {
         //Если произошла ошибка при выполнении команды
         if (response instanceof ViewBooksResponsePacket) {
             ViewBooksResponsePacket viewBooksResponsePacket = response;
+            AuthorContainerController aCCT = new AuthorContainerController(response.getAuthorsContainer());
+            aCCT.reInitAuthorsInBooks();
             return viewBooksResponsePacket.getAuthorsContainer();
         }
         return null;

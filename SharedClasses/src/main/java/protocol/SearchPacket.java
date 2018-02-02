@@ -23,6 +23,10 @@ import models.BookFilter;
 public class SearchPacket extends CommandPacket{
     private BookFilter bookFilter;
     
+    public SearchPacket(){
+         super(Commands.SEARCH);
+    }
+    
     public SearchPacket(BookFilter bookFilter){
         super(Commands.SEARCH);
         this.bookFilter = bookFilter;

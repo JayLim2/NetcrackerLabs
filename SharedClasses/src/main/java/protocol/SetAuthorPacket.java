@@ -5,6 +5,7 @@
  */
 package protocol;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import models.Author;
 
@@ -30,10 +31,12 @@ public class SetAuthorPacket extends CommandPacket{
         return id;
     }
     
+    @XmlElement
     public void setId(int id){
         this.id = id;
     }
     
+    @XmlElement
     public void setAuthor(Author author){
         this.author = author;
     }

@@ -26,6 +26,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -218,7 +219,7 @@ public class Controller {
             OutputStream out = clientSocket.getOutputStream();
             InputStream in = clientSocket.getInputStream();
 
-            JAXBContext contextCommands = JAXBContext.newInstance(CommandPacket.class, ViewBooksPacket.class, AddBookPacket.class, SetBookPacket.class, RemoveBookPacket.class, AddAuthorPacket.class, SetAuthorPacket.class, RemoveAuthorPacket.class);
+            JAXBContext contextCommands = JAXBContext.newInstance(CommandPacket.class, ViewBooksPacket.class, AddBookPacket.class, SetBookPacket.class, RemoveBookPacket.class, AddAuthorPacket.class, SetAuthorPacket.class, RemoveAuthorPacket.class, SearchPacket.class);
             Marshaller commandMarshaller = contextCommands.createMarshaller();
             XMLInputFactory xmi = XMLInputFactory.newFactory();
 
@@ -426,12 +427,46 @@ public class Controller {
                 String publishYear = bookYearInp.getText();
                 String brief = bookBriefInp.getText();
                 String publisher = bookPublisherInp.getText();
-                clientInterface.searchBook(title, authorName, publishYear, brief, publisher);
+                
 
+                try {
+            bookRecords.clear();
+            authorRecords.clear();
+
+            AuthorsContainer authorsContainer = clientInterface.searchBook(title, authorName, publishYear, brief, publisher);
+            if (authorsContainer != null) {
+                List<Author> authors1 = authorsContainer.getAuthors();
+                for (Author author1 : authors1) {
+                    authorRecords.add(new AuthorRecord(author1.getId(), author1.getName(), author1.getBooks().size()));
+                    List<Book> books1 = author1.getBooks();
+                    for (Book book1 : books1) {
+                        bookRecords.add(new BookRecord(book1.getId(), book1.getTitle(), author1.getName(), book1.getPublishYear(), book1.getPublisher(), book1.getBrief()));
+                    }
+                }
+
+                System.out.println("Список книг получен.");
+            } else {
+                System.out.println("Список книг НЕ получен.");
+            }
+
+            updateAuthorsCombobox();
+
+            booksTable.setItems(bookRecords);
+            authorsTable.setItems(authorRecords);
+
+            enableModificationForm();
+        } catch (XMLStreamException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JAXBException ex) {
+            System.out.println("Ошибка XML-сериализаци.");
+            ex.printStackTrace();
+        }
             }
         }
-        runViewBooks(event);
-        runViewAuthors(event);
+        if (currentCommand != Commands.SEARCH){
+            runViewBooks(event);
+            runViewAuthors(event);
+        }
         //authorsTable.setItems(authorRecords);
         //booksTable.setItems(bookRecords);
     }
