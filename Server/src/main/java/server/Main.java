@@ -30,7 +30,7 @@ public class Main {
             Unmarshaller unmarsh = context.createUnmarshaller();
             AuthorsContainer authors;
             try {   
-                authors = (AuthorsContainer)unmarsh.unmarshal(new File("savedata/XML1.xml"));
+                authors = (AuthorsContainer)unmarsh.unmarshal(new File("XML1a.xml"));
                 aCC = new AuthorContainerController(authors);
                 aCC.reInitAuthorsInBooks();
                 aCC.resolveIds();
