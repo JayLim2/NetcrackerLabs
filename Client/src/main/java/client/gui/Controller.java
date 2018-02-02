@@ -7,10 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import models.Author;
-import models.AuthorsContainer;
-import models.Book;
-import models.YearOutOfBoundsException;
+import models.*;
 import protocol.*;
 
 import javax.xml.bind.JAXBContext;
@@ -26,7 +23,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.List;
-import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -322,8 +318,12 @@ public class Controller {
         Book book = null;
         Author author = null;
         if (currentCommand != Commands.REMOVE_BOOK && currentCommand != Commands.REMOVE_AUTHOR) {
-            book = getBookInfo();
-            author = getAuthorInfo();
+            if (selectBook.isSelected()) {
+                book = getBookInfo();
+            }
+            if (selectAuthor.isSelected()) {
+                author = getAuthorInfo();
+            }
         }
 
         BookRecord bookRecord;
@@ -369,6 +369,7 @@ public class Controller {
                 }
                 if (id != -1) {
                     clientInterface.deleteBook(id);
+                    System.out.println("BBBbeeeee");
                     /*int i;
                     int recordsCount = bookRecords.size();
                     for (i = 0; i < recordsCount && bookRecords.get(i).getId() != id; i++) ;
@@ -427,43 +428,44 @@ public class Controller {
                 String publishYear = bookYearInp.getText();
                 String brief = bookBriefInp.getText();
                 String publisher = bookPublisherInp.getText();
-                
+
 
                 try {
-            bookRecords.clear();
-            authorRecords.clear();
+                    bookRecords.clear();
+                    authorRecords.clear();
 
-            AuthorsContainer authorsContainer = clientInterface.searchBook(title, authorName, publishYear, brief, publisher);
-            if (authorsContainer != null) {
-                List<Author> authors1 = authorsContainer.getAuthors();
-                for (Author author1 : authors1) {
-                    authorRecords.add(new AuthorRecord(author1.getId(), author1.getName(), author1.getBooks().size()));
-                    List<Book> books1 = author1.getBooks();
-                    for (Book book1 : books1) {
-                        bookRecords.add(new BookRecord(book1.getId(), book1.getTitle(), author1.getName(), book1.getPublishYear(), book1.getPublisher(), book1.getBrief()));
+                    AuthorsContainer authorsContainer = clientInterface.searchBook(title, authorName, publishYear, brief, publisher);
+                    if (authorsContainer != null) {
+                        List<Author> authors1 = authorsContainer.getAuthors();
+                        for (Author author1 : authors1) {
+                            authorRecords.add(new AuthorRecord(author1.getId(), author1.getName(), author1.getBooks().size()));
+                            List<Book> books1 = author1.getBooks();
+                            for (Book book1 : books1) {
+                                bookRecords.add(new BookRecord(book1.getId(), book1.getTitle(), author1.getName(), book1.getPublishYear(), book1.getPublisher(), book1.getBrief()));
+                            }
+                        }
+
+                        System.out.println("Список книг получен.");
+                    } else {
+                        System.out.println("Список книг НЕ получен.");
                     }
+
+                    updateAuthorsCombobox();
+
+                    booksTable.setItems(bookRecords);
+                    authorsTable.setItems(authorRecords);
+
+                    enableModificationForm();
+                } catch (XMLStreamException ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (JAXBException ex) {
+                    System.out.println("Ошибка XML-сериализаци.");
+                    ex.printStackTrace();
                 }
-
-                System.out.println("Список книг получен.");
-            } else {
-                System.out.println("Список книг НЕ получен.");
             }
-
-            updateAuthorsCombobox();
-
-            booksTable.setItems(bookRecords);
-            authorsTable.setItems(authorRecords);
-
-            enableModificationForm();
-        } catch (XMLStreamException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (JAXBException ex) {
-            System.out.println("Ошибка XML-сериализаци.");
-            ex.printStackTrace();
+            break;
         }
-            }
-        }
-        if (currentCommand != Commands.SEARCH){
+        if (currentCommand != Commands.SEARCH) {
             runViewBooks(event);
             runViewAuthors(event);
         }
@@ -479,11 +481,18 @@ public class Controller {
     private Book getBookInfo() {
         Book book = null;
         try {
-            String title = bookTitleInp.getText();
             Author bookAuthor = bookAuthorInp.getValue();
+            if (bookAuthor == null) {
+                throw new NoAuthorException();
+            }
+            String title = bookTitleInp.getText();
             int year = Integer.parseInt(bookYearInp.getText());
             String publisher = bookPublisherInp.getText();
             String brief = bookBriefInp.getText();
+
+            if (title.isEmpty() || publisher.isEmpty() || brief.isEmpty()) {
+                throw new EmptyFieldException();
+            }
 
             if (title.length() <= BOOK_TITLE_CONSTRAINT &&
                     publisher.length() <= BOOK_PUBLISHER_CONSTRAINT &&
@@ -494,8 +503,9 @@ public class Controller {
                 String errorMsg = "";
                 if (title.length() > BOOK_TITLE_CONSTRAINT)
                     errorMsg += "* Название книги превышает допустимое число символов.\n";
-                if (year < BOOK_YEAR_MIN || year > BOOK_YEAR_MAX)
+                /*if (year < BOOK_YEAR_MIN || year > BOOK_YEAR_MAX)
                     errorMsg += "* Год издания должен быть в диапазоне от " + BOOK_YEAR_MIN + " до " + BOOK_YEAR_MAX + "\n";
+                */
                 if (publisher.length() > BOOK_PUBLISHER_CONSTRAINT)
                     errorMsg += "* Название издателя превышает допустимое число символов.\n";
                 if (brief.length() > BOOK_BRIEF_CONSTRAINT)
@@ -503,9 +513,13 @@ public class Controller {
                 new Alert(Alert.AlertType.ERROR, errorMsg).show();
             }
         } catch (YearOutOfBoundsException ex) {
-
+            new Alert(Alert.AlertType.ERROR, "Год издания должен быть в диапазоне от " + BOOK_YEAR_MIN + " до " + BOOK_YEAR_MAX).show();
+        } catch (NoAuthorException ex) {
+            new Alert(Alert.AlertType.ERROR, "Невозможно добавить/изменить книгу без автора.").show();
+        } catch (EmptyFieldException ex) {
+            new Alert(Alert.AlertType.ERROR, "Недопустимы пустые поля.").show();
         } catch (Exception ex) {
-
+            new Alert(Alert.AlertType.ERROR, "Книга не добавлена/изменена из-за некорректного ввода или если одно из полей не заполнено.").show();
         }
         return book;
     }
@@ -519,10 +533,10 @@ public class Controller {
         Author author = null;
         try {
             String authorName = authorNameInp.getText();
-            if (authorName.length() <= AUTHOR_NAME_CONSTRAINT)
+            if (!authorName.isEmpty() && authorName.length() <= AUTHOR_NAME_CONSTRAINT)
                 author = new Author(authorName);
             else
-                new Alert(Alert.AlertType.ERROR, "* Author name length exceeds the allowed number of characters.").show();
+                new Alert(Alert.AlertType.ERROR, "* Author name length exceeds the allowed number of characters OR empty.").show();
         } catch (Exception ex) {
 
         }
@@ -571,7 +585,8 @@ public class Controller {
         selectEditOperation.setDisable(false);
         selectDelOperation.setDisable(false);
         selectSearchOperation.setVisible(true);
-        enableBookMainInfo();
+        if ((selectAddOperation.isSelected() || selectEditOperation.isSelected()) && selectBook.isSelected())
+            enableBookMainInfo();
         runOperationBtn.setDisable(false);
     }
 
@@ -585,7 +600,8 @@ public class Controller {
         selectSearchOperation.setVisible(false);
         bookIdInp.setDisable(true);
         authorIdInp.setDisable(true);
-        disableBookMainInfo();
+        if ((selectAddOperation.isSelected() || selectEditOperation.isSelected()) && selectBook.isSelected())
+            disableBookMainInfo();
         runOperationBtn.setDisable(true);
     }
 

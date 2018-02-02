@@ -1,8 +1,6 @@
 package client.gui;
 
 import controllers.AuthorContainerController;
-import java.io.File;
-import java.io.IOException;
 import javafx.scene.control.Alert;
 import models.Author;
 import models.AuthorsContainer;
@@ -19,11 +17,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ClientInterface {
     private Socket clientSocket;
@@ -73,7 +67,9 @@ public class ClientInterface {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ERROR: command VIEW BOOKS can not be executed.\n");
+            new Alert(Alert.AlertType.ERROR, "Command VIEW BOOKS can not be executed.\n\n" + ((ErrorPacket) response).getDescription()).show();
+
+            //System.out.println("ERROR: command VIEW BOOKS can not be executed.\n");
         }
 
         //Если всё ок
@@ -127,7 +123,9 @@ public class ClientInterface {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ERROR: command ADD BOOK can not be executed.\n");
+            new Alert(Alert.AlertType.ERROR, "Command ADD BOOK can not be executed.\n\n" + ((ErrorPacket) response).getDescription()).show();
+
+            //System.out.println("Command ADD BOOK can not be executed.\n");
             return false;
         }
 
@@ -148,23 +146,17 @@ public class ClientInterface {
      * @throws XMLStreamException
      */
     public boolean editBook(int id, Book book) throws JAXBException, XMLStreamException {
-        System.out.println("Index = " + id);
-        System.out.println("Index author = " + book.getAuthor().getId());
         SetBookPacket currentCommand = new SetBookPacket(Commands.SET_BOOK, book.getAuthor().getId(), id, book);
 
-        System.out.println("Request sent.  0000");
         contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class,ViewBooksResponsePacket.class);
         unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
 
-        System.out.println("Request sent. 1111");
         commandMarshaller.marshal(currentCommand, out);
 
-        System.out.println("Request sent. 2222");
         xer = xmi.createXMLEventReader(in);
         xer.nextEvent();
         xer.peek();
 
-        System.out.println("Request sent. EEEEEEEEEEE");
         Book.resetId();
         Author.resetId();
 
@@ -173,8 +165,10 @@ public class ClientInterface {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ERROR: command SET_BOOK can not be executed.\n");
-            System.out.println(((ErrorPacket) response).getDescription());
+            new Alert(Alert.AlertType.ERROR, "Command SET BOOK can not be executed.\n\n" + ((ErrorPacket) response).getDescription()).show();
+
+            //System.out.println("Command SET BOOK can not be executed.\n");
+            //System.out.println(((ErrorPacket) response).getDescription());
             return false;
         }
 
@@ -212,8 +206,10 @@ public class ClientInterface {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ERROR: command REMOVE BOOK can not be executed.\n");
-            System.out.println(((ErrorPacket) response).getDescription());
+            new Alert(Alert.AlertType.ERROR, "Command REMOVE BOOK can not be executed.\n\n" + ((ErrorPacket) response).getDescription()).show();
+
+            //System.out.println("ERROR: command REMOVE BOOK can not be executed.\n");
+            //System.out.println(((ErrorPacket) response).getDescription());
 
             return false;
         }
@@ -254,7 +250,9 @@ public class ClientInterface {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ERROR: command VIEW AUTHORS can not be executed.\n");
+            //System.out.println("ERROR: command VIEW AUTHORS can not be executed.\n");
+            new Alert(Alert.AlertType.ERROR, "Command VIEW AUTHORS can not be executed.\n\n" + ((ErrorPacket) response).getDescription()).show();
+
         }
 
         //Если всё ок
@@ -300,9 +298,9 @@ public class ClientInterface {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ERROR: command ADD_AUTHOR can not be executed.\n");
-            System.out.println(((ErrorPacket) response).getDescription());
-            new Alert(Alert.AlertType.ERROR, ((ErrorPacket) response).getDescription()).show();
+            //System.out.println("ERROR: command ADD_AUTHOR can not be executed.\n");
+            //System.out.println(((ErrorPacket) response).getDescription());
+            new Alert(Alert.AlertType.ERROR, "Command ADD AUTHOR can not be executed.\n\n" + ((ErrorPacket) response).getDescription()).show();
 
             return false;
         }
@@ -343,8 +341,9 @@ public class ClientInterface {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ERROR: command SET_AUTHOR can not be executed.\n\n");
-            System.out.println(((ErrorPacket) response).getDescription());
+            new Alert(Alert.AlertType.ERROR, "Command SET AUTHOR can not be executed.\n\n" + ((ErrorPacket) response).getDescription()).show();
+            //System.out.println("ERROR: command SET_AUTHOR can not be executed.\n\n");
+            //System.out.println(((ErrorPacket) response).getDescription());
 
             return false;
         }
@@ -383,8 +382,9 @@ public class ClientInterface {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            System.out.println("ERROR: command REMOVE AUTHOR can not be executed.\n");
-            System.out.println(((ErrorPacket) response).getDescription());
+            //System.out.println("ERROR: command REMOVE AUTHOR can not be executed.\n");
+            //System.out.println(((ErrorPacket) response).getDescription());
+            new Alert(Alert.AlertType.ERROR, "Command REMOVE AUTHOR can not be executed.\n\n" + ((ErrorPacket) response).getDescription()).show();
 
             return false;
         }
