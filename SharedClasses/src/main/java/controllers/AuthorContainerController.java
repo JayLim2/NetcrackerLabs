@@ -371,12 +371,12 @@ public class AuthorContainerController {
         List<Integer> bookIds = new ArrayList<>();
         List<Integer> authorIds = new ArrayList<>();
         for(Author author:authorsContainer.getAuthors()){
-            if (authorIds.contains(author.getId())){
+            if (authorIds.contains(author.getId())|| (author.getId() == -1)){
                 author.dispatchId();
             }
             else authorIds.add(author.getId());
             for(Book book:author.getBooks()){
-                if (bookIds.contains(book.getId())){
+                if (bookIds.contains(book.getId()) || (book.getId() == -1)){
                     book.dispatchId();
                 }
                 else bookIds.add(book.getId());
