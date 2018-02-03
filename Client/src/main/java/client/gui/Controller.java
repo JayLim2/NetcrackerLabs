@@ -422,7 +422,6 @@ public class Controller {
                 }
                 if (id != -1) {
                     clientInterface.deleteBook(id);
-                    System.out.println("BBBbeeeee");
                     /*int i;
                     int recordsCount = bookRecords.size();
                     for (i = 0; i < recordsCount && bookRecords.get(i).getId() != id; i++) ;
