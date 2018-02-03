@@ -38,6 +38,11 @@ public class Controller {
     private static final int BOOK_BRIEF_CONSTRAINT = 280;
     private static final int AUTHOR_NAME_CONSTRAINT = 50;
     private ClientInterface clientInterface;
+    String authorName;
+    String title;
+    String publishYear;
+    String brief;
+    String publisher;
 
 
     @FXML
@@ -498,11 +503,38 @@ public class Controller {
             break;
 
             case SEARCH: {
-                String authorName = anyAuthorTextField.getText();
-                String title = bookTitleInp.getText();
-                String publishYear = bookYearInp.getText();
-                String brief = bookBriefInp.getText();
-                String publisher = bookPublisherInp.getText();
+                if (anyAuthorTextField.getText().isEmpty()) {
+                    authorName = "*";
+                } else {
+                    authorName = anyAuthorTextField.getText();
+                }
+
+                if (bookTitleInp.getText().isEmpty()) {
+                    title = "*";
+                } else {
+                    title = bookTitleInp.getText();
+                }
+
+                if (bookYearInp.getText().isEmpty()) {
+                    publishYear = "*";
+                } else {
+                    publishYear = bookYearInp.getText();
+                }
+                if (bookBriefInp.getText().isEmpty()) {
+                    brief = "*";
+                } else {
+                    brief = bookBriefInp.getText();
+                }
+                if (bookPublisherInp.getText().isEmpty()) {
+                    publisher = "*";
+                } else {
+                    bookPublisherInp.getText();
+                }
+//                String authorName = anyAuthorTextField.getText();
+//                String title = bookTitleInp.getText();
+//                String publishYear = bookYearInp.getText();
+//                String brief = bookBriefInp.getText();
+//                String publisher = bookPublisherInp.getText();
 
                 try {
                     bookRecords.clear();
