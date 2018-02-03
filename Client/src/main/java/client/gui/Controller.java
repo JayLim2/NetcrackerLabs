@@ -18,13 +18,13 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -108,7 +108,11 @@ public class Controller {
 
     @FXML
     private Button runOperationBtn;
+    @FXML
+    private Button clearAllBtn;
 
+    private Comparator<BookRecord> bookComparator;
+    private Comparator<AuthorRecord> authorComparator;
 
     public class BookRecord {
         private int id;
@@ -278,6 +282,9 @@ public class Controller {
 
         booksTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 
+        bookComparator = new BookComparator();
+        authorComparator = new AuthorComparator();
+
         //bookRecords.add(new BookRecord(0, "test", "author1", 2017, "EKSMO", "aaaa?"));
         //booksTable.setItems(bookRecords);
 
@@ -389,6 +396,7 @@ public class Controller {
                 if (book != null) {
                     //bookRecord = new BookRecord(book.getId(), book.getTitle(), book.getAuthor().getName(), book.getPublishYear(), book.getPublisher(), book.getBrief());
                     clientInterface.addBook(book, book.getAuthor());
+                    clearBookForm();
                     //bookRecords.add(bookRecord);
                 }
             }
@@ -433,6 +441,7 @@ public class Controller {
                 if (author != null) {
                     //authorRecord = new AuthorRecord(author.getId(), author.getName(), 0);
                     clientInterface.addAuthor(author.getName());
+                    clearAuthorForm();
                     //authorRecords.add(authorRecord);
                 }
             }
@@ -465,7 +474,24 @@ public class Controller {
                     new Alert(Alert.AlertType.ERROR, "Уникальный Id автора должен быть числом.").show();
                 }
                 if (id != -1) {
-                    clientInterface.deleteAuthor(id);
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "При удалении автора, удалятся также все его книги. Продолжить?", ButtonType.YES, ButtonType.NO);
+                    final int tmp_id = id;
+
+                    alert.showAndWait().ifPresent(buttonType -> {
+                        if (buttonType.getButtonData() == ButtonBar.ButtonData.YES) {
+                            try {
+                                clientInterface.deleteAuthor(tmp_id);
+                            } catch (JAXBException ex) {
+                            } catch (XMLStreamException ex) {
+                            }
+                        }
+
+                        if (buttonType.getButtonData() == ButtonBar.ButtonData.NO) {
+                            System.out.println("REMOVE AUTHOR has been cancelled.");
+                        }
+                    });
+
+                    //clientInterface.deleteAuthor(id);
                     /*int i;
                     int recordsCount = authorRecords.size();
                     for (i = 0; i < recordsCount && authorRecords.get(i).getId() != id; i++) ;
@@ -480,7 +506,6 @@ public class Controller {
                 String publishYear = bookYearInp.getText();
                 String brief = bookBriefInp.getText();
                 String publisher = bookPublisherInp.getText();
-
 
                 try {
                     bookRecords.clear();
@@ -616,6 +641,9 @@ public class Controller {
                 System.out.println("Список книг НЕ получен.");
             }
 
+            bookRecords.sort(bookComparator);
+            authorRecords.sort(authorComparator);
+
             updateAuthorsCombobox();
 
             booksTable.setItems(bookRecords);
@@ -640,6 +668,7 @@ public class Controller {
         if ((selectAddOperation.isSelected() || selectEditOperation.isSelected()) && selectBook.isSelected())
             enableBookMainInfo();
         runOperationBtn.setDisable(false);
+        clearAllBtn.setDisable(false);
     }
 
     //Применится потом: в случае возникновения ошибки чтения с сервера (из файла), форма блокируется
@@ -655,6 +684,7 @@ public class Controller {
         if ((selectAddOperation.isSelected() || selectEditOperation.isSelected()) && selectBook.isSelected())
             disableBookMainInfo();
         runOperationBtn.setDisable(true);
+        clearAllBtn.setDisable(true);
     }
 
     public void runViewAuthors(ActionEvent event) {
@@ -796,48 +826,23 @@ public class Controller {
         System.out.println("Operation Search is selected.");
     }
 
-    //==================== Функции меню =====================
-    private File currentFile;
-
-    public void openFileAction(ActionEvent event) {
-        openFile();
+    //Очистка всех полей
+    public void clearAll(ActionEvent event) {
+        clearBookForm();
+        clearAuthorForm();
     }
 
-    public void saveFileAction(ActionEvent event) {
-        saveFile();
+    private void clearBookForm() {
+        bookIdInp.clear();
+        bookTitleInp.clear();
+        bookPublisherInp.clear();
+        bookYearInp.clear();
+        bookBriefInp.clear();
+        bookAuthorInp.getSelectionModel().selectFirst();
     }
 
-    public void saveAsFileAction(ActionEvent event) {
-        File file = chooseFile();
-        if (file != null) {
-            currentFile = file;
-            saveFile();
-        }
-    }
-
-    public void closeAction(ActionEvent event) {
-        closeApplication();
-    }
-
-    private void openFile() {
-        File file = chooseFile();
-        if (file != null) {
-            currentFile = file;
-            //выгрузки информации из файла
-        }
-    }
-
-    private void saveFile() {
-        //Сохраняет в файл, находящийся в currentFile
-    }
-
-    private File chooseFile() {
-        return null;
-    }
-
-    private void closeApplication() {
-        saveFile();
-        System.exit(0);
-        //Закрытие приложения с автоматическим вызовом saveFile
+    private void clearAuthorForm() {
+        authorIdInp.clear();
+        authorNameInp.clear();
     }
 }

@@ -10,23 +10,6 @@
                 <Font name="System Bold" size="12.0" />
             </font>
         </Label>
-        <MenuBar layoutY="2.0" prefHeight="25.0" prefWidth="732.0">
-            <menus>
-                <Menu mnemonicParsing="false" text="File">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Open" />
-                        <MenuItem mnemonicParsing="false" text="Save" />
-                        <MenuItem mnemonicParsing="false" text="Save as ...." />
-                        <MenuItem mnemonicParsing="false" text="Close" />
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Help">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                    </items>
-                </Menu>
-            </menus>
-        </MenuBar>
         <Label layoutX="392.0" layoutY="41.0" text="Список авторов">
             <font>
                 <Font name="System Bold" size="12.0" />
@@ -82,9 +65,11 @@
         <RadioButton fx:id="selectDelOperation" disable="true" layoutX="503.0" layoutY="316.0" mnemonicParsing="false" onAction="#selectDelOperation" text="Удалить" />
         <RadioButton fx:id="selectEditOperation" disable="true" layoutX="409.0" layoutY="315.0" mnemonicParsing="false" onAction="#selectEditOperation" text="Изменить" />
         <RadioButton fx:id="selectAddOperation" disable="true" layoutX="316.0" layoutY="316.0" mnemonicParsing="false" onAction="#selectAddOperation" selected="true" text="Добавить" />
-        <Button fx:id="runOperationBtn" disable="true" layoutX="37.0" layoutY="579.0" mnemonicParsing="false"
+        <Button fx:id="runOperationBtn" disable="true" layoutX="37.0" layoutY="615.0" mnemonicParsing="false"
                 onAction="#runModification" prefHeight="33.0" prefWidth="658.0" text="Выполнить операцию"/>
       <RadioButton fx:id="selectSearchOperation" layoutX="595.0" layoutY="316.0" mnemonicParsing="false" onAction="#selectSearchOperation" text="Поиск" visible="false" />
       <TextField fx:id="anyAuthorTextField" layoutX="293.0" layoutY="414.0" prefHeight="25.0" prefWidth="84.0" visible="false" />
+        <Button fx:id="clearAllBtn" disable="true" layoutX="37.0" layoutY="577.0" mnemonicParsing="false"
+                onAction="#clearAll" prefHeight="25.0" prefWidth="658.0" text="Очистить все поля"/>
     </children>
 </AnchorPane>
