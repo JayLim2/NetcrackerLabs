@@ -5,8 +5,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import models.*;
 import protocol.*;
 
@@ -46,7 +49,7 @@ public class Controller {
     @FXML
     private TableColumn<BookRecord, String> bookTitleCol;
     @FXML
-    private TableColumn<BookRecord, String> bookAuthorNameCol;
+    private TableColumn<BookRecord, Author> bookAuthorNameCol;
     @FXML
     private TableColumn<BookRecord, Integer> bookYearCol;
     @FXML
@@ -110,15 +113,17 @@ public class Controller {
     public class BookRecord {
         private int id;
         private String title;
-        private String authorName;
+        private Author author;
+        //private String authorName;
         private int year;
         private String publisher;
         private String brief;
 
-        public BookRecord(int id, String title, String authorName, int year, String publisher, String brief) {
+        public BookRecord(int id, String title, Author author, int year, String publisher, String brief) {
             this.id = id;
             this.title = title;
-            this.authorName = authorName;
+            this.author = author;
+            //this.authorName = authorName;
             this.year = year;
             this.publisher = publisher;
             this.brief = brief;
@@ -140,13 +145,21 @@ public class Controller {
             this.title = title;
         }
 
-        public String getAuthorName() {
+        public Author getAuthor() {
+            return author;
+        }
+
+        public void setAuthor(Author author) {
+            this.author = author;
+        }
+
+        /*public String getAuthorName() {
             return authorName;
         }
 
         public void setAuthorName(String authorName) {
             this.authorName = authorName;
-        }
+        }*/
 
         public int getYear() {
             return year;
@@ -254,7 +267,7 @@ public class Controller {
 
         bookIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         bookTitleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
-        bookAuthorNameCol.setCellValueFactory(new PropertyValueFactory<>("authorName"));
+        bookAuthorNameCol.setCellValueFactory(new PropertyValueFactory<>("author"));
         bookYearCol.setCellValueFactory(new PropertyValueFactory<>("year"));
         bookPublisherCol.setCellValueFactory(new PropertyValueFactory<>("publisher"));
         bookBriefCol.setCellValueFactory(new PropertyValueFactory<>("brief"));
@@ -269,6 +282,46 @@ public class Controller {
         //booksTable.setItems(bookRecords);
 
         //=================================
+    }
+
+    @FXML
+    private void handleRowSelect(MouseEvent event) {
+        Node node = ((Node) event.getTarget()).getParent();
+        TableRow row;
+        if (node instanceof TableRow) {
+            row = (TableRow) node;
+        } else {
+            // clicking on text part
+            row = null;
+            Parent parent = node.getParent();
+            if (parent instanceof TableRow) {
+                row = (TableRow) node.getParent();
+            }
+        }
+
+        //Обработка выбранной записи
+        if (row != null) {
+            Object item = row.getItem();
+            if (item instanceof BookRecord) {
+                BookRecord record = (BookRecord) row.getItem();
+                if (record != null) {
+                    bookIdInp.setText(Integer.toString(record.id));
+                    bookTitleInp.setText(record.title);
+                    bookBriefInp.setText(record.brief);
+                    bookPublisherInp.setText(record.publisher);
+                    bookYearInp.setText(Integer.toString(record.year));
+                    bookAuthorInp.getSelectionModel().select(record.author);
+                }
+            }
+
+            if (item instanceof AuthorRecord) {
+                AuthorRecord record = (AuthorRecord) row.getItem();
+                if (record != null) {
+                    authorIdInp.setText(Integer.toString(record.id));
+                    authorNameInp.setText(record.name);
+                }
+            }
+        }
     }
 
     /**
@@ -441,7 +494,7 @@ public class Controller {
                             authorRecords.add(new AuthorRecord(author1.getId(), author1.getName(), author1.getBooks().size()));
                             List<Book> books1 = author1.getBooks();
                             for (Book book1 : books1) {
-                                bookRecords.add(new BookRecord(book1.getId(), book1.getTitle(), author1.getName(), book1.getPublishYear(), book1.getPublisher(), book1.getBrief()));
+                                bookRecords.add(new BookRecord(book1.getId(), book1.getTitle(), author1, book1.getPublishYear(), book1.getPublisher(), book1.getBrief()));
                             }
                         }
 
@@ -555,7 +608,7 @@ public class Controller {
                     authorRecords.add(new AuthorRecord(author.getId(), author.getName(), author.getBooks().size()));
                     List<Book> books = author.getBooks();
                     for (Book book : books) {
-                        bookRecords.add(new BookRecord(book.getId(), book.getTitle(), author.getName(), book.getPublishYear(), book.getPublisher(), book.getBrief()));
+                        bookRecords.add(new BookRecord(book.getId(), book.getTitle(), author, book.getPublishYear(), book.getPublisher(), book.getBrief()));
                     }
                 }
 
@@ -598,8 +651,8 @@ public class Controller {
         selectEditOperation.setDisable(true);
         selectDelOperation.setDisable(true);
         selectSearchOperation.setVisible(false);
-        bookIdInp.setDisable(true);
-        authorIdInp.setDisable(true);
+        //bookIdInp.setDisable(true);
+        //authorIdInp.setDisable(true);
         if ((selectAddOperation.isSelected() || selectEditOperation.isSelected()) && selectBook.isSelected())
             disableBookMainInfo();
         runOperationBtn.setDisable(true);
@@ -623,14 +676,15 @@ public class Controller {
 
         selectSearchOperation.setVisible(true);
 
-        authorIdInp.setDisable(true);
+        //authorIdInp.setDisable(true);
         authorNameInp.setDisable(true);
 
         if (selectDelOperation.isSelected() || selectEditOperation.isSelected()) {
-            bookIdInp.setDisable(false);
+            //bookIdInp.setDisable(false);
             anyAuthorTextField.setVisible(false);
-        } else
-            bookIdInp.setDisable(true);
+        } else {
+            //bookIdInp.setDisable(true);
+        }
 
         if (!selectDelOperation.isSelected()) {
             enableBookMainInfo();
@@ -648,10 +702,11 @@ public class Controller {
 
     public void selectAuthor(ActionEvent event) {
 
-        if (selectEditOperation.isSelected() || selectDelOperation.isSelected())
-            authorIdInp.setDisable(false);
-        else
-            authorIdInp.setDisable(true);
+        if (selectEditOperation.isSelected() || selectDelOperation.isSelected()) {
+            //authorIdInp.setDisable(false);
+        } else {
+            //authorIdInp.setDisable(true);
+        }
 
         if (!selectDelOperation.isSelected())
             authorNameInp.setDisable(false);
@@ -659,7 +714,7 @@ public class Controller {
             authorNameInp.setDisable(true);
 
         //Отключение формы с книгой
-        bookIdInp.setDisable(true);
+        //bookIdInp.setDisable(true);
         disableBookMainInfo();
         selectSearchOperation.setVisible(false);
         anyAuthorTextField.setVisible(false);
@@ -686,17 +741,17 @@ public class Controller {
 
     private void disableAllInfo() {
         disableBookMainInfo();
-        bookIdInp.setDisable(true);
-        authorIdInp.setDisable(true);
+        //bookIdInp.setDisable(true);
+        //authorIdInp.setDisable(true);
         authorNameInp.setDisable(true);
     }
 
     public void selectAddOperation(ActionEvent event) {
         if (selectBook.isSelected()) {
-            bookIdInp.setDisable(true);
+            //bookIdInp.setDisable(true);
             enableBookMainInfo();
         } else if (selectAuthor.isSelected()) {
-            authorIdInp.setDisable(true);
+            //authorIdInp.setDisable(true);
             authorNameInp.setDisable(false);
         }
 
@@ -705,10 +760,10 @@ public class Controller {
 
     public void selectEditOperation(ActionEvent event) {
         if (selectBook.isSelected()) {
-            bookIdInp.setDisable(false);
+            //bookIdInp.setDisable(false);
             enableBookMainInfo();
         } else if (selectAuthor.isSelected()) {
-            authorIdInp.setDisable(false);
+            //authorIdInp.setDisable(false);
             authorNameInp.setDisable(false);
         }
 
@@ -717,10 +772,10 @@ public class Controller {
 
     public void selectDelOperation(ActionEvent event) {
         if (selectBook.isSelected()) {
-            bookIdInp.setDisable(false);
+            //bookIdInp.setDisable(false);
             disableBookMainInfo();
         } else if (selectAuthor.isSelected()) {
-            authorIdInp.setDisable(false);
+            //authorIdInp.setDisable(false);
             authorNameInp.setDisable(true);
         }
 
@@ -730,10 +785,10 @@ public class Controller {
     //todo select in controller
     public void selectSearchOperation(ActionEvent event) {
         if (selectBook.isSelected()) {
-            bookIdInp.setDisable(true);
+            //bookIdInp.setDisable(true);
             enableBookMainInfo();
         } else if (selectAuthor.isSelected()) {
-            authorIdInp.setDisable(false);
+            //authorIdInp.setDisable(false);
             authorNameInp.setDisable(true);
         }
         anyAuthorTextField.setVisible(true);
