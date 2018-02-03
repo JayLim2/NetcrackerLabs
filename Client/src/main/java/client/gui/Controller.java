@@ -506,29 +506,29 @@ public class Controller {
                 if (anyAuthorTextField.getText().isEmpty()) {
                     authorName = "*";
                 } else {
-                    authorName = anyAuthorTextField.getText();
+                    authorName = "*".concat(anyAuthorTextField.getText()).concat("*");
                 }
 
                 if (bookTitleInp.getText().isEmpty()) {
                     title = "*";
                 } else {
-                    title = bookTitleInp.getText();
+                    title = "*".concat(bookTitleInp.getText()).concat("*");
                 }
 
                 if (bookYearInp.getText().isEmpty()) {
                     publishYear = "*";
                 } else {
-                    publishYear = bookYearInp.getText();
+                    publishYear = "*".concat(bookYearInp.getText()).concat("*");
                 }
                 if (bookBriefInp.getText().isEmpty()) {
                     brief = "*";
                 } else {
-                    brief = bookBriefInp.getText();
+                    brief = "*".concat(bookBriefInp.getText()).concat("*");
                 }
                 if (bookPublisherInp.getText().isEmpty()) {
                     publisher = "*";
                 } else {
-                    bookPublisherInp.getText();
+                    publisher = "*".concat(bookPublisherInp.getText()).concat("*");
                 }
 //                String authorName = anyAuthorTextField.getText();
 //                String title = bookTitleInp.getText();
