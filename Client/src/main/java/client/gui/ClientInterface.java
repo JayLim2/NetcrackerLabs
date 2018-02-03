@@ -414,7 +414,6 @@ public class ClientInterface {
         Book.resetId();
         Author.resetId();
 
-
         ViewBooksResponsePacket response = (ViewBooksResponsePacket) unmarshResponsePacket.unmarshal(xer);
         System.out.println("Response accepted.\n");
 

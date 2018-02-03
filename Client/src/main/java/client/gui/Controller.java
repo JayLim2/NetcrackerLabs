@@ -377,7 +377,7 @@ public class Controller {
         //Считывание информации
         Book book = null;
         Author author = null;
-        if (currentCommand != Commands.REMOVE_BOOK && currentCommand != Commands.REMOVE_AUTHOR) {
+        if (currentCommand != Commands.REMOVE_BOOK && currentCommand != Commands.REMOVE_AUTHOR && currentCommand != Commands.SEARCH) {
             if (selectBook.isSelected()) {
                 book = getBookInfo();
             }
@@ -385,9 +385,6 @@ public class Controller {
                 author = getAuthorInfo();
             }
         }
-
-        BookRecord bookRecord;
-        AuthorRecord authorRecord;
 
         System.out.println(currentCommand);
 
@@ -531,6 +528,9 @@ public class Controller {
 
                     booksTable.setItems(bookRecords);
                     authorsTable.setItems(authorRecords);
+
+                    bookRecords.sort(bookComparator);
+                    authorRecords.sort(authorComparator);
 
                     enableModificationForm();
                 } catch (XMLStreamException ex) {
@@ -821,7 +821,6 @@ public class Controller {
             authorNameInp.setDisable(true);
         }
         anyAuthorTextField.setVisible(true);
-
 
         System.out.println("Operation Search is selected.");
     }
