@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Comparator;
 import java.util.List;
@@ -393,6 +394,7 @@ public class Controller {
 
         System.out.println(currentCommand);
 
+        try{
         switch (currentCommand) {
             case ADD_BOOK: {
                 if (book != null) {
@@ -578,6 +580,9 @@ public class Controller {
             runViewBooks(event);
             runViewAuthors(event);
         }
+        }catch(XMLStreamException ex){
+            System.out.println("server offline");
+        }
         //authorsTable.setItems(authorRecords);
         //booksTable.setItems(bookRecords);
     }
@@ -626,9 +631,9 @@ public class Controller {
         } catch (NoAuthorException ex) {
             new Alert(Alert.AlertType.ERROR, "Невозможно добавить/изменить книгу без автора.").show();
         } catch (EmptyFieldException ex) {
-            new Alert(Alert.AlertType.ERROR, "Недопустимы пустые поля.").show();
+            new Alert(Alert.AlertType.ERROR, "Some fields are empty").show();
         } catch (Exception ex) {
-            new Alert(Alert.AlertType.ERROR, "Книга не добавлена/изменена из-за некорректного ввода или если одно из полей не заполнено.").show();
+            new Alert(Alert.AlertType.ERROR, "Unknown Error").show();
         }
         return book;
     }
@@ -668,9 +673,9 @@ public class Controller {
                     }
                 }
 
-                System.out.println("Список книг получен.");
+                //System.out.println("Список книг получен.");
             } else {
-                System.out.println("Список книг НЕ получен.");
+                //System.out.println("Список книг НЕ получен.");
             }
 
             bookRecords.sort(bookComparator);
@@ -683,10 +688,11 @@ public class Controller {
 
             enableModificationForm();
         } catch (XMLStreamException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("server offline");
         } catch (JAXBException ex) {
-            System.out.println("Ошибка XML-сериализаци.");
-            ex.printStackTrace();
+            System.out.println("marshalling error");
+            //ex.printStackTrace();
         }
     }
 

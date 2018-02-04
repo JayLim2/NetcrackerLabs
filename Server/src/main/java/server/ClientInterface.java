@@ -119,7 +119,7 @@ public class ClientInterface implements Runnable {
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
                                 marshAC.marshal(aCC.getAuthorsContainer(), new FileOutputStream("XML1a.xml"));
                             } catch (IndexOutOfBoundsException ex) {
-                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Index error"), outp);
+                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, ex.getMessage()), outp);
                             } catch (BookAlreadyExistsException ex) {
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Duplicate Book error"), outp);
                             } finally {
@@ -156,7 +156,7 @@ public class ClientInterface implements Runnable {
                                 //вообще произойти не должно. валидация года в клиенте должна быть
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Year error"), outp);
                             } catch (IndexOutOfBoundsException ex) {
-                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Index error"), outp);
+                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, ex.getMessage()), outp);
                             } catch (BookAlreadyExistsException ex) {
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Duplicate Book error"), outp);
                             } finally {
@@ -172,7 +172,7 @@ public class ClientInterface implements Runnable {
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
                                 marshAC.marshal(aCC.getAuthorsContainer(), new FileOutputStream("XML1a.xml"));
                             } catch (IndexOutOfBoundsException ex) {
-                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, "no Author with such index"), outp);
+                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, ex.getMessage()), outp);
                             } finally {
                                 writeLock.unlock();
                             }
@@ -186,7 +186,7 @@ public class ClientInterface implements Runnable {
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
                                 marshAC.marshal(aCC.getAuthorsContainer(), new FileOutputStream("XML1a.xml"));
                             } catch (IndexOutOfBoundsException ex) {
-                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, "no Author with such index"), outp);
+                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, ex.getMessage()), outp);
                             } finally {
                                 writeLock.unlock();
                             }
@@ -200,7 +200,7 @@ public class ClientInterface implements Runnable {
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
                                 marshAC.marshal(aCC.getAuthorsContainer(), new FileOutputStream("XML1a.xml"));
                             } catch (IndexOutOfBoundsException ex) {
-                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, "no Author with such index"), outp);
+                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, ex.getMessage()), outp);
                             } finally {
                                 writeLock.unlock();
                             }
@@ -228,11 +228,11 @@ public class ClientInterface implements Runnable {
                 }
             }
         } catch (JAXBException ex) {
-            Logger.getLogger(ClientInterface.class.getName()).log(Level.SEVERE, null, ex);
+            //shouldnt happen
         } catch (IOException ex) {
-            Logger.getLogger(ClientInterface.class.getName()).log(Level.SEVERE, null, ex);
+            //shoudnt happen
         } catch (XMLStreamException ex) {
-            Logger.getLogger(ClientInterface.class.getName()).log(Level.SEVERE, null, ex);
+            //shoudnt happen
         }
     }
 

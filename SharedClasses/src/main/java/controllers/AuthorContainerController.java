@@ -66,7 +66,7 @@ public class AuthorContainerController {
                 break;
             }
         }
-        if (res == null) throw new IndexOutOfBoundsException();
+        if (res == null) throw new IndexOutOfBoundsException("no author with such index");
         return res;
     }
 
@@ -90,7 +90,7 @@ public class AuthorContainerController {
                     }
                 }
         }
-        if (res == null) throw new IndexOutOfBoundsException();
+        if (res == null) throw new IndexOutOfBoundsException("no book with such index");
         return res;
     }
 
@@ -157,7 +157,7 @@ public class AuthorContainerController {
                 }
             }
         }
-        if (res == null) throw new IndexOutOfBoundsException();
+        if (res == null) throw new IndexOutOfBoundsException("no book with such index");
     }
 
     /**
@@ -181,7 +181,7 @@ public class AuthorContainerController {
             Author.removeId(id);
         }
         else
-            throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException("no author with such index");
     }
 
     /**
