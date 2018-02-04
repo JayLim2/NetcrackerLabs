@@ -51,7 +51,7 @@ public class ClientInterface implements Runnable {
      * Main constructor for the class
      * @param clientSocket the socket to be used in this instance
      * @param aCC the main database container
-     * @param rwl synchronisation read/write lock. all instances working with the same aCC are to receve 
+     * @param rwl synchronisation read/write lock. all instances working with the same aCC are to receive
      * the same lock as well
      */
     public ClientInterface(Socket clientSocket, AuthorContainerController aCC, ReadWriteLock rwl) {

@@ -397,6 +397,17 @@ public class ClientInterface {
         return true;
     }
 
+    /**
+     *
+     * @param title
+     * @param author
+     * @param publishYear
+     * @param brief
+     * @param publisher
+     * @return
+     * @throws JAXBException
+     * @throws XMLStreamException
+     */
     public AuthorsContainer searchBook(String title, String author, String publishYear, String brief, String publisher) throws JAXBException, XMLStreamException {
         BookFilter bookFilter = new BookFilter(title, author, publishYear, brief, publisher);
         SearchPacket currentCommand = new SearchPacket(bookFilter);

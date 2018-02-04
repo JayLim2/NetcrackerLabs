@@ -23,7 +23,7 @@ import models.Book;
  * @author Alexander
  * used specifically in order to implement file interactions
 =======
- * @author Алескандр
+ * @author Alexander
 >>>>>>> 312a3f2bb90cd8aad3bbea1dded32d9dfe1b3b45
  */
 public class ServerControl implements Runnable{
@@ -31,7 +31,7 @@ public class ServerControl implements Runnable{
     private ReadWriteLock rwl;
 
     /**
-     * main contructor for the thread
+     * main constructor for the thread
      * @param aCC the database container to be used in these interactions
      * @param rwl ReadWriteLock must be the same in all thread where aCC is the same
      */
@@ -109,7 +109,7 @@ public class ServerControl implements Runnable{
     }
     
     /**
-     * Simple databse console output
+     * Simple database console output
      */
     public void viewAll(){
         rwl.readLock().lock();

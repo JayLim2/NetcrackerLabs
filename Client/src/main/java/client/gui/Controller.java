@@ -350,7 +350,7 @@ public class Controller {
         bookAuthorInp.setItems(authors);
     }
 
-    public void runModification(ActionEvent event) throws JAXBException, XMLStreamException {
+    public void runModification(ActionEvent event) throws JAXBException {
         Commands currentCommand = null;
         if (selectBook.isSelected()) {
             if (selectAddOperation.isSelected()) {
@@ -412,7 +412,7 @@ public class Controller {
                     try {
                         bookId = Integer.parseInt(bookIdInp.getText());
                     } catch (Exception e) {
-                        new Alert(Alert.AlertType.ERROR, "Уникальный индекс книги должен быть числом.").show();
+                        new Alert(Alert.AlertType.ERROR, "Book ID must be a number.").show();
                     }
                     //bookRecord = new BookRecord(bookId, book.getTitle(), book.getAuthor().getName(), book.getPublishYear(), book.getPublisher(), book.getBrief());
                     if (bookId != -1) {
@@ -430,7 +430,7 @@ public class Controller {
                 try {
                     id = Integer.parseInt(bookIdInp.getText());
                 } catch (Exception ex) {
-                    new Alert(Alert.AlertType.ERROR, "Уникальный Id книги должен быть числом.").show();
+                    new Alert(Alert.AlertType.ERROR, "Book ID must be a number.").show();
                 }
                 if (id != -1) {
                     clientInterface.deleteBook(id);
@@ -457,7 +457,7 @@ public class Controller {
                     try {
                         authorId = Integer.parseInt(authorIdInp.getText());
                     } catch (Exception e) {
-                        new Alert(Alert.AlertType.ERROR, "Уникальный индекс автора должен быть числом.").show();
+                        new Alert(Alert.AlertType.ERROR, "Author ID must be a number.").show();
                     }
                     //authorRecord = new AuthorRecord(authorId, author.getName(), author.getBooks().size());
                     if (authorId != -1) {
@@ -475,10 +475,10 @@ public class Controller {
                 try {
                     id = Integer.parseInt(authorIdInp.getText());
                 } catch (Exception ex) {
-                    new Alert(Alert.AlertType.ERROR, "Уникальный Id автора должен быть числом.").show();
+                    new Alert(Alert.AlertType.ERROR, "Author ID must be a number.").show();
                 }
                 if (id != -1) {
-                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "При удалении автора, удалятся также все его книги. Продолжить?", ButtonType.YES, ButtonType.NO);
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "If you delete the author, all his books will also be deleted. Continue?", ButtonType.YES, ButtonType.NO);
                     final int tmp_id = id;
 
                     alert.showAndWait().ifPresent(buttonType -> {
@@ -553,9 +553,9 @@ public class Controller {
                             }
                         }
 
-                        System.out.println("Список книг получен.");
+                        System.out.println("The book list has been received.\n");
                     } else {
-                        System.out.println("Список книг НЕ получен.");
+                        System.out.println("The book list is NOT received.");
                     }
 
                     updateAuthorsCombobox();
@@ -570,7 +570,7 @@ public class Controller {
                 } catch (XMLStreamException ex) {
                     Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (JAXBException ex) {
-                    System.out.println("Ошибка XML-сериализаци.");
+                    System.out.println("XML Serialization Error.");
                     ex.printStackTrace();
                 }
             }
@@ -616,20 +616,20 @@ public class Controller {
             } else {
                 String errorMsg = "";
                 if (title.length() > BOOK_TITLE_CONSTRAINT)
-                    errorMsg += "* Название книги превышает допустимое число символов.\n";
+                    errorMsg += "* The title of the book exceeds the allowed number of characters.\n";
                 /*if (year < BOOK_YEAR_MIN || year > BOOK_YEAR_MAX)
                     errorMsg += "* Год издания должен быть в диапазоне от " + BOOK_YEAR_MIN + " до " + BOOK_YEAR_MAX + "\n";
                 */
                 if (publisher.length() > BOOK_PUBLISHER_CONSTRAINT)
-                    errorMsg += "* Название издателя превышает допустимое число символов.\n";
+                    errorMsg += "* The publisher name exceeds the  allowed number of characters.\n";
                 if (brief.length() > BOOK_BRIEF_CONSTRAINT)
-                    errorMsg += "* Длина краткого описания превышает " + BOOK_BRIEF_CONSTRAINT + " символов.\n";
+                    errorMsg += "* The length of the short description exceeds " + BOOK_BRIEF_CONSTRAINT + " characters.\n";
                 new Alert(Alert.AlertType.ERROR, errorMsg).show();
             }
         } catch (YearOutOfBoundsException ex) {
-            new Alert(Alert.AlertType.ERROR, "Год издания должен быть в диапазоне от " + BOOK_YEAR_MIN + " до " + BOOK_YEAR_MAX).show();
+            new Alert(Alert.AlertType.ERROR, "The year of publication must be in the range of " + BOOK_YEAR_MIN + " to " + BOOK_YEAR_MAX).show();
         } catch (NoAuthorException ex) {
-            new Alert(Alert.AlertType.ERROR, "Невозможно добавить/изменить книгу без автора.").show();
+            new Alert(Alert.AlertType.ERROR, "You can not add / edit a book without the author.").show();
         } catch (EmptyFieldException ex) {
             new Alert(Alert.AlertType.ERROR, "Some fields are empty").show();
         } catch (Exception ex) {
