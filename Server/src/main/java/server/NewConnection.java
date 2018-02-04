@@ -7,14 +7,14 @@ import java.net.Socket;
 
 public class NewConnection extends Thread {
 
-    private static Socket socket;
+    private Socket socket;
     private OutputStream out;
     private InputStream in;
     private int clientId;
 
 
     public NewConnection(Socket client) {
-        NewConnection.socket = client;
+        this.socket = client;
     }
 
     public int getClientId() {
@@ -31,7 +31,8 @@ public class NewConnection extends Thread {
             StreamContainer.getInstance().View();
             out.write(clientId);
             out.flush();
-            System.out.println("New client # "+ clientId + " connected");
+            System.out.println("New client # " + clientId + " connected");
+            //todo вызвать нижний туду
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -43,10 +44,13 @@ public class NewConnection extends Thread {
         try {
             out.close();
             in.close();
-            System.out.println("Client disconnected");
+            socket.close();
+            System.out.println("Client " + clientId + " disconnected");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    //todo захуярить commandRelay, аналог листнера, тут только вызвать
 }
 

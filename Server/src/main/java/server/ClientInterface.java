@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.logging.Level;
@@ -38,6 +39,7 @@ public class ClientInterface implements Runnable {
     private AuthorContainerController aCC;
     private Lock readLock;
     private Lock writeLock;
+    private Marshaller marshResponse;
 
     public ClientInterface(Socket clientSocket, AuthorContainerController aCC, ReadWriteLock rwl) {
         this.clientSocket = clientSocket;
@@ -68,7 +70,7 @@ public class ClientInterface implements Runnable {
 //            Unmarshaller unmarshIndex = contextIndex.createUnmarshaller();
 //            Unmarshaller unmarshBook = contextBook.createUnmarshaller();
 //            Unmarshaller unmarshAuthor = contextAuthor.createUnmarshaller();
-            Marshaller marshResponse = contextResponse.createMarshaller();
+            marshResponse = contextResponse.createMarshaller();
             //Marshaller marshAuthorsContainer = contextAuthorsContainer.createMarshaller();
             a:
             {
@@ -97,6 +99,7 @@ public class ClientInterface implements Runnable {
                             try {
                                 aCC.addBook(book, id);
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
+
                                 /*for (OutputStream stream : StreamContainer.getInstance().getStreams())
                                     marshResponse.marshal(new ViewBooksResponsePacket(Responses.OK, aCC.getAuthorsContainer()), outp);*/
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
@@ -163,6 +166,7 @@ public class ClientInterface implements Runnable {
                             try {
                                 aCC.removeBook(rmbp.getId());
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                                //todo написать метод sendUpdateComand
                             } catch (IndexOutOfBoundsException ex) {
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "no Author with such index"), outp);
                             } finally {
@@ -198,6 +202,23 @@ public class ClientInterface implements Runnable {
             Logger.getLogger(ClientInterface.class.getName()).log(Level.SEVERE, null, ex);
         } catch (XMLStreamException ex) {
             Logger.getLogger(ClientInterface.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+
+    private void sendUpdateCommand(){
+        List<OutputStream> streams = StreamContainer.getInstance().getStreams();
+        if (streams != null){
+            for (OutputStream stream : streams) {
+                try {
+                    marshResponse.marshal(new ViewBooksResponsePacket(Responses.OK, aCC.getAuthorsContainer()), stream);
+                }
+                catch (JAXBException e){
+                    e.printStackTrace();
+                }
+
+
+            }
         }
     }
 

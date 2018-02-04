@@ -17,10 +17,11 @@ import java.io.InputStream;
 public class ClientListener extends Thread {
 
     private InputStream inputStream;
-    JAXBContext contextResponsePacket;
-    Unmarshaller unmarshResponsePacket;
-    XMLInputFactory xmi;
-    XMLEventReader xer;
+    private JAXBContext contextResponsePacket;
+    private Unmarshaller unmarshResponsePacket;
+    private XMLInputFactory xmi;
+    private XMLEventReader xer;
+    private ClientResponsePacketParser clientResponsePacketParser;
 
     public ClientListener(InputStream inputStream) {
         try {
@@ -29,6 +30,7 @@ public class ClientListener extends Thread {
             unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
             xmi = XMLInputFactory.newFactory();
             xer = xmi.createXMLEventReader(inputStream);
+            clientResponsePacketParser = ClientResponsePacketParser.getInstance();
         } catch (XMLStreamException e) {
             e.printStackTrace();
         } catch (JAXBException e) {
@@ -46,7 +48,8 @@ public class ClientListener extends Thread {
                     xer.peek();
                     ResponsePacket response = (ResponsePacket) unmarshResponsePacket.unmarshal(xer);
                     System.out.println("Response accepted.\n");
-                    //todo response action, call ClientResponsePacketParser
+                    //todo response action, call ClientResponsePacketParser DONE
+                    clientResponsePacketParser.parse(response);
                     System.out.println(response);
                 }
             }

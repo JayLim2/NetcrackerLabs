@@ -337,6 +337,8 @@ public class Controller {
                     //bookRecord = new BookRecord(bookId, book.getTitle(), book.getAuthor().getName(), book.getPublishYear(), book.getPublisher(), book.getBrief());
                     if (bookId != -1) {
                         clientInterface.editBook(bookId, book);
+                        //todo пример
+                        PacketSender.getInstance().editBook(bookId,book,Client.getInstance().getOut());
                     }
                     /*int recordsCount = bookRecords.size();
                     int i;

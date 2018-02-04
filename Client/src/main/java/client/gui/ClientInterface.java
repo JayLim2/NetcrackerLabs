@@ -140,6 +140,7 @@ public class ClientInterface {
         System.out.println("Index author = " + book.getAuthor().getId());
         SetBookPacket currentCommand = new SetBookPacket(Commands.SET_BOOK, book.getAuthor().getId(), id, book);
 
+        //
         System.out.println("Request sent.  0000");
         JAXBContext contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class);
         Unmarshaller unmarshResponsePacket = contextResponsePacket.createUnmarshaller();

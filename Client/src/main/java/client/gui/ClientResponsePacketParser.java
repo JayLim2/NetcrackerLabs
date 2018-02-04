@@ -1,5 +1,7 @@
 package client.gui;
 
+import protocol.ResponsePacket;
+
 public class ClientResponsePacketParser {
     private static ClientResponsePacketParser instance;
 
@@ -13,8 +15,9 @@ public class ClientResponsePacketParser {
         return instance;
     }
 
-    public void parse(){
+    public void parse(ResponsePacket responsePacket){
         //todo парсинг команды, выполнение действия
+        //из каждой херни вытащить response через if ок ерор вьюбукс
 
     }
 }

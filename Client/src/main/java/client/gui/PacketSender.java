@@ -22,11 +22,14 @@ public class PacketSender {
         return instance;
     }
 
+
+
     public void viewBooks(OutputStream out) throws JAXBException {
         JAXBContext contextCommands = JAXBContext.newInstance(ViewBooksPacket.class);
         Marshaller commandMarshaller = contextCommands.createMarshaller();
         ViewBooksPacket currentCommand = new ViewBooksPacket(Commands.VIEW_BOOKS);
         commandMarshaller.marshal(currentCommand, out);
+        //todo flush
     }
 
     public void addBook(Book book, Author author, OutputStream out) throws JAXBException {

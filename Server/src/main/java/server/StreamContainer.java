@@ -31,7 +31,9 @@ public class StreamContainer {
         streamMap.put(key, stream);
     }
 
-    public void View() {
+
+   //todo не забыть удалить
+   public void View() {
         for (Map.Entry entry : streamMap.entrySet()) {
             Integer key = (Integer) entry.getKey();
             OutputStream value = (OutputStream) entry.getValue();
