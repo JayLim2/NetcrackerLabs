@@ -80,7 +80,9 @@ public class ClientInterface implements Runnable {
                     xer.nextEvent();
                     xer.peek();
                     command = (CommandPacket) unmarshPacket.unmarshal(xer);
-                    switch (command.getCommand()) {
+                    switch (command.getCommand())
+                    {
+
                         case VIEW_AUTHORS:
                         case VIEW_BOOKS:
                             readLock.lock();
@@ -216,8 +218,6 @@ public class ClientInterface implements Runnable {
                 catch (JAXBException e){
                     e.printStackTrace();
                 }
-
-
             }
         }
     }

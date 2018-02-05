@@ -38,6 +38,7 @@ public class Controller {
     private static final int BOOK_BRIEF_CONSTRAINT = 280;
     private static final int AUTHOR_NAME_CONSTRAINT = 50;
     private Client client;
+    private static Controller instance;
 
     @FXML
     private TableView booksTable;
@@ -104,6 +105,13 @@ public class Controller {
     @FXML
     private Button runOperationBtn;
 
+    public static Controller getInstance() {
+        if (instance == null) {
+            instance = new Controller();
+        }
+        return instance;
+    }
+
     public class BookRecord {
         private int id;
         private String title;
@@ -111,6 +119,7 @@ public class Controller {
         private int year;
         private String publisher;
         private String brief;
+
 
         public BookRecord(int id, String title, String authorName, int year, String publisher, String brief) {
             this.id = id;
@@ -220,21 +229,21 @@ public class Controller {
 
             //Создание объекта вспомогательного класса, созданного только для общения с сервером
             clientInterface = new ClientInterface(clientSocket, out, in, commandMarshaller, contextCommands, xmi);
-           // client = Client.getInstance();
-         //   if(client.connect()==1) System.out.println("error connect to server");
+            // client = Client.getInstance();
+            //   if(client.connect()==1) System.out.println("error connect to server");
 
 
             updateAuthorsCombobox();
         } catch (UnknownHostException e) {
-            System.out.println("Неизвестный хост.");
+            System.out.println("Unknown host.");
         } catch (IOException e) {
-            System.out.println("Ошибка механизма ввода-вывода.");
+            System.out.println("I/O mechanism error");
             e.printStackTrace();
         } catch (JAXBException e) {
-            System.out.println("Ошибка XML-сериализации.");
+            System.out.println("XML serialization error");
             e.printStackTrace();
         } catch (XMLStreamException e) {
-            System.out.println("Ошибка потока XML.");
+            System.out.println("XML stream error.");
             e.printStackTrace();
         }
 
@@ -320,7 +329,8 @@ public class Controller {
             case ADD_BOOK: {
                 if (book != null) {
                     //bookRecord = new BookRecord(book.getId(), book.getTitle(), book.getAuthor().getName(), book.getPublishYear(), book.getPublisher(), book.getBrief());
-                    clientInterface.addBook(book, book.getAuthor());
+                    //clientInterface.addBook(book, book.getAuthor());
+                    PacketSender.getInstance().addBook(book, book.getAuthor(), Client.getInstance().getOut());
                     //bookRecords.add(bookRecord);
                 }
             }
@@ -336,9 +346,9 @@ public class Controller {
                     }
                     //bookRecord = new BookRecord(bookId, book.getTitle(), book.getAuthor().getName(), book.getPublishYear(), book.getPublisher(), book.getBrief());
                     if (bookId != -1) {
-                        clientInterface.editBook(bookId, book);
+                     //   clientInterface.editBook(bookId, book);
                         //todo пример
-                        PacketSender.getInstance().editBook(bookId,book,Client.getInstance().getOut());
+                        PacketSender.getInstance().editBook(bookId, book, Client.getInstance().getOut());
                     }
                     /*int recordsCount = bookRecords.size();
                     int i;
@@ -463,6 +473,42 @@ public class Controller {
     }
 
     public void runViewBooks(ActionEvent event) {
+        updateTableInfo();
+//        try {
+//            bookRecords.clear();
+//            authorRecords.clear();
+//
+//            AuthorsContainer authorsContainer = clientInterface.viewBooks();
+//            if (authorsContainer != null) {
+//                List<Author> authors = authorsContainer.getAuthors();
+//                for (Author author : authors) {
+//                    authorRecords.add(new AuthorRecord(author.getId(), author.getName(), author.getBooks().size()));
+//                    List<Book> books = author.getBooks();
+//                    for (Book book : books) {
+//                        bookRecords.add(new BookRecord(book.getId(), book.getTitle(), author.getName(), book.getPublishYear(), book.getPublisher(), book.getBrief()));
+//                    }
+//                }
+//
+//                System.out.println("Список книг получен.");
+//            } else {
+//                System.out.println("Список книг НЕ получен.");
+//            }
+//
+//            updateAuthorsCombobox();
+//
+//            booksTable.setItems(bookRecords);
+//            authorsTable.setItems(authorRecords);
+//
+//            enableModificationForm();
+//        } catch (XMLStreamException ex) {
+//            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (JAXBException ex) {
+//            System.out.println("Ошибка XML-сериализаци.");
+//            ex.printStackTrace();
+//        }
+    }
+
+    public void updateTableInfo(){
         try {
             bookRecords.clear();
             authorRecords.clear();
@@ -521,7 +567,7 @@ public class Controller {
     }
 
     public void runViewAuthors(ActionEvent event) {
-        runViewBooks(event);
+        updateTableInfo();
         /*try {
             AuthorsContainer authorsContainer = clientInterface.viewAuthors();
             System.out.println("Список авторов получен.");

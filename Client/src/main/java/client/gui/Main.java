@@ -15,6 +15,16 @@ public class Main extends Application {
         primaryStage.show();
     }
 
+    @Override
+    public void stop() throws Exception {
+        Client.getInstance().finish();
+        System.out.println("Stage is closing");
+        super.stop();
+    }
+
+
+
+
     public static void main(String[] args) {
         launch(args);
     }

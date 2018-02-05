@@ -31,16 +31,6 @@ public class StreamContainer {
         streamMap.put(key, stream);
     }
 
-
-   //todo не забыть удалить
-   public void View() {
-        for (Map.Entry entry : streamMap.entrySet()) {
-            Integer key = (Integer) entry.getKey();
-            OutputStream value = (OutputStream) entry.getValue();
-            System.out.println("Key: " + key +"  Value: " + value);
-        }
-    }
-
     public void removeStream(Integer key){
         streamMap.remove(key);
     }

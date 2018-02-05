@@ -1,6 +1,9 @@
 package client.gui;
 
+import protocol.ErrorPacket;
+import protocol.OkPacket;
 import protocol.ResponsePacket;
+import protocol.ViewBooksResponsePacket;
 
 public class ClientResponsePacketParser {
     private static ClientResponsePacketParser instance;
@@ -8,16 +11,26 @@ public class ClientResponsePacketParser {
     private ClientResponsePacketParser() {
     }
 
-    public static ClientResponsePacketParser getInstance(){
-        if (instance == null){
+    public static ClientResponsePacketParser getInstance() {
+        if (instance == null) {
             instance = new ClientResponsePacketParser();
         }
         return instance;
     }
 
-    public void parse(ResponsePacket responsePacket){
+    public void parse(ResponsePacket responsePacket) {
         //todo парсинг команды, выполнение действия
-        //из каждой херни вытащить response через if ок ерор вьюбукс
+        if (responsePacket instanceof OkPacket) {
+            System.out.println("Done.\n");
+        }
+        if (responsePacket instanceof ErrorPacket) {
+            System.out.println("Error");
+        }
+        if (responsePacket instanceof ViewBooksResponsePacket) {
+            //Controller.getInstance().updateTableInfo();
+            Controller.getInstance().runViewBooks(null);
 
+
+        }
     }
 }

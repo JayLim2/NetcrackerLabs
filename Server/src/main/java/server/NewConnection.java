@@ -1,5 +1,13 @@
 package server;
 
+import protocol.*;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,6 +19,7 @@ public class NewConnection extends Thread {
     private OutputStream out;
     private InputStream in;
     private int clientId;
+    private ServerListener serverListener;
 
 
     public NewConnection(Socket client) {
@@ -24,14 +33,14 @@ public class NewConnection extends Thread {
     @Override
     public void run() {
         try {
-            out = socket.getOutputStream();
             in = socket.getInputStream();
             clientId = IdGenerator.getInstance().createId();
             StreamContainer.getInstance().addStream(clientId, out);
-            StreamContainer.getInstance().View();
             out.write(clientId);
             out.flush();
             System.out.println("New client # " + clientId + " connected");
+            serverListener = new ServerListener(in);
+            serverListener.start();
             //todo вызвать нижний туду
         } catch (IOException e) {
             e.printStackTrace();
@@ -51,6 +60,7 @@ public class NewConnection extends Thread {
         }
     }
 
-    //todo захуярить commandRelay, аналог листнера, тут только вызвать
+    //todo захуярить commandRelay, аналог листнера, тут только вызвать  В ОТДЕЛЬНЫЙ КЛАСС ЭТО ВСЕ SERVER LISTENER
+
 }
 
