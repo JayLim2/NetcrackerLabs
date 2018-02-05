@@ -38,6 +38,7 @@ public class Controller {
     private static final int BOOK_PUBLISHER_CONSTRAINT = 35;
     private static final int BOOK_BRIEF_CONSTRAINT = 280;
     private static final int AUTHOR_NAME_CONSTRAINT = 50;
+    private static Controller instance;
     private ClientInterface clientInterface;
     String authorName;
     String title;
@@ -119,6 +120,14 @@ public class Controller {
 
     private Comparator<BookRecord> bookComparator;
     private Comparator<AuthorRecord> authorComparator;
+
+    public static Controller getInstance() {
+        if (instance == null) {
+            instance = new Controller();
+        }
+        return instance;
+    }
+
 
     public class BookRecord {
         private int id;
@@ -232,501 +241,512 @@ public class Controller {
         }
     }
 
+
     public void initialize() {
-        try {
-            Socket clientSocket = new Socket(InetAddress.getLocalHost(), 4444);
-            OutputStream out = clientSocket.getOutputStream();
-            InputStream in = clientSocket.getInputStream();
-
-            JAXBContext contextCommands = JAXBContext.newInstance(CommandPacket.class, ViewBooksPacket.class, AddBookPacket.class, SetBookPacket.class, RemoveBookPacket.class, AddAuthorPacket.class, SetAuthorPacket.class, RemoveAuthorPacket.class, SearchPacket.class);
-            Marshaller commandMarshaller = contextCommands.createMarshaller();
-            XMLInputFactory xmi = XMLInputFactory.newFactory();
-
-            //Создание объекта вспомогательного класса, созданного только для общения с сервером
-            clientInterface = new ClientInterface(clientSocket, out, in, commandMarshaller, contextCommands, xmi);
-            // client = Client.getInstance();
-            //   if(client.connect()==1) System.out.println("error connect to server");
 
 
-            updateAuthorsCombobox();
-        } catch (UnknownHostException e) {
-            System.out.println("Неизвестный хост.");
-        } catch (IOException e) {
-            System.out.println("Ошибка механизма ввода-вывода.");
-            e.printStackTrace();
-        } catch (JAXBException e) {
-            System.out.println("Ошибка XML-сериализации.");
-            e.printStackTrace();
-        } catch (XMLStreamException e) {
-            System.out.println("Ошибка потока XML.");
-            e.printStackTrace();
+            Client.getInstance().connect();
+//              Socket clientSocket = new Socket(InetAddress.getLocalHost(), 4444);
+//              OutputStream out = clientSocket.getOutputStream();
+//              InputStream in = clientSocket.getInputStream();
+//
+//            JAXBContext contextCommands = JAXBContext.newInstance(CommandPacket.class, ViewBooksPacket.class, AddBookPacket.class, SetBookPacket.class, RemoveBookPacket.class, AddAuthorPacket.class, SetAuthorPacket.class, RemoveAuthorPacket.class, SearchPacket.class);
+//            Marshaller commandMarshaller = contextCommands.createMarshaller();
+//            XMLInputFactory xmi = XMLInputFactory.newFactory();
+//
+//            //Создание объекта вспомогательного класса, созданного только для общения с сервером
+//        ////    clientInterface = new ClientInterface(clientSocket, out, in, commandMarshaller, contextCommands, xmi);
+//            // client = Client.getInstance();
+//            //   if(client.connect()==1) System.out.println("error connect to server");
+//
+//
+//            updateAuthorsCombobox();
+//        }
+//        catch (UnknownHostException e) {
+//            System.out.println("Неизвестный хост.");
+//        }
+//        catch (IOException e) {
+//            System.out.println("Ошибка механизма ввода-вывода.");
+//            e.printStackTrace();
+//        }
+//        catch (JAXBException e) {
+//            System.out.println("Ошибка XML-сериализации.");
+//            e.printStackTrace();
+//        } catch (XMLStreamException e) {
+//            System.out.println("Ошибка потока XML.");
+//            e.printStackTrace();
+//        }
+
+            //================================================
+            group1 = new ToggleGroup();
+            group2 = new ToggleGroup();
+            selectBook.setToggleGroup(group1);
+            selectAuthor.setToggleGroup(group1);
+            selectAddOperation.setToggleGroup(group2);
+            selectEditOperation.setToggleGroup(group2);
+            selectDelOperation.setToggleGroup(group2);
+            selectSearchOperation.setToggleGroup(group2);
+
+            bookRecords = FXCollections.observableArrayList();
+            authorRecords = FXCollections.observableArrayList();
+
+            bookIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+            bookTitleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
+            bookAuthorNameCol.setCellValueFactory(new PropertyValueFactory<>("author"));
+            bookYearCol.setCellValueFactory(new PropertyValueFactory<>("year"));
+            bookPublisherCol.setCellValueFactory(new PropertyValueFactory<>("publisher"));
+            bookBriefCol.setCellValueFactory(new PropertyValueFactory<>("brief"));
+
+            authorIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+            authorNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+            authorBooksCountCol.setCellValueFactory(new PropertyValueFactory<>("booksCount"));
+
+            booksTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+
+            bookComparator = new BookComparator();
+            authorComparator = new AuthorComparator();
+
+            //bookRecords.add(new BookRecord(0, "test", "author1", 2017, "EKSMO", "aaaa?"));
+            //booksTable.setItems(bookRecords);
+
+            //=================================
+
         }
 
-        //================================================
-        group1 = new ToggleGroup();
-        group2 = new ToggleGroup();
-        selectBook.setToggleGroup(group1);
-        selectAuthor.setToggleGroup(group1);
-        selectAddOperation.setToggleGroup(group2);
-        selectEditOperation.setToggleGroup(group2);
-        selectDelOperation.setToggleGroup(group2);
-        selectSearchOperation.setToggleGroup(group2);
-
-        bookRecords = FXCollections.observableArrayList();
-        authorRecords = FXCollections.observableArrayList();
-
-        bookIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
-        bookTitleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
-        bookAuthorNameCol.setCellValueFactory(new PropertyValueFactory<>("author"));
-        bookYearCol.setCellValueFactory(new PropertyValueFactory<>("year"));
-        bookPublisherCol.setCellValueFactory(new PropertyValueFactory<>("publisher"));
-        bookBriefCol.setCellValueFactory(new PropertyValueFactory<>("brief"));
-
-        authorIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
-        authorNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
-        authorBooksCountCol.setCellValueFactory(new PropertyValueFactory<>("booksCount"));
-
-        booksTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
-
-        bookComparator = new BookComparator();
-        authorComparator = new AuthorComparator();
-
-        //bookRecords.add(new BookRecord(0, "test", "author1", 2017, "EKSMO", "aaaa?"));
-        //booksTable.setItems(bookRecords);
-
-        //=================================
-    }
-
-    @FXML
-    private void handleRowSelect(MouseEvent event) {
-        Node node = ((Node) event.getTarget()).getParent();
-        TableRow row;
-        if (node instanceof TableRow) {
-            row = (TableRow) node;
-        } else {
-            // clicking on text part
-            row = null;
-            Parent parent = node.getParent();
-            if (parent instanceof TableRow) {
-                row = (TableRow) node.getParent();
-            }
-        }
-
-        //Обработка выбранной записи
-        if (row != null) {
-            Object item = row.getItem();
-            if (item instanceof BookRecord) {
-                BookRecord record = (BookRecord) row.getItem();
-                if (record != null) {
-                    bookIdInp.setText(Integer.toString(record.id));
-                    bookTitleInp.setText(record.title);
-                    bookBriefInp.setText(record.brief);
-                    bookPublisherInp.setText(record.publisher);
-                    bookYearInp.setText(Integer.toString(record.year));
-                    bookAuthorInp.getSelectionModel().select(record.author);
+        @FXML
+        private void handleRowSelect (MouseEvent event){
+            Node node = ((Node) event.getTarget()).getParent();
+            TableRow row;
+            if (node instanceof TableRow) {
+                row = (TableRow) node;
+            } else {
+                // clicking on text part
+                row = null;
+                Parent parent = node.getParent();
+                if (parent instanceof TableRow) {
+                    row = (TableRow) node.getParent();
                 }
             }
 
-            if (item instanceof AuthorRecord) {
-                AuthorRecord record = (AuthorRecord) row.getItem();
-                if (record != null) {
-                    authorIdInp.setText(Integer.toString(record.id));
-                    authorNameInp.setText(record.name);
+            //Обработка выбранной записи
+            if (row != null) {
+                Object item = row.getItem();
+                if (item instanceof BookRecord) {
+                    BookRecord record = (BookRecord) row.getItem();
+                    if (record != null) {
+                        bookIdInp.setText(Integer.toString(record.id));
+                        bookTitleInp.setText(record.title);
+                        bookBriefInp.setText(record.brief);
+                        bookPublisherInp.setText(record.publisher);
+                        bookYearInp.setText(Integer.toString(record.year));
+                        bookAuthorInp.getSelectionModel().select(record.author);
+                    }
+                }
+
+                if (item instanceof AuthorRecord) {
+                    AuthorRecord record = (AuthorRecord) row.getItem();
+                    if (record != null) {
+                        authorIdInp.setText(Integer.toString(record.id));
+                        authorNameInp.setText(record.name);
+                    }
                 }
             }
         }
-    }
 
-    /**
-     * Updates the authors list
-     *
-     * @throws JAXBException
-     * @throws XMLStreamException
-     */
-    private void updateAuthorsCombobox() throws JAXBException, XMLStreamException {
-        AuthorsContainer authorsContainer = clientInterface.viewAuthors();
-        ObservableList<Author> authors = FXCollections.observableArrayList();
-        authors.addAll(authorsContainer.getAuthors());
-        bookAuthorInp.setItems(authors);
-    }
-
-    public void runModification(ActionEvent event) throws JAXBException {
-        Commands currentCommand = null;
-        if (selectBook.isSelected()) {
-            if (selectAddOperation.isSelected()) {
-                currentCommand = Commands.ADD_BOOK;
-            }
-            if (selectEditOperation.isSelected()) {
-                currentCommand = Commands.SET_BOOK;
-            }
-            if (selectDelOperation.isSelected()) {
-                currentCommand = Commands.REMOVE_BOOK;
-            }
-            if (selectSearchOperation.isSelected()) {
-                currentCommand = Commands.SEARCH;
-            }
-        } else if (selectAuthor.isSelected()) {
-            if (selectAddOperation.isSelected()) {
-                currentCommand = Commands.ADD_AUTHOR;
-            }
-            if (selectEditOperation.isSelected()) {
-                currentCommand = Commands.SET_AUTHOR;
-            }
-            if (selectDelOperation.isSelected()) {
-                currentCommand = Commands.REMOVE_AUTHOR;
-            }
+        /**
+         * Updates the authors list
+         *
+         * @throws JAXBException
+         * @throws XMLStreamException
+         */
+        private void updateAuthorsCombobox () throws JAXBException, XMLStreamException {
+            AuthorsContainer authorsContainer = clientInterface.viewAuthors();
+            ObservableList<Author> authors = FXCollections.observableArrayList();
+            authors.addAll(authorsContainer.getAuthors());
+            bookAuthorInp.setItems(authors);
         }
 
-        if (currentCommand == null)
-            return;
-
-        //Считывание информации
-        Book book = null;
-        Author author = null;
-        if (currentCommand != Commands.REMOVE_BOOK && currentCommand != Commands.REMOVE_AUTHOR && currentCommand != Commands.SEARCH) {
+        public void runModification (ActionEvent event) throws JAXBException {
+            Commands currentCommand = null;
             if (selectBook.isSelected()) {
-                book = getBookInfo();
-            }
-            if (selectAuthor.isSelected()) {
-                author = getAuthorInfo();
-            }
-        }
-
-        System.out.println(currentCommand);
-
-        try{
-        switch (currentCommand) {
-            case ADD_BOOK: {
-                if (book != null) {
-                    //bookRecord = new BookRecord(book.getId(), book.getTitle(), book.getAuthor().getName(), book.getPublishYear(), book.getPublisher(), book.getBrief());
-                    clientInterface.addBook(book, book.getAuthor());
-                    clearBookForm();
-                    //bookRecords.add(bookRecord);
+                if (selectAddOperation.isSelected()) {
+                    currentCommand = Commands.ADD_BOOK;
+                }
+                if (selectEditOperation.isSelected()) {
+                    currentCommand = Commands.SET_BOOK;
+                }
+                if (selectDelOperation.isSelected()) {
+                    currentCommand = Commands.REMOVE_BOOK;
+                }
+                if (selectSearchOperation.isSelected()) {
+                    currentCommand = Commands.SEARCH;
+                }
+            } else if (selectAuthor.isSelected()) {
+                if (selectAddOperation.isSelected()) {
+                    currentCommand = Commands.ADD_AUTHOR;
+                }
+                if (selectEditOperation.isSelected()) {
+                    currentCommand = Commands.SET_AUTHOR;
+                }
+                if (selectDelOperation.isSelected()) {
+                    currentCommand = Commands.REMOVE_AUTHOR;
                 }
             }
-            break;
-            case SET_BOOK: {
-                if (book != null) {
-                    //int bookId = book.getId();
-                    int bookId = -1;
-                    try {
-                        bookId = Integer.parseInt(bookIdInp.getText());
-                    } catch (Exception e) {
-                        new Alert(Alert.AlertType.ERROR, "Book ID must be a number.").show();
+
+            if (currentCommand == null)
+                return;
+
+            //Считывание информации
+            Book book = null;
+            Author author = null;
+            if (currentCommand != Commands.REMOVE_BOOK && currentCommand != Commands.REMOVE_AUTHOR && currentCommand != Commands.SEARCH) {
+                if (selectBook.isSelected()) {
+                    book = getBookInfo();
+                }
+                if (selectAuthor.isSelected()) {
+                    author = getAuthorInfo();
+                }
+            }
+
+            System.out.println(currentCommand);
+
+
+            switch (currentCommand) {
+                case ADD_BOOK: {
+                    if (book != null) {
+                        //bookRecord = new BookRecord(book.getId(), book.getTitle(), book.getAuthor().getName(), book.getPublishYear(), book.getPublisher(), book.getBrief());
+                        //clientInterface.addBook(book, book.getAuthor());
+                        PacketSender.getInstance().addBook(book, book.getAuthor(), Client.getInstance().getOut());
+                        clearBookForm();
+                        //bookRecords.add(bookRecord);
                     }
-                    //bookRecord = new BookRecord(bookId, book.getTitle(), book.getAuthor().getName(), book.getPublishYear(), book.getPublisher(), book.getBrief());
-                    if (bookId != -1) {
-                        clientInterface.editBook(bookId, book);
-                    }
+                }
+                break;
+                case SET_BOOK: {
+                    if (book != null) {
+                        //int bookId = book.getId();
+                        int bookId = -1;
+                        try {
+                            bookId = Integer.parseInt(bookIdInp.getText());
+                        } catch (Exception e) {
+                            new Alert(Alert.AlertType.ERROR, "Book ID must be a number.").show();
+                        }
+                        //bookRecord = new BookRecord(bookId, book.getTitle(), book.getAuthor().getName(), book.getPublishYear(), book.getPublisher(), book.getBrief());
+                        if (bookId != -1) {
+                            //clientInterface.editBook(bookId, book);
+                            PacketSender.getInstance().editBook(bookId, book, Client.getInstance().getOut());
+                        }
                     /*int recordsCount = bookRecords.size();
                     int i;
                     for (i = 0; i < recordsCount && bookRecords.get(i).getId() != bookId; i++) ;
                     bookRecords.set(i, bookRecord);*/
+                    }
                 }
-            }
-            break;
-            case REMOVE_BOOK: {
-                int id = -1;
-                try {
-                    id = Integer.parseInt(bookIdInp.getText());
-                } catch (Exception ex) {
-                    new Alert(Alert.AlertType.ERROR, "Book ID must be a number.").show();
-                }
-                if (id != -1) {
-                    clientInterface.deleteBook(id);
+                break;
+                case REMOVE_BOOK: {
+                    int id = -1;
+                    try {
+                        id = Integer.parseInt(bookIdInp.getText());
+                    } catch (Exception ex) {
+                        new Alert(Alert.AlertType.ERROR, "Book ID must be a number.").show();
+                    }
+                    if (id != -1) {
+                        // clientInterface.deleteBook(id);
+                        PacketSender.getInstance().deleteBook(id, Client.getInstance().getOut());
                     /*int i;
                     int recordsCount = bookRecords.size();
                     for (i = 0; i < recordsCount && bookRecords.get(i).getId() != id; i++) ;
                     bookRecords.remove(i);*/
-                }
-            }
-            break;
-            case ADD_AUTHOR: {
-                if (author != null) {
-                    //authorRecord = new AuthorRecord(author.getId(), author.getName(), 0);
-                    clientInterface.addAuthor(author.getName());
-                    clearAuthorForm();
-                    //authorRecords.add(authorRecord);
-                }
-            }
-            break;
-            case SET_AUTHOR: {
-                if (author != null) {
-                    //int authorId = author.getId();
-                    int authorId = -1;
-                    try {
-                        authorId = Integer.parseInt(authorIdInp.getText());
-                    } catch (Exception e) {
-                        new Alert(Alert.AlertType.ERROR, "Author ID must be a number.").show();
                     }
-                    //authorRecord = new AuthorRecord(authorId, author.getName(), author.getBooks().size());
-                    if (authorId != -1) {
-                        clientInterface.editAuthor(authorId, author.getName());
+                }
+                break;
+                case ADD_AUTHOR: {
+                    if (author != null) {
+                        //authorRecord = new AuthorRecord(author.getId(), author.getName(), 0);
+                        //clientInterface.addAuthor(author.getName());
+                        PacketSender.getInstance().addAuthor(author.getName(), Client.getInstance().getOut());
+                        clearAuthorForm();
+                        //authorRecords.add(authorRecord);
                     }
+                }
+                break;
+                case SET_AUTHOR: {
+                    if (author != null) {
+                        //int authorId = author.getId();
+                        int authorId = -1;
+                        try {
+                            authorId = Integer.parseInt(authorIdInp.getText());
+                        } catch (Exception e) {
+                            new Alert(Alert.AlertType.ERROR, "Author ID must be a number.").show();
+                        }
+                        //authorRecord = new AuthorRecord(authorId, author.getName(), author.getBooks().size());
+                        if (authorId != -1) {
+                            //clientInterface.editAuthor(authorId, author.getName());
+                            PacketSender.getInstance().editAuthor(authorId, author.getName(), Client.getInstance().getOut());
+                        }
                     /*int recordsCount = authorRecords.size();
                     int i;
                     for (i = 0; i < recordsCount && authorRecords.get(i).getId() != authorId; i++) ;
                     authorRecords.set(i, authorRecord);*/
+                    }
                 }
-            }
-            break;
-            case REMOVE_AUTHOR: {
-                int id = -1;
-                try {
-                    id = Integer.parseInt(authorIdInp.getText());
-                } catch (Exception ex) {
-                    new Alert(Alert.AlertType.ERROR, "Author ID must be a number.").show();
-                }
-                if (id != -1) {
-                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "If you delete the author, all his books will also be deleted. Continue?", ButtonType.YES, ButtonType.NO);
-                    final int tmp_id = id;
+                break;
+                case REMOVE_AUTHOR: {
+                    int id = -1;
+                    try {
+                        id = Integer.parseInt(authorIdInp.getText());
+                    } catch (Exception ex) {
+                        new Alert(Alert.AlertType.ERROR, "Author ID must be a number.").show();
+                    }
+                    if (id != -1) {
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "If you delete the author, all his books will also be deleted. Continue?", ButtonType.YES, ButtonType.NO);
+                        final int tmp_id = id;
 
-                    alert.showAndWait().ifPresent(buttonType -> {
-                        if (buttonType.getButtonData() == ButtonBar.ButtonData.YES) {
-                            try {
-                                clientInterface.deleteAuthor(tmp_id);
-                            } catch (JAXBException ex) {
-                            } catch (XMLStreamException ex) {
+                        alert.showAndWait().ifPresent(buttonType -> {
+                            if (buttonType.getButtonData() == ButtonBar.ButtonData.YES) {
+                                try {
+                                    //clientInterface.deleteAuthor(tmp_id);
+                                    PacketSender.getInstance().deleteAuthor(tmp_id, Client.getInstance().getOut());
+                                } catch (JAXBException ex) {
+                                }
                             }
-                        }
 
-                        if (buttonType.getButtonData() == ButtonBar.ButtonData.NO) {
-                            System.out.println("REMOVE AUTHOR has been cancelled.");
-                        }
-                    });
+                            if (buttonType.getButtonData() == ButtonBar.ButtonData.NO) {
+                                System.out.println("REMOVE AUTHOR has been cancelled.");
+                            }
+                        });
 
-                    //clientInterface.deleteAuthor(id);
+                        //clientInterface.deleteAuthor(id);
                     /*int i;
                     int recordsCount = authorRecords.size();
                     for (i = 0; i < recordsCount && authorRecords.get(i).getId() != id; i++) ;
                     authorRecords.remove(i);*/
+                    }
                 }
-            }
-            break;
+                break;
 
-            case SEARCH: {
-                if (anyAuthorTextField.getText().isEmpty()) {
-                    authorName = "*";
-                } else {
-                    authorName = "*".concat(anyAuthorTextField.getText()).concat("*");
-                }
+                case SEARCH: {
+                    if (anyAuthorTextField.getText().isEmpty()) {
+                        authorName = "*";
+                    } else {
+                        authorName = "*".concat(anyAuthorTextField.getText()).concat("*");
+                    }
 
-                if (bookTitleInp.getText().isEmpty()) {
-                    title = "*";
-                } else {
-                    title = "*".concat(bookTitleInp.getText()).concat("*");
-                }
+                    if (bookTitleInp.getText().isEmpty()) {
+                        title = "*";
+                    } else {
+                        title = "*".concat(bookTitleInp.getText()).concat("*");
+                    }
 
-                if (bookYearInp.getText().isEmpty()) {
-                    publishYear = "*";
-                } else {
-                    publishYear = "*".concat(bookYearInp.getText()).concat("*");
-                }
-                if (bookBriefInp.getText().isEmpty()) {
-                    brief = "*";
-                } else {
-                    brief = "*".concat(bookBriefInp.getText()).concat("*");
-                }
-                if (bookPublisherInp.getText().isEmpty()) {
-                    publisher = "*";
-                } else {
-                    publisher = "*".concat(bookPublisherInp.getText()).concat("*");
-                }
+                    if (bookYearInp.getText().isEmpty()) {
+                        publishYear = "*";
+                    } else {
+                        publishYear = "*".concat(bookYearInp.getText()).concat("*");
+                    }
+                    if (bookBriefInp.getText().isEmpty()) {
+                        brief = "*";
+                    } else {
+                        brief = "*".concat(bookBriefInp.getText()).concat("*");
+                    }
+                    if (bookPublisherInp.getText().isEmpty()) {
+                        publisher = "*";
+                    } else {
+                        publisher = "*".concat(bookPublisherInp.getText()).concat("*");
+                    }
 //                String authorName = anyAuthorTextField.getText();
 //                String title = bookTitleInp.getText();
 //                String publishYear = bookYearInp.getText();
 //                String brief = bookBriefInp.getText();
 //                String publisher = bookPublisherInp.getText();
 
-                try {
-                    bookRecords.clear();
-                    authorRecords.clear();
+                    try {
+                        bookRecords.clear();
+                        authorRecords.clear();
 
-                    AuthorsContainer authorsContainer = clientInterface.searchBook(title, authorName, publishYear, brief, publisher);
-                    if (authorsContainer != null) {
-                        List<Author> authors1 = authorsContainer.getAuthors();
-                        for (Author author1 : authors1) {
-                            authorRecords.add(new AuthorRecord(author1.getId(), author1.getName(), author1.getBooks().size()));
-                            List<Book> books1 = author1.getBooks();
-                            for (Book book1 : books1) {
-                                bookRecords.add(new BookRecord(book1.getId(), book1.getTitle(), author1, book1.getPublishYear(), book1.getPublisher(), book1.getBrief()));
+                        AuthorsContainer authorsContainer = clientInterface.searchBook(title, authorName, publishYear, brief, publisher);
+
+                        if (authorsContainer != null) {
+                            List<Author> authors1 = authorsContainer.getAuthors();
+                            for (Author author1 : authors1) {
+                                authorRecords.add(new AuthorRecord(author1.getId(), author1.getName(), author1.getBooks().size()));
+                                List<Book> books1 = author1.getBooks();
+                                for (Book book1 : books1) {
+                                    bookRecords.add(new BookRecord(book1.getId(), book1.getTitle(), author1, book1.getPublishYear(), book1.getPublisher(), book1.getBrief()));
+                                }
                             }
+
+                            System.out.println("The book list has been received.\n");
+                        } else {
+                            System.out.println("The book list is NOT received.");
                         }
 
-                        System.out.println("The book list has been received.\n");
-                    } else {
-                        System.out.println("The book list is NOT received.");
+                        updateAuthorsCombobox();
+
+                        booksTable.setItems(bookRecords);
+                        authorsTable.setItems(authorRecords);
+
+                        bookRecords.sort(bookComparator);
+                        authorRecords.sort(authorComparator);
+
+                        enableModificationForm();
+                    } catch (XMLStreamException ex) {
+                        Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (JAXBException ex) {
+                        System.out.println("XML Serialization Error.");
+                        ex.printStackTrace();
                     }
-
-                    updateAuthorsCombobox();
-
-                    booksTable.setItems(bookRecords);
-                    authorsTable.setItems(authorRecords);
-
-                    bookRecords.sort(bookComparator);
-                    authorRecords.sort(authorComparator);
-
-                    enableModificationForm();
-                } catch (XMLStreamException ex) {
-                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (JAXBException ex) {
-                    System.out.println("XML Serialization Error.");
-                    ex.printStackTrace();
                 }
+                break;
             }
-            break;
-        }
-        if (currentCommand != Commands.SEARCH) {
-            runViewBooks(event);
-            runViewAuthors(event);
-        }
-        }catch(XMLStreamException ex){
-            System.out.println("server offline");
-        }
-        //authorsTable.setItems(authorRecords);
-        //booksTable.setItems(bookRecords);
-    }
-
-    /**
-     * Creates a new BOOK by the parameters received from the form
-     *
-     * @return book
-     */
-    private Book getBookInfo() {
-        Book book = null;
-        try {
-            Author bookAuthor = bookAuthorInp.getValue();
-            if (bookAuthor == null) {
-                throw new NoAuthorException();
-            }
-            String title = bookTitleInp.getText();
-            int year = Integer.parseInt(bookYearInp.getText());
-            String publisher = bookPublisherInp.getText();
-            String brief = bookBriefInp.getText();
-
-            if (title.isEmpty() || publisher.isEmpty() || brief.isEmpty()) {
-                throw new EmptyFieldException();
+            if (currentCommand != Commands.SEARCH) {
+                runViewBooks(event);
+                runViewAuthors(event);
             }
 
-            if (title.length() <= BOOK_TITLE_CONSTRAINT &&
-                    publisher.length() <= BOOK_PUBLISHER_CONSTRAINT &&
-                    (year >= BOOK_YEAR_MIN && year <= BOOK_YEAR_MAX) &&
-                    brief.length() <= BOOK_BRIEF_CONSTRAINT) {
-                book = new Book(title, bookAuthor, year, publisher, brief);
-            } else {
-                String errorMsg = "";
-                if (title.length() > BOOK_TITLE_CONSTRAINT)
-                    errorMsg += "* The title of the book exceeds the allowed number of characters.\n";
+            //authorsTable.setItems(authorRecords);
+            //booksTable.setItems(bookRecords);
+        }
+
+        /**
+         * Creates a new BOOK by the parameters received from the form
+         *
+         * @return book
+         */
+        private Book getBookInfo () {
+            Book book = null;
+            try {
+                Author bookAuthor = bookAuthorInp.getValue();
+                if (bookAuthor == null) {
+                    throw new NoAuthorException();
+                }
+                String title = bookTitleInp.getText();
+                int year = Integer.parseInt(bookYearInp.getText());
+                String publisher = bookPublisherInp.getText();
+                String brief = bookBriefInp.getText();
+
+                if (title.isEmpty() || publisher.isEmpty() || brief.isEmpty()) {
+                    throw new EmptyFieldException();
+                }
+
+                if (title.length() <= BOOK_TITLE_CONSTRAINT &&
+                        publisher.length() <= BOOK_PUBLISHER_CONSTRAINT &&
+                        (year >= BOOK_YEAR_MIN && year <= BOOK_YEAR_MAX) &&
+                        brief.length() <= BOOK_BRIEF_CONSTRAINT) {
+                    book = new Book(title, bookAuthor, year, publisher, brief);
+                } else {
+                    String errorMsg = "";
+                    if (title.length() > BOOK_TITLE_CONSTRAINT)
+                        errorMsg += "* The title of the book exceeds the allowed number of characters.\n";
                 /*if (year < BOOK_YEAR_MIN || year > BOOK_YEAR_MAX)
                     errorMsg += "* Год издания должен быть в диапазоне от " + BOOK_YEAR_MIN + " до " + BOOK_YEAR_MAX + "\n";
                 */
-                if (publisher.length() > BOOK_PUBLISHER_CONSTRAINT)
-                    errorMsg += "* The publisher name exceeds the  allowed number of characters.\n";
-                if (brief.length() > BOOK_BRIEF_CONSTRAINT)
-                    errorMsg += "* The length of the short description exceeds " + BOOK_BRIEF_CONSTRAINT + " characters.\n";
-                new Alert(Alert.AlertType.ERROR, errorMsg).show();
+                    if (publisher.length() > BOOK_PUBLISHER_CONSTRAINT)
+                        errorMsg += "* The publisher name exceeds the  allowed number of characters.\n";
+                    if (brief.length() > BOOK_BRIEF_CONSTRAINT)
+                        errorMsg += "* The length of the short description exceeds " + BOOK_BRIEF_CONSTRAINT + " characters.\n";
+                    new Alert(Alert.AlertType.ERROR, errorMsg).show();
+                }
+            } catch (YearOutOfBoundsException ex) {
+                new Alert(Alert.AlertType.ERROR, "The year of publication must be in the range of " + BOOK_YEAR_MIN + " to " + BOOK_YEAR_MAX).show();
+            } catch (NoAuthorException ex) {
+                new Alert(Alert.AlertType.ERROR, "You can not add / edit a book without the author.").show();
+            } catch (EmptyFieldException ex) {
+                new Alert(Alert.AlertType.ERROR, "Some fields are empty").show();
+            } catch (Exception ex) {
+                new Alert(Alert.AlertType.ERROR, "Unknown Error").show();
             }
-        } catch (YearOutOfBoundsException ex) {
-            new Alert(Alert.AlertType.ERROR, "The year of publication must be in the range of " + BOOK_YEAR_MIN + " to " + BOOK_YEAR_MAX).show();
-        } catch (NoAuthorException ex) {
-            new Alert(Alert.AlertType.ERROR, "You can not add / edit a book without the author.").show();
-        } catch (EmptyFieldException ex) {
-            new Alert(Alert.AlertType.ERROR, "Some fields are empty").show();
-        } catch (Exception ex) {
-            new Alert(Alert.AlertType.ERROR, "Unknown Error").show();
+            return book;
         }
-        return book;
-    }
 
-    /**
-     * Creates new AUTHOR by the parameters received from the form
-     *
-     * @return
-     */
-    private Author getAuthorInfo() {
-        Author author = null;
-        try {
-            String authorName = authorNameInp.getText();
-            if (!authorName.isEmpty() && authorName.length() <= AUTHOR_NAME_CONSTRAINT)
-                author = new Author(authorName);
-            else
-                new Alert(Alert.AlertType.ERROR, "* Author name length exceeds the allowed number of characters OR empty.").show();
-        } catch (Exception ex) {
+        /**
+         * Creates new AUTHOR by the parameters received from the form
+         *
+         * @return
+         */
+        private Author getAuthorInfo () {
+            Author author = null;
+            try {
+                String authorName = authorNameInp.getText();
+                if (!authorName.isEmpty() && authorName.length() <= AUTHOR_NAME_CONSTRAINT)
+                    author = new Author(authorName);
+                else
+                    new Alert(Alert.AlertType.ERROR, "* Author name length exceeds the allowed number of characters OR empty.").show();
+            } catch (Exception ex) {
 
+            }
+            return author;
         }
-        return author;
-    }
 
-    public void runViewBooks(ActionEvent event) {
-        try {
-            bookRecords.clear();
-            authorRecords.clear();
+        public void runViewBooks (ActionEvent event){
+            try {
+                bookRecords.clear();
+                authorRecords.clear();
 
-            AuthorsContainer authorsContainer = clientInterface.viewBooks();
-            if (authorsContainer != null) {
-                List<Author> authors = authorsContainer.getAuthors();
-                for (Author author : authors) {
-                    authorRecords.add(new AuthorRecord(author.getId(), author.getName(), author.getBooks().size()));
-                    List<Book> books = author.getBooks();
-                    for (Book book : books) {
-                        bookRecords.add(new BookRecord(book.getId(), book.getTitle(), author, book.getPublishYear(), book.getPublisher(), book.getBrief()));
+                AuthorsContainer authorsContainer = clientInterface.viewBooks();
+                if (authorsContainer != null) {
+                    List<Author> authors = authorsContainer.getAuthors();
+                    for (Author author : authors) {
+                        authorRecords.add(new AuthorRecord(author.getId(), author.getName(), author.getBooks().size()));
+                        List<Book> books = author.getBooks();
+                        for (Book book : books) {
+                            bookRecords.add(new BookRecord(book.getId(), book.getTitle(), author, book.getPublishYear(), book.getPublisher(), book.getBrief()));
+                        }
                     }
+
+                    //System.out.println("Список книг получен.");
+                } else {
+                    //System.out.println("Список книг НЕ получен.");
                 }
 
-                //System.out.println("Список книг получен.");
-            } else {
-                //System.out.println("Список книг НЕ получен.");
+                bookRecords.sort(bookComparator);
+                authorRecords.sort(authorComparator);
+
+                updateAuthorsCombobox();
+
+                booksTable.setItems(bookRecords);
+                authorsTable.setItems(authorRecords);
+
+                enableModificationForm();
+            } catch (XMLStreamException ex) {
+                //Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("server offline");
+            } catch (JAXBException ex) {
+                System.out.println("marshalling error");
+                //ex.printStackTrace();
             }
-
-            bookRecords.sort(bookComparator);
-            authorRecords.sort(authorComparator);
-
-            updateAuthorsCombobox();
-
-            booksTable.setItems(bookRecords);
-            authorsTable.setItems(authorRecords);
-
-            enableModificationForm();
-        } catch (XMLStreamException ex) {
-            //Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("server offline");
-        } catch (JAXBException ex) {
-            System.out.println("marshalling error");
-            //ex.printStackTrace();
         }
-    }
 
-    private void enableModificationForm() {
-        selectBook.setDisable(false);
-        selectAuthor.setDisable(false);
-        selectAddOperation.setDisable(false);
-        selectEditOperation.setDisable(false);
-        selectDelOperation.setDisable(false);
-        selectSearchOperation.setVisible(true);
-        if ((selectAddOperation.isSelected() || selectEditOperation.isSelected()) && selectBook.isSelected())
-            enableBookMainInfo();
-        runOperationBtn.setDisable(false);
-        clearAllBtn.setDisable(false);
-    }
+        private void enableModificationForm () {
+            selectBook.setDisable(false);
+            selectAuthor.setDisable(false);
+            selectAddOperation.setDisable(false);
+            selectEditOperation.setDisable(false);
+            selectDelOperation.setDisable(false);
+            selectSearchOperation.setVisible(true);
+            if ((selectAddOperation.isSelected() || selectEditOperation.isSelected()) && selectBook.isSelected())
+                enableBookMainInfo();
+            runOperationBtn.setDisable(false);
+            clearAllBtn.setDisable(false);
+        }
 
-    //Применится потом: в случае возникновения ошибки чтения с сервера (из файла), форма блокируется
-    private void disableModificationForm() {
-        selectBook.setDisable(true);
-        selectAuthor.setDisable(true);
-        selectAddOperation.setDisable(true);
-        selectEditOperation.setDisable(true);
-        selectDelOperation.setDisable(true);
-        selectSearchOperation.setVisible(false);
-        //bookIdInp.setDisable(true);
-        //authorIdInp.setDisable(true);
-        if ((selectAddOperation.isSelected() || selectEditOperation.isSelected()) && selectBook.isSelected())
-            disableBookMainInfo();
-        runOperationBtn.setDisable(true);
-        clearAllBtn.setDisable(true);
-    }
+        //Применится потом: в случае возникновения ошибки чтения с сервера (из файла), форма блокируется
+        private void disableModificationForm () {
+            selectBook.setDisable(true);
+            selectAuthor.setDisable(true);
+            selectAddOperation.setDisable(true);
+            selectEditOperation.setDisable(true);
+            selectDelOperation.setDisable(true);
+            selectSearchOperation.setVisible(false);
+            //bookIdInp.setDisable(true);
+            //authorIdInp.setDisable(true);
+            if ((selectAddOperation.isSelected() || selectEditOperation.isSelected()) && selectBook.isSelected())
+                disableBookMainInfo();
+            runOperationBtn.setDisable(true);
+            clearAllBtn.setDisable(true);
+        }
 
-    public void runViewAuthors(ActionEvent event) {
-        runViewBooks(event);
+        public void runViewAuthors (ActionEvent event){
+            runViewBooks(event);
         /*try {
             AuthorsContainer authorsContainer = clientInterface.viewAuthors();
             System.out.println("Список авторов получен.");
@@ -736,150 +756,150 @@ public class Controller {
             System.out.println("Ошибка XML-сериализаци.");
             ex.printStackTrace();
         }*/
-    }
+        }
 
-    public void selectBook(ActionEvent event) {
-        //Отключение формы с автором
+        public void selectBook (ActionEvent event){
+            //Отключение формы с автором
 
-        selectSearchOperation.setVisible(true);
+            selectSearchOperation.setVisible(true);
 
-        //authorIdInp.setDisable(true);
-        authorNameInp.setDisable(true);
+            //authorIdInp.setDisable(true);
+            authorNameInp.setDisable(true);
 
-        if (selectDelOperation.isSelected() || selectEditOperation.isSelected()) {
-            //bookIdInp.setDisable(false);
-            anyAuthorTextField.setVisible(false);
-        } else {
+            if (selectDelOperation.isSelected() || selectEditOperation.isSelected()) {
+                //bookIdInp.setDisable(false);
+                anyAuthorTextField.setVisible(false);
+            } else {
+                //bookIdInp.setDisable(true);
+            }
+
+            if (!selectDelOperation.isSelected()) {
+                enableBookMainInfo();
+                anyAuthorTextField.setVisible(false);
+            } else {
+                disableBookMainInfo();
+            }
+
+            if (selectSearchOperation.isSelected()) {
+                anyAuthorTextField.setVisible(true);
+            } else anyAuthorTextField.setVisible(false);
+
+            System.out.println("Operand type Book is selected.");
+        }
+
+        public void selectAuthor (ActionEvent event){
+
+            if (selectEditOperation.isSelected() || selectDelOperation.isSelected()) {
+                //authorIdInp.setDisable(false);
+            } else {
+                //authorIdInp.setDisable(true);
+            }
+
+            if (!selectDelOperation.isSelected())
+                authorNameInp.setDisable(false);
+            else
+                authorNameInp.setDisable(true);
+
+            //Отключение формы с книгой
             //bookIdInp.setDisable(true);
-        }
-
-        if (!selectDelOperation.isSelected()) {
-            enableBookMainInfo();
-            anyAuthorTextField.setVisible(false);
-        } else {
             disableBookMainInfo();
+            selectSearchOperation.setVisible(false);
+            anyAuthorTextField.setVisible(false);
+
+
+            System.out.println("Operand type Author is selected.");
         }
 
-        if (selectSearchOperation.isSelected()) {
+        private void enableBookMainInfo () {
+            bookTitleInp.setDisable(false);
+            bookAuthorInp.setDisable(false);
+            bookYearInp.setDisable(false);
+            bookPublisherInp.setDisable(false);
+            bookBriefInp.setDisable(false);
+        }
+
+        private void disableBookMainInfo () {
+            bookTitleInp.setDisable(true);
+            bookAuthorInp.setDisable(true);
+            bookYearInp.setDisable(true);
+            bookPublisherInp.setDisable(true);
+            bookBriefInp.setDisable(true);
+        }
+
+        private void disableAllInfo () {
+            disableBookMainInfo();
+            //bookIdInp.setDisable(true);
+            //authorIdInp.setDisable(true);
+            authorNameInp.setDisable(true);
+        }
+
+        public void selectAddOperation (ActionEvent event){
+            if (selectBook.isSelected()) {
+                //bookIdInp.setDisable(true);
+                enableBookMainInfo();
+            } else if (selectAuthor.isSelected()) {
+                //authorIdInp.setDisable(true);
+                authorNameInp.setDisable(false);
+            }
+
+            System.out.println("Operation Add is selected.");
+        }
+
+        public void selectEditOperation (ActionEvent event){
+            if (selectBook.isSelected()) {
+                //bookIdInp.setDisable(false);
+                enableBookMainInfo();
+            } else if (selectAuthor.isSelected()) {
+                //authorIdInp.setDisable(false);
+                authorNameInp.setDisable(false);
+            }
+
+            System.out.println("Operation Edit is selected.");
+        }
+
+        public void selectDelOperation (ActionEvent event){
+            if (selectBook.isSelected()) {
+                //bookIdInp.setDisable(false);
+                disableBookMainInfo();
+            } else if (selectAuthor.isSelected()) {
+                //authorIdInp.setDisable(false);
+                authorNameInp.setDisable(true);
+            }
+
+            System.out.println("Operation Delete is selected.");
+        }
+
+        //todo select in controller
+        public void selectSearchOperation (ActionEvent event){
+            if (selectBook.isSelected()) {
+                //bookIdInp.setDisable(true);
+                enableBookMainInfo();
+            } else if (selectAuthor.isSelected()) {
+                //authorIdInp.setDisable(false);
+                authorNameInp.setDisable(true);
+            }
             anyAuthorTextField.setVisible(true);
-        } else anyAuthorTextField.setVisible(false);
 
-        System.out.println("Operand type Book is selected.");
-    }
-
-    public void selectAuthor(ActionEvent event) {
-
-        if (selectEditOperation.isSelected() || selectDelOperation.isSelected()) {
-            //authorIdInp.setDisable(false);
-        } else {
-            //authorIdInp.setDisable(true);
+            System.out.println("Operation Search is selected.");
         }
 
-        if (!selectDelOperation.isSelected())
-            authorNameInp.setDisable(false);
-        else
-            authorNameInp.setDisable(true);
-
-        //Отключение формы с книгой
-        //bookIdInp.setDisable(true);
-        disableBookMainInfo();
-        selectSearchOperation.setVisible(false);
-        anyAuthorTextField.setVisible(false);
-
-
-        System.out.println("Operand type Author is selected.");
-    }
-
-    private void enableBookMainInfo() {
-        bookTitleInp.setDisable(false);
-        bookAuthorInp.setDisable(false);
-        bookYearInp.setDisable(false);
-        bookPublisherInp.setDisable(false);
-        bookBriefInp.setDisable(false);
-    }
-
-    private void disableBookMainInfo() {
-        bookTitleInp.setDisable(true);
-        bookAuthorInp.setDisable(true);
-        bookYearInp.setDisable(true);
-        bookPublisherInp.setDisable(true);
-        bookBriefInp.setDisable(true);
-    }
-
-    private void disableAllInfo() {
-        disableBookMainInfo();
-        //bookIdInp.setDisable(true);
-        //authorIdInp.setDisable(true);
-        authorNameInp.setDisable(true);
-    }
-
-    public void selectAddOperation(ActionEvent event) {
-        if (selectBook.isSelected()) {
-            //bookIdInp.setDisable(true);
-            enableBookMainInfo();
-        } else if (selectAuthor.isSelected()) {
-            //authorIdInp.setDisable(true);
-            authorNameInp.setDisable(false);
+        //Очистка всех полей
+        public void clearAll (ActionEvent event){
+            clearBookForm();
+            clearAuthorForm();
         }
 
-        System.out.println("Operation Add is selected.");
-    }
-
-    public void selectEditOperation(ActionEvent event) {
-        if (selectBook.isSelected()) {
-            //bookIdInp.setDisable(false);
-            enableBookMainInfo();
-        } else if (selectAuthor.isSelected()) {
-            //authorIdInp.setDisable(false);
-            authorNameInp.setDisable(false);
+        private void clearBookForm () {
+            bookIdInp.clear();
+            bookTitleInp.clear();
+            bookPublisherInp.clear();
+            bookYearInp.clear();
+            bookBriefInp.clear();
+            bookAuthorInp.getSelectionModel().selectFirst();
         }
 
-        System.out.println("Operation Edit is selected.");
-    }
-
-    public void selectDelOperation(ActionEvent event) {
-        if (selectBook.isSelected()) {
-            //bookIdInp.setDisable(false);
-            disableBookMainInfo();
-        } else if (selectAuthor.isSelected()) {
-            //authorIdInp.setDisable(false);
-            authorNameInp.setDisable(true);
+        private void clearAuthorForm () {
+            authorIdInp.clear();
+            authorNameInp.clear();
         }
-
-        System.out.println("Operation Delete is selected.");
     }
-
-    //todo select in controller
-    public void selectSearchOperation(ActionEvent event) {
-        if (selectBook.isSelected()) {
-            //bookIdInp.setDisable(true);
-            enableBookMainInfo();
-        } else if (selectAuthor.isSelected()) {
-            //authorIdInp.setDisable(false);
-            authorNameInp.setDisable(true);
-        }
-        anyAuthorTextField.setVisible(true);
-
-        System.out.println("Operation Search is selected.");
-    }
-
-    //Очистка всех полей
-    public void clearAll(ActionEvent event) {
-        clearBookForm();
-        clearAuthorForm();
-    }
-
-    private void clearBookForm() {
-        bookIdInp.clear();
-        bookTitleInp.clear();
-        bookPublisherInp.clear();
-        bookYearInp.clear();
-        bookBriefInp.clear();
-        bookAuthorInp.getSelectionModel().selectFirst();
-    }
-
-    private void clearAuthorForm() {
-        authorIdInp.clear();
-        authorNameInp.clear();
-    }
-}

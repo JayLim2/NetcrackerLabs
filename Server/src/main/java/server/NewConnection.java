@@ -41,7 +41,6 @@ public class NewConnection extends Thread {
             System.out.println("New client # " + clientId + " connected");
             serverListener = new ServerListener(in);
             serverListener.start();
-            //todo вызвать нижний туду
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -59,8 +58,6 @@ public class NewConnection extends Thread {
             e.printStackTrace();
         }
     }
-
-    //todo захуярить commandRelay, аналог листнера, тут только вызвать  В ОТДЕЛЬНЫЙ КЛАСС ЭТО ВСЕ SERVER LISTENER
 
 }
 

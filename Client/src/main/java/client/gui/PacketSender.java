@@ -1,17 +1,23 @@
 package client.gui;
 
 import models.Author;
+import models.AuthorsContainer;
 import models.Book;
+import models.BookFilter;
 import protocol.*;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.OutputStream;
 
 public class PacketSender {
     private static PacketSender instance;
+    JAXBContext contextResponsePacket;
+    Unmarshaller unmarshResponsePacket;
 
     private PacketSender() {
     }
@@ -34,7 +40,7 @@ public class PacketSender {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //todo flush
+
     }
 
     public void addBook(Book book, Author author, OutputStream out) throws JAXBException {
@@ -118,6 +124,24 @@ public class PacketSender {
             Marshaller commandMarshaller = contextCommands.createMarshaller();
             RemoveAuthorPacket currentCommand = new RemoveAuthorPacket(Commands.REMOVE_AUTHOR, id);
             commandMarshaller.marshal(currentCommand, out);
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void searchBook(String title, String author, String publishYear, String brief, String publisher, OutputStream out) throws JAXBException{
+
+        try {
+            BookFilter bookFilter = new BookFilter(title, author, publishYear, brief, publisher);
+            SearchPacket currentCommand = new SearchPacket(bookFilter);
+
+            contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class, ViewBooksResponsePacket.class);
+            unmarshResponsePacket = contextResponsePacket.createUnmarshaller();
+
+            JAXBContext contextCommands1 = JAXBContext.newInstance(CommandPacket.class, ViewBooksPacket.class, AddBookPacket.class, SetBookPacket.class, RemoveBookPacket.class, AddAuthorPacket.class, SetAuthorPacket.class, RemoveAuthorPacket.class, SearchPacket.class);
+            Marshaller commandMarshaller1 = contextCommands1.createMarshaller();
+            commandMarshaller1.marshal(currentCommand, out);
             out.flush();
         } catch (IOException e) {
             e.printStackTrace();

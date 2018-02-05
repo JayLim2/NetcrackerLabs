@@ -1,5 +1,6 @@
 package server;
 
+import models.AuthorsContainer;
 import protocol.*;
 
 import javax.xml.bind.JAXBContext;
@@ -27,21 +28,23 @@ public class ServerListener extends Thread {
     private Unmarshaller unmarshPacket;
     private ServerCommandParser serverCommandParser;
     private CommandPacket command;
+    private JAXBContext contextAC;
+    private Marshaller marshAC;
 
     public ServerListener(InputStream inputStream) {
 
-
         try {
             this.inputStream = inputStream;
-            contextPacket = JAXBContext.newInstance(CommandPacket.class, AddBookPacket.class, ViewBooksPacket.class,
-                    AddAuthorPacket.class, RemoveBookPacket.class, RemoveAuthorPacket.class, SetAuthorPacket.class, SetBookPacket.class);
-            unmarshPacket = contextPacket.createUnmarshaller();
             xmi = XMLInputFactory.newFactory();
-            contextResponse = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class,
-                    ViewBooksResponsePacket.class);
-            marshResponse = contextResponse.createMarshaller();
-
-            serverCommandParser = ServerCommandParser.getInstance();
+            JAXBContext contextAC = JAXBContext.newInstance(AuthorsContainer.class);
+            marshAC = contextAC.createMarshaller();
+            contextPacket = JAXBContext.newInstance(CommandPacket.class, AddBookPacket.class,
+                    ViewBooksPacket.class, AddAuthorPacket.class, RemoveBookPacket.class,
+                    RemoveAuthorPacket.class, SetAuthorPacket.class, SetBookPacket.class, SearchPacket.class);
+            unmarshPacket = contextPacket.createUnmarshaller();
+            contextResponse = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class,
+                    ErrorPacket.class, ViewBooksResponsePacket.class);
+            Marshaller marshResponse = contextResponse.createMarshaller();
         } catch (JAXBException e) {
             e.printStackTrace();
         }
@@ -55,10 +58,10 @@ public class ServerListener extends Thread {
             while (!isInterrupted()) {
                 Thread.sleep(250);
                 if (inputStream.available() > 0) {
-
-                    xer = xmi.createXMLEventReader(inputStream);
+                                        xer = xmi.createXMLEventReader(inputStream);
                     xer.nextEvent();
                     xer.peek();
+                    String res = xer.toString();
                     command = (CommandPacket) unmarshPacket.unmarshal(xer);
                     serverCommandParser.parse(command);
                 }

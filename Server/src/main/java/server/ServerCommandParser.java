@@ -2,21 +2,21 @@ package server;
 
 import controllers.AuthorContainerController;
 import exceptions.InvalidCommandAction;
-import models.Author;
-import models.Book;
-import models.BookAlreadyExistsException;
-import models.YearOutOfBoundsException;
+import models.*;
 import protocol.*;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 
 public class ServerCommandParser {
-    //todo слушает команды, аналог парсера клиент все методы sychronized
+
 
     private static ServerCommandParser instance;
     private OutputStream outp;
@@ -24,6 +24,8 @@ public class ServerCommandParser {
     private Lock readLock;
     private Lock writeLock;
     private Marshaller marshResponse;
+    private JAXBContext contextAC;
+    private Marshaller marshAC;
 
     public ServerCommandParser() {
 
@@ -42,7 +44,6 @@ public class ServerCommandParser {
             case VIEW_BOOKS:
                 readLock.lock();
                 try {
-                    //marshResponses.marshal(Responses.OK, outp);
                     marshResponse.marshal(new ViewBooksResponsePacket(Responses.OK, aCC.getAuthorsContainer()), outp);
                 } finally {
                     readLock.unlock();
@@ -56,11 +57,14 @@ public class ServerCommandParser {
                 try {
                     aCC.addBook(book, id);
                     marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                    marshAC.marshal(aCC.getAuthorsContainer(), new FileOutputStream("XML1a.xml"));
                     sendUpdateCommand();
                 } catch (IndexOutOfBoundsException ex) {
-                    marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Index error"), outp);
+                    marshResponse.marshal(new ErrorPacket(Responses.ERROR, ex.getMessage()), outp);
                 } catch (BookAlreadyExistsException ex) {
                     marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Duplicate Book error"), outp);
+                } catch (FileNotFoundException ex) {
+                    marshResponse.marshal(new ErrorPacket(Responses.ERROR, "File not found"), outp);
                 } finally {
                     writeLock.unlock();
                 }
@@ -73,9 +77,12 @@ public class ServerCommandParser {
                     Author author = abap.getAuthor();
                     aCC.addAuthor(author);
                     marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                    marshAC.marshal(aCC.getAuthorsContainer(), new FileOutputStream("XML1a.xml"));
                     sendUpdateCommand();
                 } catch (InvalidCommandAction e) {
                     marshResponse.marshal(new ErrorPacket(Responses.ERROR, e.getMessage()), outp);
+                } catch (FileNotFoundException ex) {
+                    marshResponse.marshal(new ErrorPacket(Responses.ERROR, "File not found"), outp);
                 } finally {
                     writeLock.unlock();
                 }
@@ -88,16 +95,19 @@ public class ServerCommandParser {
                 int id2 = stbp.getNewAuthorId();
                 writeLock.lock();
                 try {
-                    aCC.changeBook(book, id, id2);//мб предварительную валидацию года приписать
+                    aCC.changeBook(book, id, id2);
                     marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                    marshAC.marshal(aCC.getAuthorsContainer(), new FileOutputStream("XML1a.xml"));
                     sendUpdateCommand();
                 } catch (YearOutOfBoundsException ex) {
                     //вообще произойти не должно. валидация года в клиенте должна быть
                     marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Year error"), outp);
                 } catch (IndexOutOfBoundsException ex) {
-                    marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Index error"), outp);
+                    marshResponse.marshal(new ErrorPacket(Responses.ERROR, ex.getMessage()), outp);
                 } catch (BookAlreadyExistsException ex) {
                     marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Duplicate Book error"), outp);
+                } catch (FileNotFoundException ex) {
+                    marshResponse.marshal(new ErrorPacket(Responses.ERROR, "File not found"), outp);
                 } finally {
                     writeLock.unlock();
                 }
@@ -109,9 +119,12 @@ public class ServerCommandParser {
                 try {
                     aCC.getAuthor(stap.getId()).setName(stap.getAuthor().getName());
                     marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                    marshAC.marshal(aCC.getAuthorsContainer(), new FileOutputStream("XML1a.xml"));
                     sendUpdateCommand();
                 } catch (IndexOutOfBoundsException ex) {
-                    marshResponse.marshal(new ErrorPacket(Responses.ERROR, "no Author with such index"), outp);
+                    marshResponse.marshal(new ErrorPacket(Responses.ERROR, ex.getMessage()), outp);
+                } catch (FileNotFoundException ex) {
+                    marshResponse.marshal(new ErrorPacket(Responses.ERROR, "File not found"), outp);
                 } finally {
                     writeLock.unlock();
                 }
@@ -123,10 +136,12 @@ public class ServerCommandParser {
                 try {
                     aCC.removeBook(rmbp.getId());
                     marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                    marshAC.marshal(aCC.getAuthorsContainer(), new FileOutputStream("XML1a.xml"));
                     sendUpdateCommand();
-                    //todo написать метод sendUpdateComand
                 } catch (IndexOutOfBoundsException ex) {
-                    marshResponse.marshal(new ErrorPacket(Responses.ERROR, "no Author with such index"), outp);
+                    marshResponse.marshal(new ErrorPacket(Responses.ERROR, ex.getMessage()), outp);
+                } catch (FileNotFoundException ex) {
+                    marshResponse.marshal(new ErrorPacket(Responses.ERROR, "File not found"), outp);
                 } finally {
                     writeLock.unlock();
                 }
@@ -138,28 +153,44 @@ public class ServerCommandParser {
                 try {
                     aCC.removeAuthor(rmap.getId());
                     marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                    marshAC.marshal(aCC.getAuthorsContainer(), new FileOutputStream("XML1a.xml"));
                     sendUpdateCommand();
                 } catch (IndexOutOfBoundsException ex) {
-                    marshResponse.marshal(new ErrorPacket(Responses.ERROR, "no Author with such index"), outp);
+                    marshResponse.marshal(new ErrorPacket(Responses.ERROR, ex.getMessage()), outp);
+                } catch (FileNotFoundException ex) {
+                    marshResponse.marshal(new ErrorPacket(Responses.ERROR, "File not found"), outp);
                 } finally {
                     writeLock.unlock();
                 }
             }
             break;
-
+            case SEARCH: {
+                SearchPacket searchPacket = (SearchPacket) command;
+                readLock.lock();
+                try {
+                    AuthorsContainer resp = aCC.search(searchPacket.getBookFilter());
+                    marshResponse.marshal(new ViewBooksResponsePacket(Responses.OK, resp), outp);
+                } finally {
+                    readLock.unlock();
+                }
+            }
+            break;
+            case BYE: {
+                marshResponse.marshal(new OkPacket(Responses.OK), outp);
+            }
             default:
                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "unknownCommand"), outp);
         }
 
     }
-    private void sendUpdateCommand(){
+
+    private void sendUpdateCommand() {
         List<OutputStream> streams = StreamContainer.getInstance().getStreams();
-        if (streams != null){
+        if (streams != null) {
             for (OutputStream stream : streams) {
                 try {
                     marshResponse.marshal(new ViewBooksResponsePacket(Responses.OK, aCC.getAuthorsContainer()), stream);
-                }
-                catch (JAXBException e){
+                } catch (JAXBException e) {
                     e.printStackTrace();
                 }
             }
