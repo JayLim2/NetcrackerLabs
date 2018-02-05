@@ -10,7 +10,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author Алескандр
+ * @author Alexander
+ * @deprecated 
  */
 @XmlRootElement
 public class Index {

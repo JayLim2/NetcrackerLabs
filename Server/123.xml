@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<authorsContainer>
+    <authorList>
+        <name></name>
+    </authorList>
+    <authorList>
+        <name></name>
+    </authorList>
+    <authorList>
+        <booksList>
+            <brief>default</brief>
+            <publishYear>1832</publishYear>
+            <publisher>default</publisher>
+            <title>Eugene Onegin</title>
+        </booksList>
+        <booksList>
+            <brief>default</brief>
+            <publishYear>1841</publishYear>
+            <publisher>default</publisher>
+            <title>Dubrovsky</title>
+        </booksList>
+        <booksList>
+            <brief>default</brief>
+            <publishYear>1841</publishYear>
+            <publisher>default</publisher>
+            <title>Dubrovsky</title>
+        </booksList>
+        <name>Pushkin A.S.</name>
+    </authorList>
+    <authorList>
+        <booksList>
+            <brief>default</brief>
+            <publishYear>1867</publishYear>
+            <publisher>default</publisher>
+            <title>War and Piece</title>
+        </booksList>
+        <booksList>
+            <brief>default</brief>
+            <publishYear>1852</publishYear>
+            <publisher>default</publisher>
+            <title>Childhood.Nature.Yuity</title>
+        </booksList>
+        <name>Tolstoy L.N.</name>
+    </authorList>
+    <authorList>
+        <booksList>
+            <brief></brief>
+            <publishYear>0</publishYear>
+            <publisher></publisher>
+            <title>eeeeeeeeeeeee</title>
+        </booksList>
+        <booksList>
+            <brief></brief>
+            <publishYear>0</publishYear>
+            <publisher></publisher>
+            <title>ffffffffffff</title>
+        </booksList>
+        <name>ggggggggggggg</name>
+    </authorList>
+    <authorList>
+        <booksList>
+            <brief></brief>
+            <publishYear>1222</publishYear>
+            <publisher></publisher>
+            <title></title>
+        </booksList>
+        <name>lenin</name>
+    </authorList>
+</authorsContainer>

@@ -21,7 +21,8 @@ import java.util.Scanner;
 
 
 /**
- * @author Алескандр
+ * @deprecated 
+ * @author 
  */
 public class AuthorContainerView {
     private AuthorContainerController aCC;//пока так. разберусь с событиями - перепилю.вроде как контрллер должен слушать то что мы во view посылаем

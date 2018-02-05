@@ -10,8 +10,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
 /**
- *
- * @author Алескандр
+ * Command packet superclass
+ * @see Commands
+ * @author Alexander
  */
 
 public class CommandPacket {

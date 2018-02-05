@@ -10,8 +10,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import models.AuthorsContainer;
 
 /**
- *
- * @author Алескандр
+ * @see ResponsePacket
+ * @see Responses
+ * @author Alexander
  */
 @XmlRootElement
 public class ViewBooksResponsePacket extends ResponsePacket{

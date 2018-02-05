@@ -7,7 +7,7 @@ package models;
 
 /**
  *
- * @author Алескандр
+ * @author Alexander
  */
 public class BookAlreadyExistsException extends Exception {
 

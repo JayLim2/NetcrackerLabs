@@ -1,12 +1,15 @@
 package models;
 
-import javax.xml.bind.ValidationException;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Author model. contains name and booklist
+ * @author Alexander, Korostelev, Komarov
+ */
 @XmlRootElement
 @XmlSeeAlso(Book.class)
 public class Author {
@@ -25,15 +28,25 @@ public class Author {
         busyId = new LinkedList<>();
     }
 
+    /**
+     * empty constructor for serialization purposes
+     */
     public Author() {
         books = new LinkedList<>();
     }
 
+    /**
+     * main constructor
+     * @param name author name 
+     */
     public Author(String name) {
         this.name = name.trim();
         books = new LinkedList<>();
     }
 
+    /**
+     * id generator. to be invoked upon addition to a container
+     */
     public void dispatchId() {
         int nid = 0;
         while (busyId.contains(nid)) nid++;
@@ -41,6 +54,10 @@ public class Author {
         busyId.add(id);
     }
 
+    /**
+     * @deprecated
+     * @param id 
+     */
     public static void removeId(int id) {
         //busyId.remove(new Integer(id));
     }
@@ -55,18 +72,25 @@ public class Author {
         return id;
     }
 
-    public void setId(int val) throws ValidationException {
+    /**
+     * set and add the new id to author busyid list
+     * @param val new id
+     */
+    public void setId(int val) {//throws ValidationException {
         if (val != -1) {
             busyId.remove(new Integer(id));
             if (busyId.contains(val)) {
                 busyId.add(id);
-                throw new ValidationException("busy id");
+                //throw new ValidationException("busy id");
             }
             id = val;
             busyId.add(id);
         }
     }
 
+    /**
+     * reset author id list. to be used upon reload from file for example
+     */
     public static void resetId() {
         busyId = new LinkedList<>();
     }
@@ -84,6 +108,11 @@ public class Author {
         this.books = books;
     }
 
+    /**
+     * @deprecated 
+     * @param book
+     * @return 
+     */
     public boolean addBook(Book book) {
         if (!isExists(book, books) && isValid(book)) {
             book.setTitle(book.getTitle().trim());
@@ -97,6 +126,12 @@ public class Author {
         return false;
     }
 
+    /**
+     * @deprecated 
+     * @param book
+     * @param bookList
+     * @return 
+     */
     private boolean isExists(Book book, List<Book> bookList) {
         for (Book currentBook : bookList) {
             if (book.equals(currentBook))
@@ -105,6 +140,12 @@ public class Author {
         return false;
     }
 
+    
+    /**
+     * @deprecated 
+     * @param book
+     * @return 
+     */
     private boolean isValid(Book book) {
         return !book.getTitle().isEmpty() &&
                 book.getTitle().length() <= TITLE_LIMIT &&

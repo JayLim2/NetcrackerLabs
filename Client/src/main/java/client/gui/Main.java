@@ -10,20 +10,10 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(Main.class.getResource("/MainForm.fxml"));
-        primaryStage.setTitle("Лабораторная работа №2");
+        primaryStage.setTitle("Netcracker task №2");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
-
-    @Override
-    public void stop() throws Exception {
-        Client.getInstance().finish();
-        System.out.println("Stage is closing");
-        super.stop();
-    }
-
-
-
 
     public static void main(String[] args) {
         launch(args);

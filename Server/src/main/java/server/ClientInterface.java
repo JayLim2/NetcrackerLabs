@@ -7,6 +7,8 @@ package server;
 
 import controllers.AuthorContainerController;
 import exceptions.InvalidCommandAction;
+import java.io.File;
+import java.io.FileOutputStream;
 import models.Author;
 import models.Book;
 import models.YearOutOfBoundsException;
@@ -23,24 +25,35 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import models.AuthorsContainer;
 
 import models.BookAlreadyExistsException;
 
 /**
- * @author Алескандр
+ * Client dialog class.
+ * Used for communication with a client. 
+ * Accepts command packets, parses them and then 
+ * constructs and sends an appropriate response packet.
+ * packets are xml formatted
+ * @author Alexander
  */
 public class ClientInterface implements Runnable {
     private final Socket clientSocket;
     private AuthorContainerController aCC;
     private Lock readLock;
     private Lock writeLock;
-    private Marshaller marshResponse;
 
+    /**
+     * Main constructor for the class
+     * @param clientSocket the socket to be used in this instance
+     * @param aCC the main database container
+     * @param rwl synchronisation read/write lock. all instances working with the same aCC are to receive
+     * the same lock as well
+     */
     public ClientInterface(Socket clientSocket, AuthorContainerController aCC, ReadWriteLock rwl) {
         this.clientSocket = clientSocket;
         this.aCC = aCC;
@@ -48,46 +61,46 @@ public class ClientInterface implements Runnable {
         writeLock = rwl.writeLock();
     }
 
+    /**
+     * the main dialog.
+     * infinite loop until BYE or disconnect.
+     * uses JAXB annotations to pass packets to client
+     * currently implemented commands are:
+     * ADD_AUTHOR, ADD_BOOK, SET_AUTHOR, SET_BOOK, REMOVE_BOOK, 
+     * REMOVE_AUTHOR, VIEW_BOOKS, VIEW_AUTHORS, BYE, SEARCH
+     * to know more about their format and functionality
+     * @see protocol
+     */
     @Override
     public void run() {
         try {
             OutputStream outp = clientSocket.getOutputStream();
-//            StreamContainer.getInstance().addStream(outp);
             XMLInputFactory xmi = XMLInputFactory.newFactory();
             InputStream inp = clientSocket.getInputStream();
             XMLEventReader xer;
-            JAXBContext contextPacket = JAXBContext.newInstance(CommandPacket.class, AddBookPacket.class, ViewBooksPacket.class,
-                    AddAuthorPacket.class, RemoveBookPacket.class, RemoveAuthorPacket.class, SetAuthorPacket.class, SetBookPacket.class);
+            JAXBContext contextAC = JAXBContext.newInstance(AuthorsContainer.class);
+            Marshaller marshAC = contextAC.createMarshaller();
+            JAXBContext contextPacket = JAXBContext.newInstance(CommandPacket.class, AddBookPacket.class, 
+                    ViewBooksPacket.class,AddAuthorPacket.class, RemoveBookPacket.class,
+                    RemoveAuthorPacket.class, SetAuthorPacket.class, SetBookPacket.class, SearchPacket.class);
             Unmarshaller unmarshPacket = contextPacket.createUnmarshaller();
-//            JAXBContext contextCommands = JAXBContext.newInstance(Commands.class);
-            JAXBContext contextResponse = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class,
-                    ViewBooksResponsePacket.class);
-//            JAXBContext contextBook = JAXBContext.newInstance(Book.class);
-//            JAXBContext contextAuthor = JAXBContext.newInstance(Author.class);
-//            JAXBContext contextIndex = JAXBContext.newInstance(Index.class);
-            //JAXBContext contextAuthorsContainer = JAXBContext.newInstance(AuthorsContainer.class);
-//            Unmarshaller unmarshCommands = contextCommands.createUnmarshaller();
-//            Unmarshaller unmarshIndex = contextIndex.createUnmarshaller();
-//            Unmarshaller unmarshBook = contextBook.createUnmarshaller();
-//            Unmarshaller unmarshAuthor = contextAuthor.createUnmarshaller();
-            marshResponse = contextResponse.createMarshaller();
-            //Marshaller marshAuthorsContainer = contextAuthorsContainer.createMarshaller();
+            JAXBContext contextResponse = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, 
+                    ErrorPacket.class,ViewBooksResponsePacket.class);
+            Marshaller marshResponse = contextResponse.createMarshaller();
             a:
             {
                 while (true) {
-                    CommandPacket command = new CommandPacket();
+                    CommandPacket command;
                     xer = xmi.createXMLEventReader(inp);
                     xer.nextEvent();
                     xer.peek();
+                    String res = xer.toString();
                     command = (CommandPacket) unmarshPacket.unmarshal(xer);
-                    switch (command.getCommand())
-                    {
-
+                    switch (command.getCommand()) {
                         case VIEW_AUTHORS:
                         case VIEW_BOOKS:
                             readLock.lock();
                             try {
-                                //marshResponses.marshal(Responses.OK, outp);
                                 marshResponse.marshal(new ViewBooksResponsePacket(Responses.OK, aCC.getAuthorsContainer()), outp);
                             } finally {
                                 readLock.unlock();
@@ -101,12 +114,12 @@ public class ClientInterface implements Runnable {
                             try {
                                 aCC.addBook(book, id);
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
-
                                 /*for (OutputStream stream : StreamContainer.getInstance().getStreams())
                                     marshResponse.marshal(new ViewBooksResponsePacket(Responses.OK, aCC.getAuthorsContainer()), outp);*/
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                                marshAC.marshal(aCC.getAuthorsContainer(), new FileOutputStream("XML1a.xml"));
                             } catch (IndexOutOfBoundsException ex) {
-                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Index error"), outp);
+                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, ex.getMessage()), outp);
                             } catch (BookAlreadyExistsException ex) {
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Duplicate Book error"), outp);
                             } finally {
@@ -121,6 +134,7 @@ public class ClientInterface implements Runnable {
                                 Author author = abap.getAuthor();
                                 aCC.addAuthor(author);
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                                marshAC.marshal(aCC.getAuthorsContainer(), new FileOutputStream("XML1a.xml"));
                             } catch (InvalidCommandAction e) {
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, e.getMessage()), outp);
                             } finally {
@@ -135,13 +149,14 @@ public class ClientInterface implements Runnable {
                             int id2 = stbp.getNewAuthorId();
                             writeLock.lock();
                             try {
-                                aCC.changeBook(book, id, id2);//мб предварительную валидацию года приписать
+                                aCC.changeBook(book, id, id2);
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                                marshAC.marshal(aCC.getAuthorsContainer(), new FileOutputStream("XML1a.xml"));
                             } catch (YearOutOfBoundsException ex) {
                                 //вообще произойти не должно. валидация года в клиенте должна быть
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Year error"), outp);
                             } catch (IndexOutOfBoundsException ex) {
-                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Index error"), outp);
+                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, ex.getMessage()), outp);
                             } catch (BookAlreadyExistsException ex) {
                                 marshResponse.marshal(new ErrorPacket(Responses.ERROR, "Duplicate Book error"), outp);
                             } finally {
@@ -155,8 +170,9 @@ public class ClientInterface implements Runnable {
                             try {
                                 aCC.getAuthor(stap.getId()).setName(stap.getAuthor().getName());
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                                marshAC.marshal(aCC.getAuthorsContainer(), new FileOutputStream("XML1a.xml"));
                             } catch (IndexOutOfBoundsException ex) {
-                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, "no Author with such index"), outp);
+                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, ex.getMessage()), outp);
                             } finally {
                                 writeLock.unlock();
                             }
@@ -168,9 +184,9 @@ public class ClientInterface implements Runnable {
                             try {
                                 aCC.removeBook(rmbp.getId());
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
-                                //todo написать метод sendUpdateComand
+                                marshAC.marshal(aCC.getAuthorsContainer(), new FileOutputStream("XML1a.xml"));
                             } catch (IndexOutOfBoundsException ex) {
-                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, "no Author with such index"), outp);
+                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, ex.getMessage()), outp);
                             } finally {
                                 writeLock.unlock();
                             }
@@ -182,10 +198,23 @@ public class ClientInterface implements Runnable {
                             try {
                                 aCC.removeAuthor(rmap.getId());
                                 marshResponse.marshal(new OkPacket(Responses.OK), outp);
+                                marshAC.marshal(aCC.getAuthorsContainer(), new FileOutputStream("XML1a.xml"));
                             } catch (IndexOutOfBoundsException ex) {
-                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, "no Author with such index"), outp);
+                                marshResponse.marshal(new ErrorPacket(Responses.ERROR, ex.getMessage()), outp);
                             } finally {
                                 writeLock.unlock();
+                            }
+                        }
+                        break;
+                        case SEARCH:{
+                            SearchPacket searchPacket = (SearchPacket)command;
+                            readLock.lock();
+                            try{
+                                AuthorsContainer resp = aCC.search(searchPacket.getBookFilter());
+                                marshResponse.marshal(new ViewBooksResponsePacket(Responses.OK,resp), outp);
+                            }
+                            finally{
+                                readLock.unlock();
                             }
                         }
                         break;
@@ -199,26 +228,11 @@ public class ClientInterface implements Runnable {
                 }
             }
         } catch (JAXBException ex) {
-            Logger.getLogger(ClientInterface.class.getName()).log(Level.SEVERE, null, ex);
+            //shouldnt happen
         } catch (IOException ex) {
-            Logger.getLogger(ClientInterface.class.getName()).log(Level.SEVERE, null, ex);
+            //shoudnt happen
         } catch (XMLStreamException ex) {
-            Logger.getLogger(ClientInterface.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-
-    private void sendUpdateCommand(){
-        List<OutputStream> streams = StreamContainer.getInstance().getStreams();
-        if (streams != null){
-            for (OutputStream stream : streams) {
-                try {
-                    marshResponse.marshal(new ViewBooksResponsePacket(Responses.OK, aCC.getAuthorsContainer()), stream);
-                }
-                catch (JAXBException e){
-                    e.printStackTrace();
-                }
-            }
+            //shoudnt happen
         }
     }
 
