@@ -19,6 +19,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+/**
+ * Client interface class
+ * <p>
+ * This class communicates with the server.
+ * Send commands and data to the server and receive a response from the server
+ * in accordance with the established communication protocol.
+ *
+ * @author Sergey Komarov
+ * @author Rostislav Korostelev (SEARCH operation and some fixes).
+ */
 public class ClientInterface {
     private Socket clientSocket;
     private OutputStream out;
@@ -31,6 +41,16 @@ public class ClientInterface {
     JAXBContext contextResponsePacket;
     Unmarshaller unmarshResponsePacket;
 
+    /**
+     * Constructor of an encapsulated client interface object
+     *
+     * @param clientSocket      socket of client
+     * @param out               output stream
+     * @param in                input stream
+     * @param commandMarshaller command marshaller to marshall commands for server
+     * @param contextCommands   context commands
+     * @param xmi               XMLInputFactory
+     */
     public ClientInterface(Socket clientSocket, OutputStream out, InputStream in, Marshaller commandMarshaller,
                            JAXBContext contextCommands, XMLInputFactory xmi) {
         this.clientSocket = clientSocket;
@@ -44,8 +64,8 @@ public class ClientInterface {
     /**
      * Sending VIEW_BOOKS command from the client
      *
-     * @throws JAXBException
-     * @throws XMLStreamException
+     * @throws JAXBException by JAXB methods
+     * @throws XMLStreamException by marshaller/unmarshaller
      */
     public AuthorsContainer viewBooks() throws JAXBException, XMLStreamException {
         Book.resetId();
@@ -68,8 +88,6 @@ public class ClientInterface {
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
             new Alert(Alert.AlertType.ERROR, "Command VIEW BOOKS can not be executed.\n\n" + ((ErrorPacket) response).getDescription()).show();
-
-            //System.out.println("ERROR: command VIEW BOOKS can not be executed.\n");
         }
 
         //Если всё ок
@@ -77,15 +95,6 @@ public class ClientInterface {
             ViewBooksResponsePacket viewBooksResponsePacket = (ViewBooksResponsePacket) response;
 
             return viewBooksResponsePacket.getAuthorsContainer();
-            /*AuthorsContainer authorsContainer = viewBooksResponsePacket.getAuthorsContainer();
-            List<Author> authors = authorsContainer.getAuthors();
-            System.out.printf("%4s %30s %5s %15s %25s%n", "#", "Title", "Year", "Publisher", "Brief");
-            for (Author author : authors) {
-                List<Book> books = author.getBooks();
-                for (Book book : books) {
-                    System.out.printf("%4d %30s %5d %15s %25s%n", book.getId(), book.getTitle(), book.getPublishYear(), book.getPublisher(), book.getBrief());
-                }
-            }*/
         }
 
         return null;
@@ -93,18 +102,13 @@ public class ClientInterface {
 
     /**
      * Sending the ADD_BOOK [DATA] command from the client
-     *
-     * @param book
-     * @param author
-     * @throws JAXBException
-     * @throws XMLStreamException
+     * Encapsulates the command and data in itself.
+     * @param book new book object
+     * @param author book author object
+     * @throws JAXBException by JAXB methods
+     * @throws XMLStreamException by marshaller/unmarshaller
      */
     public boolean addBook(Book book, Author author) throws JAXBException, XMLStreamException {
-        //FIXME 28.12.17
-        /* Проблема заключается в том, что пакет пересылается с неким номером, который
-        сервером магическим образом интерпретируется как указатель на автора. �? этот НОМЕР
-        вообще говоря НЕ совпадает с айдишником автора.
-         */
         AddBookPacket currentCommand = new AddBookPacket(Commands.ADD_BOOK, author.getId(), book);
 
         contextResponsePacket = JAXBContext.newInstance(ResponsePacket.class, OkPacket.class, ErrorPacket.class, ViewBooksResponsePacket.class);
@@ -124,8 +128,6 @@ public class ClientInterface {
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
             new Alert(Alert.AlertType.ERROR, "Command ADD BOOK can not be executed.\n\n" + ((ErrorPacket) response).getDescription()).show();
-
-            //System.out.println("Command ADD BOOK can not be executed.\n");
             return false;
         }
 
@@ -139,11 +141,11 @@ public class ClientInterface {
 
     /**
      * Sending the SET_BOOK [DATA] command from the client by ID
-     *
-     * @param id
-     * @param book
-     * @throws JAXBException
-     * @throws XMLStreamException
+     * Encapsulates the command and data in itself.
+     * @param id unique ID number of book in books table
+     * @param book edited book object
+     * @throws JAXBException by JAXB methods
+     * @throws XMLStreamException by marshaller/unmarshaller
      */
     public boolean editBook(int id, Book book) throws JAXBException, XMLStreamException {
         SetBookPacket currentCommand = new SetBookPacket(Commands.SET_BOOK, book.getAuthor().getId(), id, book);
@@ -166,9 +168,6 @@ public class ClientInterface {
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
             new Alert(Alert.AlertType.ERROR, "Command SET BOOK can not be executed.\n\n" + ((ErrorPacket) response).getDescription()).show();
-
-            //System.out.println("Command SET BOOK can not be executed.\n");
-            //System.out.println(((ErrorPacket) response).getDescription());
             return false;
         }
 
@@ -182,10 +181,10 @@ public class ClientInterface {
 
     /**
      * Sending the REMOVE BOOK command from the client by ID
-     *
-     * @param id
-     * @throws JAXBException
-     * @throws XMLStreamException
+     * Encapsulates the command and data in itself.
+     * @param id unique ID number of book in books table
+     * @throws JAXBException by JAXB methods
+     * @throws XMLStreamException by marshaller/unmarshaller
      */
     public boolean deleteBook(int id) throws JAXBException, XMLStreamException {
         RemoveBookPacket currentCommand = new RemoveBookPacket(Commands.REMOVE_BOOK, id);
@@ -207,10 +206,6 @@ public class ClientInterface {
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
             new Alert(Alert.AlertType.ERROR, "Command REMOVE BOOK can not be executed.\n\n" + ((ErrorPacket) response).getDescription()).show();
-
-            //System.out.println("ERROR: command REMOVE BOOK can not be executed.\n");
-            //System.out.println(((ErrorPacket) response).getDescription());
-
             return false;
         }
 
@@ -226,9 +221,8 @@ public class ClientInterface {
 
     /**
      * Sending the VIEW_AUTHORS command from the client
-     *
-     * @throws JAXBException
-     * @throws XMLStreamException
+     * @throws JAXBException by JAXB methods
+     * @throws XMLStreamException by marshaller/unmarshaller
      */
     public AuthorsContainer viewAuthors() throws JAXBException, XMLStreamException {
         Book.resetId();
@@ -250,9 +244,7 @@ public class ClientInterface {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            //System.out.println("ERROR: command VIEW AUTHORS can not be executed.\n");
             new Alert(Alert.AlertType.ERROR, "Command VIEW AUTHORS can not be executed.\n\n" + ((ErrorPacket) response).getDescription()).show();
-
         }
 
         //Если всё ок
@@ -260,12 +252,6 @@ public class ClientInterface {
             ViewBooksResponsePacket viewBooksResponsePacket = (ViewBooksResponsePacket) response;
 
             return viewBooksResponsePacket.getAuthorsContainer();
-            /*AuthorsContainer authorsContainer = viewBooksResponsePacket.getAuthorsContainer();
-            List<Author> authors = authorsContainer.getAuthors();
-            System.out.printf("%4s %15s %15s%n", "#", "Author name", "Count of books");
-            for (Author author : authors) {
-                System.out.printf("%4d %15s %15d%n", author.getId(), author.getName(), author.getBooks().size());
-            }*/
         }
 
         return null;
@@ -273,10 +259,10 @@ public class ClientInterface {
 
     /**
      * Sending the ADD_AUTHOR [DATA] command from the client
-     *
-     * @param authorName
-     * @throws JAXBException
-     * @throws XMLStreamException
+     * Encapsulates the command and data in itself.
+     * @param authorName author name
+     * @throws JAXBException by JAXB methods
+     * @throws XMLStreamException by marshaller/unmarshaller
      */
     public boolean addAuthor(String authorName) throws JAXBException, XMLStreamException {
         Author author = new Author(authorName);
@@ -298,10 +284,7 @@ public class ClientInterface {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            //System.out.println("ERROR: command ADD_AUTHOR can not be executed.\n");
-            //System.out.println(((ErrorPacket) response).getDescription());
             new Alert(Alert.AlertType.ERROR, "Command ADD AUTHOR can not be executed.\n\n" + ((ErrorPacket) response).getDescription()).show();
-
             return false;
         }
 
@@ -315,11 +298,11 @@ public class ClientInterface {
 
     /**
      * Sending the SET_AUTHOR [NEW_DATA] command from the client by ID
-     *
-     * @param id
-     * @param authorName
-     * @throws JAXBException
-     * @throws XMLStreamException
+     * Encapsulates the command and data in itself.
+     * @param id unique ID number of author in authors table
+     * @param authorName author name
+     * @throws JAXBException by JAXB methods
+     * @throws XMLStreamException by marshaller/unmarshaller
      */
     public boolean editAuthor(int id, String authorName) throws JAXBException, XMLStreamException {
         Author author = new Author(authorName);
@@ -342,9 +325,6 @@ public class ClientInterface {
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
             new Alert(Alert.AlertType.ERROR, "Command SET AUTHOR can not be executed.\n\n" + ((ErrorPacket) response).getDescription()).show();
-            //System.out.println("ERROR: command SET_AUTHOR can not be executed.\n\n");
-            //System.out.println(((ErrorPacket) response).getDescription());
-
             return false;
         }
 
@@ -358,10 +338,10 @@ public class ClientInterface {
 
     /**
      * Sending the REMOVE_AUTHOR command from the client by ID
-     *
-     * @param id
-     * @throws JAXBException
-     * @throws XMLStreamException
+     * Encapsulates the command and data in itself.
+     * @param id unique ID number of author in authors table
+     * @throws JAXBException by JAXB methods
+     * @throws XMLStreamException by marshaller/unmarshaller
      */
     public boolean deleteAuthor(int id) throws JAXBException, XMLStreamException {
         RemoveAuthorPacket currentCommand = new RemoveAuthorPacket(Commands.REMOVE_AUTHOR, id);
@@ -382,8 +362,6 @@ public class ClientInterface {
 
         //Если произошла ошибка при выполнении команды
         if (response instanceof ErrorPacket) {
-            //System.out.println("ERROR: command REMOVE AUTHOR can not be executed.\n");
-            //System.out.println(((ErrorPacket) response).getDescription());
             new Alert(Alert.AlertType.ERROR, "Command REMOVE AUTHOR can not be executed.\n\n" + ((ErrorPacket) response).getDescription()).show();
 
             return false;
@@ -398,13 +376,14 @@ public class ClientInterface {
     }
 
     /**
-     *
-     * @param title
-     * @param author
-     * @param publishYear
-     * @param brief
-     * @param publisher
-     * @return
+     * Sending the SEARCH BOOK command to the server
+     * Encapsulates the command and data in itself.
+     * @param title book title
+     * @param author author of book
+     * @param publishYear year when book published
+     * @param brief short description of book
+     * @param publisher name of book publisher
+     * @return AuthorsConainer with results of request if request successful OR null if else.
      * @throws JAXBException
      * @throws XMLStreamException
      */
@@ -418,7 +397,7 @@ public class ClientInterface {
         JAXBContext contextCommands1 = JAXBContext.newInstance(CommandPacket.class, ViewBooksPacket.class, AddBookPacket.class, SetBookPacket.class, RemoveBookPacket.class, AddAuthorPacket.class, SetAuthorPacket.class, RemoveAuthorPacket.class, SearchPacket.class);
         Marshaller commandMarshaller1 = contextCommands1.createMarshaller();
         commandMarshaller1.marshal(currentCommand, out);
-        
+
         xer = xmi.createXMLEventReader(in);
         xer.nextEvent();
         xer.peek();
