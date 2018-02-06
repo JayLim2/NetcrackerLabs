@@ -17,7 +17,7 @@
     <properties>
         <!-- Maven Plugins version -->
         <checkstyle.plugin.version>2.6</checkstyle.plugin.version>
-        <pmd.plugin.version>2.7.1</pmd.plugin.version>
+        <pmd.plugin.version>3.9.0</pmd.plugin.version>
         <findbugs.plugin.version>3.0.1</findbugs.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
