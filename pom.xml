@@ -14,13 +14,22 @@
         <module>Client</module>
     </modules>
     
+    <properties>
+        <!-- Maven Plugins version -->
+        <checkstyle.plugin.version>2.6</checkstyle.plugin.version>
+        <pmd.plugin.version>2.7.1</pmd.plugin.version>
+        <findbugs.plugin.version>3.0.1</findbugs.plugin.version>
+        <pmd.nc.rules.version>1.0.1</pmd.nc.rules.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <repositories>
         <repository>
             <id>projectlombok.org</id>
             <url>http://projectlombok.org/mavenrepo</url>
         </repository>
     </repositories>    
-    
+
     <reporting>
         <plugins>
             <plugin>
@@ -28,7 +37,8 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <charset>cp1252</charset>
+                    <encoding>utf-8</encoding>
+                    <failOnError>false</failOnError>
                 </configuration>
             </plugin>
         </plugins>
@@ -36,6 +46,45 @@
 
     <build>
         <plugins>	
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${checkstyle.plugin.version}</version>
+                <configuration>
+                    <configLocation>checkstyle.xml</configLocation>
+                    <includeTests>true</includeTests>
+                    <linkXRef>false</linkXRef>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>${pmd.plugin.version}</version>
+                <configuration>
+                    <rulesets>
+                        <ruleset>${project.parent.basedir}/nc_rules.xml</ruleset>
+                    </rulesets>
+                    <targetJdk>${project.build.targetLevel}</targetJdk>
+                    <includeTests>true</includeTests>
+                    <outputEncoding>${project.build.sourceEncoding}</outputEncoding>
+                    <linkXRef>false</linkXRef>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.netcracker.om.tls</groupId>
+                        <artifactId>nc.pmd.rules</artifactId>
+                        <version>${pmd.nc.rules.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>findbugs-maven-plugin</artifactId>
+                    <version>${findbugs.plugin.version}</version>
+                    <configuration>
+                        <includeTests>true</includeTests>
+                    </configuration>
+                </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -57,7 +106,7 @@
             </plugin> 
         </plugins>
     </build> 
-    
+
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
