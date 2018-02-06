@@ -19,7 +19,6 @@
         <checkstyle.plugin.version>2.6</checkstyle.plugin.version>
         <pmd.plugin.version>2.7.1</pmd.plugin.version>
         <findbugs.plugin.version>3.0.1</findbugs.plugin.version>
-        <pmd.nc.rules.version>1.0.1</pmd.nc.rules.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -69,13 +68,6 @@
                     <outputEncoding>${project.build.sourceEncoding}</outputEncoding>
                     <linkXRef>false</linkXRef>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.netcracker.om.tls</groupId>
-                        <artifactId>nc.pmd.rules</artifactId>
-                        <version>${pmd.nc.rules.version}</version>
-                    </dependency>
-                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
