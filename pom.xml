@@ -62,7 +62,7 @@
                 <version>${pmd.plugin.version}</version>
                 <configuration>
                     <rulesets>
-                        <ruleset>${project.parent.basedir}/nc_rules.xml</ruleset>
+                        <ruleset>${project.parent.basedir}/pmd_rules.xml</ruleset>
                     </rulesets>
                     <targetJdk>${project.build.targetLevel}</targetJdk>
                     <includeTests>true</includeTests>
