@@ -37,7 +37,7 @@ public class Author {
 
     /**
      * main constructor
-     * @param name author name 
+     * @param name author name
      */
     public Author(String name) {
         this.name = name.trim();
@@ -56,7 +56,7 @@ public class Author {
 
     /**
      * @deprecated
-     * @param id 
+     * @param id
      */
     public static void removeId(int id) {
         //busyId.remove(new Integer(id));
@@ -109,9 +109,9 @@ public class Author {
     }
 
     /**
-     * @deprecated 
+     * @deprecated
      * @param book
-     * @return 
+     * @return
      */
     public boolean addBook(Book book) {
         if (!isExists(book, books) && isValid(book)) {
@@ -127,10 +127,10 @@ public class Author {
     }
 
     /**
-     * @deprecated 
+     * @deprecated
      * @param book
      * @param bookList
-     * @return 
+     * @return
      */
     private boolean isExists(Book book, List<Book> bookList) {
         for (Book currentBook : bookList) {
@@ -140,11 +140,10 @@ public class Author {
         return false;
     }
 
-    
     /**
-     * @deprecated 
+     * @deprecated
      * @param book
-     * @return 
+     * @return
      */
     private boolean isValid(Book book) {
         return !book.getTitle().isEmpty() &&

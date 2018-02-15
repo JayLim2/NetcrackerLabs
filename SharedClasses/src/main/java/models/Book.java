@@ -28,7 +28,7 @@ public class Book {
     static{
         busyId = new LinkedList<>();
     }
-    
+
     /**
      * empty constructor for serialization
      */
@@ -36,13 +36,12 @@ public class Book {
     }
 
     /**
-     * 
      * @param title book's title
      * @param author Author of the book
      * @param publishYear publush year. cant be bigger than current
-     * @param publisher 
+     * @param publisher
      * @param brief
-     * @throws YearOutOfBoundsException if publish year bigger than current one  
+     * @throws YearOutOfBoundsException if publish year bigger than current one
      */
     public Book(String title, Author author, int publishYear, String publisher, String brief) throws YearOutOfBoundsException {
         this.title = title.trim();
@@ -70,33 +69,33 @@ public class Book {
     public int getId() {
         return id;
     }
-    
-    public void setId(int val) {//throws ValidationException {
-		if (val != -1){
-			busyId.remove(new Integer(id));
-			if (busyId.contains(val)) {
-				busyId.add(id);
-				//throw new ValidationException("busy id");
-			}
-			id = val;
-			busyId.add(id);
-		}
+
+    public void setId(int val) {
+        if (val != -1){
+            busyId.remove(new Integer(id));
+            if (busyId.contains(val)) {
+                busyId.add(id);
+//throw new ValidationException("busy id");
+            }
+            id = val;
+            busyId.add(id);
+        }
     }
 
     /**
-     * id dispatcher.to be ivoked upon addition to a container 
+     * id dispatcher.to be ivoked upon addition to a container
      */
     public void dispatchId(){
-	int nid = 0;
+        int nid = 0;
         while (busyId.contains(nid)) nid++;
-		id = nid;
+        id = nid;
         busyId.add(id);
     }
-	
-	public static void removeId(int id){
-		//busyId.remove(new Integer(id));
-	}
-    
+
+    public static void removeId(int id){
+//busyId.remove(new Integer(id));
+    }
+
     public static void resetId(){
         busyId = new LinkedList<>();
     }

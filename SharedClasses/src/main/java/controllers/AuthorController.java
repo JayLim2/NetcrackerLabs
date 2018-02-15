@@ -1,70 +1,93 @@
 package controllers;
 
 import models.Author;
-import models.AuthorsContainer;
 import models.Book;
 
 /**
- * not used anywhere
- * @author Àlexander
+ * Not used anywhere.
+ * @author Alexander
  */
 public class AuthorController {
+    /**
+     * Encapsulated Author model.
+     */
     private Author author;
 
+    /**
+     * Not used for now.
+     */
     public AuthorController() {
-        author = null;//pointless
+        author = null; //pointless
     }
 
-    public AuthorController(Author author) {
-        this.author = author;
+    /**
+     * Default constructor.
+     * @param newAuthor model to wrap
+     */
+    public AuthorController(final Author newAuthor) {
+        this.author = newAuthor;
     }
 
-    public Author getAuthor() {
+    /**
+     * Gets the stored author.
+     * @return the stored author
+     */
+    public final Author getAuthor() {
         return author;
     }
 
-    public void setAuthor(Author author) {
-        this.author = author;
+    /**
+     * Sets the author to store.
+     * @param newAuthor suthor to store
+     */
+    public final void setAuthor(final Author newAuthor) {
+        this.author = newAuthor;
     }
 
-    public Book getBook(int index) {
-        if(index < 0 || index > author.getBooks().size())
+    /**
+     * @deprecated
+     * @param index position in the underlying list
+     * @return book at the index position in list
+     */
+    public final Book getBook(final int index) {
+        if (index < 0 || index > author.getBooks().size()) {
             return null;
+        }
         return author.getBooks().get(index);
     }
 
-    public void addBook(int index, Book book) {
-        if(index < 0 || index > author.getBooks().size())
+    /**
+     * @param book the book to add
+     * @deprecated
+     * @param index book's position in the list
+     */
+    public final void addBook(final int index, final Book book) {
+        if (index < 0 || index > author.getBooks().size()) {
             return;
+        }
         author.getBooks().add(index, book);
     }
 
-    public void editBook(int index, Book book) {
-        if(index < 0 || index >= author.getBooks().size())
+    /**
+     * @param book book to set
+     * @deprecated
+     * @param index book's position in the list
+     */
+    public final void editBook(final int index, final Book book) {
+        if (index < 0 || index >= author.getBooks().size()) {
             return;
+        }
         author.getBooks().set(index, book);
     }
 
-    public void deleteBook(int index) {
-        if(index < 0 || index > author.getBooks().size())
+    /**
+     * @deprecated
+     * @param index position in the underlying list
+     */
+    public final void deleteBook(final int index) {
+        if (index < 0 || index > author.getBooks().size()) {
             return;
+        }
         author.getBooks().remove(index);
     }
-
-    /*private AuthorsContainer authorsContainer;
-    private BookController bookController;
-
-    public AuthorController() {
-        authorsContainer = new AuthorsContainer();
-        bookController = new BookController();
-    }
-
-    public void addAuthor(Author author){
-        authorsContainer.addAuthor(author);
-    }
-
-    public void addBook(Book book, int id){
-        bookController.setAuthor(authorsContainer.getAuthor(id));
-        bookController.addBook(book);
-    }*/
 }

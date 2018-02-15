@@ -5,68 +5,66 @@ import models.Book;
 import models.YearOutOfBoundsException;
 
 /**
- * a wrapper for book model to provide functionality
+ * A wrapper for book model to provide functionality.
  * @author Alexander
  */
 public class BookController  {
+    /**
+     * Encapsulated Book model.
+     */
     private Book book;
 
     /**
-     * main constructor
-     * @param book to be encapsulated 
+     * Main constructor.
+     * @param newBook to be encapsulated
      */
-    public BookController(Book book) {
-        this.book = book;
+    public BookController(final Book newBook) {
+        this.book = newBook;
     }
 
-    public Book getBook() {
+    /**
+     * Gets the underlying book.
+     * @return the underlying book
+     */
+    public final Book getBook() {
         return book;
     }
 
-    public void setBook(Book book) {
-        this.book = book;
-    }
-    
-    
     /**
-     * checks if contined book is equivalent(not equal!) to provided book
-     * @param book book to compare to
-     * @return true if equvalent, false if not 
+     * Sets the underlying book.
+     * @param newBook the book to set
      */
-    public boolean isEquvalent(Book book){
-        return this.book.getTitle().equals(book.getTitle()) &&
-            this.book.getPublishYear() == book.getPublishYear() &&
-            this.book.getBrief().equals(book.getBrief()) &&
-            this.book.getPublisher().equals(book.getPublisher());
+    public final void setBook(final Book newBook) {
+        this.book = newBook;
     }
-    
+
     /**
-     * modifies a book in container with values providet through the param book and param author
-     * @param book new param encapsulation
+     * Checks if contined book is equivalent(not equal!) to provided book.
+     * @param newBook book to compare to
+     * @return true if equvalent, false if not
+     */
+    public final boolean isEquvalent(final Book newBook) {
+        return this.book.getTitle().equals(newBook.getTitle())
+                && this.book.getPublishYear() == newBook.getPublishYear()
+                && this.book.getBrief().equals(newBook.getBrief())
+                && this.book.getPublisher().equals(newBook.getPublisher());
+    }
+
+    /**
+     * Modifies a book in container with values
+     * provided through the param book and param author.
+     * @param newBook new param encapsulation
      * @param author new author
-     * @throws YearOutOfBoundsException if new values somehow contain a wrong year value even though it should be impossible
+     * @throws YearOutOfBoundsException if new values
+     * somehow contain a wrong year value even
+     * though it should be impossible
      */
-    public void modifyBook(Book book, Author author) throws YearOutOfBoundsException{
-        this.book.setPublishYear(book.getPublishYear());//так. так то должно работать. но лучше перестарховаться.
+    public final void modifyBook(final Book newBook, final Author author)
+            throws YearOutOfBoundsException {
+        this.book.setPublishYear(newBook.getPublishYear());
         this.book.setAuthor(author);
-        this.book.setBrief(book.getBrief());
-        this.book.setPublisher(book.getPublisher());
-        this.book.setTitle(book.getTitle());
+        this.book.setBrief(newBook.getBrief());
+        this.book.setPublisher(newBook.getPublisher());
+        this.book.setTitle(newBook.getTitle());
     }
-    /*private Author author;
-
-    public BookController(Author author) {
-        this.author = author;
-    }
-  
-    public BookController() {    }
-
-    public void setAuthor(Author author) {
-        this.author = author;
-    }
-
-    public void addBook(Book book){
-        //author.addBook(book);
-
-    }*/
 }

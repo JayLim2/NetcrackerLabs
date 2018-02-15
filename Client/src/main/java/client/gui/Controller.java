@@ -627,7 +627,7 @@ public class Controller {
         } catch (EmptyFieldException ex) {
             new Alert(Alert.AlertType.ERROR, "Some fields are empty").show();
         } catch (Exception ex) {
-            new Alert(Alert.AlertType.ERROR, "Unknown Error").show();
+            new Alert(Alert.AlertType.ERROR, "The year of publication must be a number").show();
         }
         return book;
     }

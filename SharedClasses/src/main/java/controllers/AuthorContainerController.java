@@ -22,7 +22,7 @@ import models.YearOutOfBoundsException;
 
 
 /**
- * This class is used in any interactions 
+ * This class is used in any interactions
  * with encapsulated database container
  * @author Alexander
  * @author Rostislav
@@ -33,14 +33,14 @@ public class AuthorContainerController {
 
     /**
      * main constructor
-     * @param authorsContainer the controlled model in question 
+     * @param authorsContainer the controlled model in question
      */
     public AuthorContainerController(AuthorsContainer authorsContainer) {
         this.authorsContainer = authorsContainer;
     }
 
     /**
-     * 
+     *
      * @param author author to add to the encapsulated container
      * @throws InvalidCommandAction if author with the same name exists in this container already
      */
@@ -185,20 +185,20 @@ public class AuthorContainerController {
     }
 
     /**
-     * 
-     * @return the underlying authorsContainer model 
+     *
+     * @return the underlying authorsContainer model
      */
     public AuthorsContainer getAuthorsContainer() {
         return authorsContainer;
     }
 
     /**
-     * adds a book to the container. It is assumed that the book lacks an id 
+     * adds a book to the container. It is assumed that the book lacks an id
      * or a set author
      * uses getAuthor to retrive author by id
-     * uses author.addBook to attempt to attach book to the author 
+     * uses author.addBook to attempt to attach book to the author
      * @param book the book to be added
-     * @param id the id of the book's author 
+     * @param id the id of the book's author
      * @throws BookAlreadyExistsException if it is alredy attached to the author
      */
     public void addBook(Book book, int id) throws BookAlreadyExistsException {
@@ -207,12 +207,11 @@ public class AuthorContainerController {
         if (!author.addBook(book))throw new BookAlreadyExistsException();
         book.dispatchId();
     }
-    
-    
+
     /**
      * checks if an equvalent(not equal!) book alredy exists in the author
      * @param author to check for equvalents in
-     * @param book to compare 
+     * @param book to compare
      * @return if an equvalent(not equal!) book alredy exists in the author
      */
     public boolean existAlready(Author author, Book book){
@@ -223,7 +222,7 @@ public class AuthorContainerController {
         }
         return false;
     }
-    
+
     /**
      * changes a book with bid index in container
      * @param book encapsulated new parameters
@@ -242,7 +241,6 @@ public class AuthorContainerController {
             throw new BookAlreadyExistsException();
         }//and throw Exception
         else{
-            
             new BookController(chBook).modifyBook(book,author);
             author.addBook(chBook);
         }
@@ -261,7 +259,7 @@ public class AuthorContainerController {
 
     /**
      *???????????????????????
-     * @return 
+     * @return
      */
     public boolean checkBooksInAuthor() {
         List<Author> tmp = authorsContainer.getAuthors();
@@ -271,7 +269,7 @@ public class AuthorContainerController {
         }
         return false;
     }
-    
+
     /**
      * book search function
      * @param filter an ecapsulation of regexes used to check books
@@ -299,13 +297,11 @@ public class AuthorContainerController {
                     System.out.println("cant happen");
                     // cant happen normally
                 }
-                
             }
         }
         return result;
     }
-    
-    
+
     /**
      * check if author with this name exists already in container
      * @param checkAuthor author to check
@@ -317,7 +313,7 @@ public class AuthorContainerController {
         }
         return false;
     }
-    
+
     /**
      * retrives an author by name
      * @param name author's name
@@ -329,14 +325,13 @@ public class AuthorContainerController {
         }
         return null;
     }
-    
-    
+
     /**
      * merge current container with another
      * equvalent book a skipped
      * author with the same name are merged in one
      * ids are not resolved
-     * @param anotherAuthorsContainer 
+     * @param anotherAuthorsContainer
      */
     public void merge(AuthorsContainer anotherAuthorsContainer){
         for(Author author:anotherAuthorsContainer.getAuthors()){
@@ -360,10 +355,10 @@ public class AuthorContainerController {
                         //cant happen
                     }
                 }
-            }    
+            }
         }
     }
-    
+
     /**
      * resolves id conflicts(2 models hvaing the same id)
      */

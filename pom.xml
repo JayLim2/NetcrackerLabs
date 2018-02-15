@@ -20,6 +20,7 @@
         <pmd.plugin.version>3.9.0</pmd.plugin.version>
         <findbugs.plugin.version>3.0.1</findbugs.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <repositories>
