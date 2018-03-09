@@ -20,7 +20,7 @@ public class ClientResponsePacketParser {
         return instance;
     }
 
-    public AuthorsContainer parse(ResponsePacket responsePacket) {
+    public void parse(ResponsePacket responsePacket) {
         //todo парсинг команды, выполнение действия
         if (responsePacket instanceof OkPacket) {
             System.out.println("Done.\n");
@@ -29,11 +29,12 @@ public class ClientResponsePacketParser {
             System.out.println("Error");
         }
         if (responsePacket instanceof ViewBooksResponsePacket) {
-            ViewBooksResponsePacket viewBooksResponsePacket = (ViewBooksResponsePacket) responsePacket;
-            AuthorContainerController aCCT = new AuthorContainerController(((ViewBooksResponsePacket) responsePacket).getAuthorsContainer());
-            aCCT.reInitAuthorsInBooks();
-            return viewBooksResponsePacket.getAuthorsContainer();
+
+
+
         }
-        return null;
+
     }
+
+
 }
