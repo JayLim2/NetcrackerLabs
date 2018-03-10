@@ -12,7 +12,8 @@ import java.util.List;
  * the book model class
  * book consists of title(String), auhtor(Author),
  * publishYear(int), publisher(String), breif(String)
- * @author Alexander,Korostelev, Komarov
+ *
+ * @author Alexander, Korostelev, Komarov
  */
 @XmlRootElement
 public class Book {
@@ -21,11 +22,12 @@ public class Book {
     private int publishYear;
     private String publisher;
     private String brief;
+    private int publisherID;
     private static List<Integer> busyId;
     private int id = -1;
 
 
-    static{
+    static {
         busyId = new LinkedList<>();
     }
 
@@ -36,8 +38,8 @@ public class Book {
     }
 
     /**
-     * @param title book's title
-     * @param author Author of the book
+     * @param title       book's title
+     * @param author      Author of the book
      * @param publishYear publush year. cant be bigger than current
      * @param publisher
      * @param brief
@@ -49,6 +51,13 @@ public class Book {
         setPublishYear(publishYear);
         this.publisher = publisher.trim();
         this.brief = brief.trim();
+    }
+
+    public Book(String title, int publishYear, String brief, int publisherID) throws YearOutOfBoundsException {
+        this.title = title.trim();
+        setPublishYear(publishYear);
+        this.brief = brief;
+        this.publisherID = publisherID;
     }
 
     @XmlElement
@@ -65,13 +74,15 @@ public class Book {
         return author;
     }
 
+
+
     @XmlElement
     public int getId() {
         return id;
     }
 
     public void setId(int val) {
-        if (val != -1){
+        if (val != -1) {
             busyId.remove(new Integer(id));
             if (busyId.contains(val)) {
                 busyId.add(id);
@@ -85,18 +96,18 @@ public class Book {
     /**
      * id dispatcher.to be ivoked upon addition to a container
      */
-    public void dispatchId(){
+    public void dispatchId() {
         int nid = 0;
         while (busyId.contains(nid)) nid++;
         id = nid;
         busyId.add(id);
     }
 
-    public static void removeId(int id){
+    public static void removeId(int id) {
 //busyId.remove(new Integer(id));
     }
 
-    public static void resetId(){
+    public static void resetId() {
         busyId = new LinkedList<>();
     }
 
@@ -137,6 +148,10 @@ public class Book {
 
     public void setBrief(String brief) {
         this.brief = brief.trim();
+    }
+
+    public int getPublisherID() {
+        return publisherID;
     }
 
     //Book Equals

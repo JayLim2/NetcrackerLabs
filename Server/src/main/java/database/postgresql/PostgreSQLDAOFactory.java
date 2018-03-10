@@ -3,11 +3,6 @@ package database.postgresql;
 import database.daointerfaces.AuthorDAO;
 import database.daointerfaces.BookDAO;
 import database.daointerfaces.DAOFactory;
-
-import javax.activation.DataSource;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.sql.Connection;
@@ -20,11 +15,11 @@ public class PostgreSQLDAOFactory implements DAOFactory {
     private static final String DB_PATH = "jdbc:postgresql://localhost:5432/postgres";
     private static final String USER = "postgres";
     private static final String PASS = "root";
-    private static final String DRIVER_NAME = "org.postgresql.Driver";
+//    private static final String DRIVER_NAME = "org.postgresql.Driver";
     private static final String START_SCRIPT_NAME = "Server/src/main/java/database/databaseStartScript.sql";
     private static PostgreSQLDAOFactory instance;
     private Connection connection;
-    private DataSource dataSource;
+
 
     private PostgreSQLDAOFactory(String path) throws SQLException {
         connection = getConnection();
@@ -47,17 +42,17 @@ public class PostgreSQLDAOFactory implements DAOFactory {
         return instance;
     }
 
-    public void setConnection(String pathStartScript) {
-        try {
-            Class.forName(DRIVER_NAME);
-            connection = DriverManager.getConnection(DB_PATH, USER, PASS);
-        } catch (SQLException e) {
-            System.out.println("Error connection");
-        } catch (ClassNotFoundException e) {
-            System.out.println("Driver was not found");
-        }
-        executeSqlStartScript(pathStartScript);
-    }
+//    public void setConnection(String pathStartScript) {
+//        try {
+//            Class.forName(DRIVER_NAME);
+//            connection = DriverManager.getConnection(DB_PATH, USER, PASS);
+//        } catch (SQLException e) {
+//            System.out.println("Error connection");
+//        } catch (ClassNotFoundException e) {
+//            System.out.println("Driver was not found");
+//        }
+//        executeSqlStartScript(pathStartScript);
+//    }
 
     @Override
     public Connection getConnection() throws SQLException {
@@ -68,7 +63,6 @@ public class PostgreSQLDAOFactory implements DAOFactory {
         String delimiter = ";";
         Scanner scanner;
         try {
-            //todo замменить на path
             scanner = new Scanner(new FileInputStream(path)).useDelimiter(delimiter);
             Statement currentStatement = null;
             while (scanner.hasNext()) {

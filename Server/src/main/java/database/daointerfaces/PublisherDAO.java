@@ -16,5 +16,5 @@ public interface PublisherDAO {
 
 
 }
-//todo написать модель Publisher, затем снять комментирование
+//todo написать модель Publisher, затем снять комментирование и написать реализацию для PostgreSQL
 */

@@ -39,18 +39,35 @@ public class PostgreSQLAuthorDAO implements AuthorDAO {
     }
 
     @Override
-    public Author read(int authorID) {
-        return null;
+    public Author read(int authorID) throws SQLException {
+        String sql = "SELECT * FROM  \"author\" WHERE \"authorID\" = ?;";
+        Author author;
+        try (PreparedStatement stm = connection.prepareStatement(sql)) {
+            stm.setInt(1, authorID);
+            ResultSet rs = stm.executeQuery();
+            rs.next();
+            author = new Author(rs.getString("authorName"));
+        }
+        return author;
     }
 
     @Override
-    public void update(Author author) {
-
+    public void update(Author author) throws SQLException {
+        String sql = "UPDATE \"author\" SET \"authorName\" = ?, WHERE \"authorID\" = ?";
+        try (PreparedStatement stm = connection.prepareStatement(sql)) {
+            stm.setString(1, author.getName());
+            stm.setInt(2, author.getId());
+            stm.executeUpdate();
+        }
     }
 
     @Override
-    public void delete(int authorID) {
-
+    public void delete(int authorID) throws SQLException {
+        String sql = "DELETE FROM \"author\" WHERE \"authorID\" = ?";
+        try (PreparedStatement stm = connection.prepareStatement(sql)) {
+            stm.setInt(1, authorID);
+            stm.executeUpdate();
+        }
     }
 
     @Override
