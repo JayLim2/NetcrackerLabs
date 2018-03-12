@@ -3,6 +3,9 @@ package database.postgresql;
 import database.daointerfaces.AuthorDAO;
 import database.daointerfaces.BookDAO;
 import database.daointerfaces.DAOFactory;
+import database.daointerfaces.PublisherDAO;
+import model.Publisher;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.sql.Connection;
@@ -15,7 +18,7 @@ public class PostgreSQLDAOFactory implements DAOFactory {
     private static final String DB_PATH = "jdbc:postgresql://localhost:5432/postgres";
     private static final String USER = "postgres";
     private static final String PASS = "root";
-//    private static final String DRIVER_NAME = "org.postgresql.Driver";
+    //    private static final String DRIVER_NAME = "org.postgresql.Driver";
     private static final String START_SCRIPT_NAME = "Server/src/main/java/database/databaseStartScript.sql";
     private static PostgreSQLDAOFactory instance;
     private Connection connection;
@@ -90,14 +93,17 @@ public class PostgreSQLDAOFactory implements DAOFactory {
     }
 
     @Override
-    public AuthorDAO getAuthorDAO() {
+    public PostgreSQLAuthorDAO getAuthorDAO() {
         return new PostgreSQLAuthorDAO(connection);
     }
 
     @Override
-    public BookDAO getBookDAO() {
+    public PostgreSQLBookDAO getBookDAO() {
         return new PostgreSQLBookDAO(connection);
     }
 
-
+    @Override
+    public PostgreSQLPublisherDAO getPublisherDAO() {
+        return new PostgreSQLPublisherDAO(connection);
+    }
 }

@@ -1,20 +1,21 @@
-/*
 package database.daointerfaces;
 
+import model.Publisher;
+
 import java.sql.SQLException;
+import java.util.List;
 
 public interface PublisherDAO {
-    public Publusher create(int publisherID, String publisherName) throws ;
 
-    public Publisher read(int publisherID) throws SQLException;
+    Publisher create(String publisherName) throws SQLException;
 
-    public void update(Publisher publisher) throws SQLException;
+    Publisher read(int publisherID) throws SQLException;
 
-    public void delete(int publisherID) throws SQLException;
+    void update(Publisher publisher) throws SQLException;
 
-    public List<Publisher> getAll()throws SQLException;
+    void delete(int publisherID) throws SQLException;
 
-
+    List<Publisher> getAll()throws SQLException;
 }
-//todo написать модель Publisher, затем снять комментирование и написать реализацию для PostgreSQL
-*/
+
+

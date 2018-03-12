@@ -1,9 +1,8 @@
 package database.postgresql;
 
 import database.daointerfaces.BookDAO;
-import models.Author;
-import models.Book;
-import models.YearOutOfBoundsException;
+import factories.BookFactory;
+import model.Book;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,10 +20,9 @@ public class PostgreSQLBookDAO implements BookDAO {
     }
 
     @Override
-    public Book create(String bookName, int publishYear, String brief, int publisherID) throws SQLException, YearOutOfBoundsException {
+    public Book create(String bookName, int publishYear, String brief, int publisherID) throws SQLException {
         String sql = "INSERT INTO \"book\" (\"bookName\", \"publishYear\", \"brief\", \"publisherID\") VALUES (?,?,?,?);";
         String sqlSelect = "SELECT * FROM \"book\" WHERE \"bookName\" = ?";
-        Book book;
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
             stm.setString(1, bookName);
             stm.setInt(2, publishYear);
@@ -35,44 +33,42 @@ public class PostgreSQLBookDAO implements BookDAO {
                 stm2.setString(1, bookName);
                 ResultSet rs2 = stm2.executeQuery();
                 rs2.next();
-                book = new Book(rs2.getString("bookName"),
+                return BookFactory.createBook(rs2.getInt("bookID"),
+                        rs2.getString("bookName"),
                         rs2.getInt("publishYear"),
                         rs2.getString("brief"),
                         rs2.getInt("publisherID"));
             }
         }
-        return book;
     }
 
     @Override
-    public Book read(int bookID) throws SQLException, YearOutOfBoundsException {
+    public Book read(int bookID) throws SQLException {
         String sql = "SELECT * FROM  \"book\" WHERE \"bookID\" = ?;";
-        Book book;
-        try (PreparedStatement stm = connection.prepareStatement(sql)){
-            stm.setInt(1,bookID);
+        try (PreparedStatement stm = connection.prepareStatement(sql)) {
+            stm.setInt(1, bookID);
             ResultSet rs = stm.executeQuery();
             rs.next();
-            book = new Book(rs.getString("bookName"),
+            return BookFactory.createBook(rs.getInt("bookID"),
+                    rs.getString("bookName"),
                     rs.getInt("publishYear"),
                     rs.getString("brief"),
                     rs.getInt("publisherID"));
         }
-        return book;
     }
 
     @Override
     public void update(Book book) throws SQLException {
         String sql = "UPDATE \"book\" SET \"bookName\" = ?, \"publishYear\" = ?, " +
-                "\"brief\" = ?, \"publisherID\" = ?, WHERE \"bookID\" = ?";
+                "\"brief\" = ?, \"publisherID\" = ? WHERE \"bookID\" = ?";
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
-            stm.setString(1, book.getTitle());
-            stm.setInt(2, book.getPublishYear());
+            stm.setString(1, book.getBookName());
+            stm.setInt(2, book.getPublushYear());
             stm.setString(3, book.getBrief());
             stm.setInt(4, book.getPublisherID());
-            stm.setInt(5, book.getId());
+            stm.setInt(5, book.getBookID());
             stm.executeUpdate();
         }
-
     }
 
     @Override
@@ -85,13 +81,14 @@ public class PostgreSQLBookDAO implements BookDAO {
     }
 
     @Override
-    public List<Book> getAll() throws SQLException, YearOutOfBoundsException {
+    public List<Book> getAll() throws SQLException {
         List<Book> list = new LinkedList<>();
         String sql = "SELECT * FROM \"book\"";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
-                list.add(new Book(rs.getString("bookName"),
+                list.add(BookFactory.createBook(rs.getInt("bookID"),
+                        rs.getString("bookName"),
                         rs.getInt("publishYear"),
                         rs.getString("brief"),
                         rs.getInt("publisherID")));

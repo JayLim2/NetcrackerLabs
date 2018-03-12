@@ -4,9 +4,10 @@ import database.daointerfaces.DAOFactory;
 import database.postgresql.PostgreSQLAuthorDAO;
 import database.postgresql.PostgreSQLBookDAO;
 import database.postgresql.PostgreSQLDAOFactory;
-import models.Author;
-import models.Book;
-import models.YearOutOfBoundsException;
+import database.postgresql.PostgreSQLPublisherDAO;
+import model.Author;
+import model.Book;
+import model.Publisher;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -14,62 +15,30 @@ import java.sql.SQLException;
 public class TestDB {
     public static void main(String[] args) {
         try {
-            DAOFactory daoFactory = PostgreSQLDAOFactory.getInstance("Server/src/main/java/database/databaseStartScript.sql");
-            Connection connection = daoFactory.getConnection();
-            PostgreSQLAuthorDAO postgreSQLAuthorDAO = new PostgreSQLAuthorDAO(connection);
-            PostgreSQLBookDAO postgreSQLBookDAO = new PostgreSQLBookDAO(connection);
-
-/*          Tests:
-            перед тем, как пробовать действия с книгами, занесите в таблицы бд любого паблишера
-*/
+            PostgreSQLDAOFactory daoFactory = PostgreSQLDAOFactory.getInstance("Server/src/main/java/database/databaseStartScript.sql");
+            PostgreSQLAuthorDAO postgreSQLAuthorDAO = daoFactory.getAuthorDAO();
+            PostgreSQLBookDAO postgreSQLBookDAO = daoFactory.getBookDAO();
+            PostgreSQLPublisherDAO postgreSQLPublisherDAO = daoFactory.getPublisherDAO();
 
 
-//           create author
-
-//            postgreSQLAuthorDAO.create("11Esenin221");
-
-
-//           read author
-
-//            System.out.println(postgreSQLAuthorDAO.read(0));
-
-//            create book
-//            try {
-//                postgreSQLBookDAO.create("deleteme", 1234, "2", 0);
-//            } catch (YearOutOfBoundsException e) {
-//                e.printStackTrace();
-//            }
-
-
-//           read book
-            try {
-                System.out.println(postgreSQLBookDAO.read(1));
-            } catch (YearOutOfBoundsException e) {
-                e.printStackTrace();
-            }
-
-
-//            удаление книги
-//          postgreSQLBookDAO.delete(4);
-
-
-//            удаление автора
-//            postgreSQLAuthorDAO.delete(10);
-
-
-//            update Autor, пока работает некорректно, т.к. у автора старая модель со старым id
-
+//            postgreSQLAuthorDAO.delete(0);
+//            System.out.println(postgreSQLAuthorDAO.create("11Esenin221"));
 //            Author a = postgreSQLAuthorDAO.read(1);
-//            a.setName("eseninTRUE");
+//            a.setAuthorName("Esenin");
 //            postgreSQLAuthorDAO.update(a);
+//            System.out.println(postgreSQLAuthorDAO.read(1));
 
+//            System.out.println(postgreSQLPublisherDAO.create("puvlic"));
+//            Publisher b = postgreSQLPublisherDAO.read(0);
+//            b.setPublisherName("Publisher");
+//            postgreSQLPublisherDAO.update(b);
+//            System.out.println(postgreSQLPublisherDAO.read(0));
 
-//          update Book, пока работает некорректно, т.к. у автора старая модель со старым id
-
-//            Book b = postgreSQLBookDAO.read(1);
-//            b.setTitle("Newtitle");
-//            postgreSQLBookDAO.update(b);
-
+//            System.out.println(postgreSQLBookDAO.create("book", 223,"asdf", 0));
+            Book b = postgreSQLBookDAO.read(0);
+            b.setBookName("BookName");
+            postgreSQLBookDAO.update(b);
+            System.out.println(postgreSQLBookDAO.read(0));
 
 
         } catch (SQLException e) {

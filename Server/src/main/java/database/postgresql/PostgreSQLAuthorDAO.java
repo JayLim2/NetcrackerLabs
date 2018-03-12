@@ -1,7 +1,8 @@
 package database.postgresql;
 
 import database.daointerfaces.AuthorDAO;
-import models.Author;
+import factories.AuthorFactory;
+import model.Author;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,7 +24,6 @@ public class PostgreSQLAuthorDAO implements AuthorDAO {
     public Author create(String authorName) throws SQLException {
         String sql = "INSERT INTO \"author\" (\"authorName\") VALUES (?);";
         String sqlSelect = "SELECT * FROM \"author\" WHERE \"authorName\" = ?";
-        Author author;
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
             stm.setString(1, authorName);
             stm.executeUpdate();
@@ -31,32 +31,29 @@ public class PostgreSQLAuthorDAO implements AuthorDAO {
                 stm2.setString(1, authorName);
                 ResultSet rs2 = stm2.executeQuery();
                 rs2.next();
-                author = new Author(rs2.getString("authorName"));
-
+                return AuthorFactory.createAuthor(rs2.getInt("authorID"),
+                        rs2.getString("authorName"));
             }
-            return author;
         }
     }
 
     @Override
     public Author read(int authorID) throws SQLException {
         String sql = "SELECT * FROM  \"author\" WHERE \"authorID\" = ?;";
-        Author author;
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
             stm.setInt(1, authorID);
             ResultSet rs = stm.executeQuery();
             rs.next();
-            author = new Author(rs.getString("authorName"));
+            return AuthorFactory.createAuthor(rs.getInt("authorID"), rs.getString("authorName"));
         }
-        return author;
     }
 
     @Override
     public void update(Author author) throws SQLException {
-        String sql = "UPDATE \"author\" SET \"authorName\" = ?, WHERE \"authorID\" = ?";
+        String sql = "UPDATE \"author\" SET \"authorName\" = ? WHERE \"authorID\" = ?";
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
-            stm.setString(1, author.getName());
-            stm.setInt(2, author.getId());
+            stm.setString(1, author.getAuthorName());
+            stm.setInt(2, author.getAuthorID());
             stm.executeUpdate();
         }
     }
@@ -77,7 +74,8 @@ public class PostgreSQLAuthorDAO implements AuthorDAO {
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
-                list.add(new Author(rs.getString("authorName")));
+                list.add(AuthorFactory.createAuthor(rs.getInt("authorID"),
+                        rs.getString("authorName")));
             }
         }
         return Collections.unmodifiableList(list);
