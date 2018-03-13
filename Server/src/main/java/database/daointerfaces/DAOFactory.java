@@ -12,5 +12,5 @@ public interface DAOFactory {
 
     AuthorDAO getAuthorDAO();
 
-    AuthorBookConnectorDAO getAuthorBookConnectorDAO();
+//    AuthorBookConnectorDAO getAuthorBookConnectorDAO();
 }

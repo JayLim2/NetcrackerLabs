@@ -31,6 +31,7 @@ public class PostgreSQLDAOFactory implements DAOFactory {
 
     private PostgreSQLDAOFactory() throws SQLException {
         connection = getConnection();
+        executeSqlStartScript(START_SCRIPT_NAME);
     }
 
     public static PostgreSQLDAOFactory getInstance(String path) throws SQLException {
@@ -107,3 +108,4 @@ public class PostgreSQLDAOFactory implements DAOFactory {
         return new PostgreSQLPublisherDAO(connection);
     }
 }
+
