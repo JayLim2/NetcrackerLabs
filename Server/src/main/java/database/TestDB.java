@@ -18,7 +18,7 @@ public class TestDB {
     public static void main(String[] args) {
         try {
 
-            PostgreSQLDAOFactory daoFactory = PostgreSQLDAOFactory.getInstance("Server/src/main/java/database/databaseStartScript.sql");
+            PostgreSQLDAOFactory daoFactory = PostgreSQLDAOFactory.getInstance("C:\\Users\\Алескандр\\Documents\\GitHub\\NetLabsStage2\\NetcrackerLabs\\Server\\src\\main\\java\\database\\databaseStartScript.sql");
             PostgreSQLAuthorDAO postgreSQLAuthorDAO = daoFactory.getAuthorDAO();
             PostgreSQLBookDAO postgreSQLBookDAO = daoFactory.getBookDAO();
             PostgreSQLPublisherDAO postgreSQLPublisherDAO = daoFactory.getPublisherDAO();
