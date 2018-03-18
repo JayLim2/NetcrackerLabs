@@ -31,7 +31,7 @@ public class PostgreSQLAuthorDAO implements AuthorDAO {
                 stm2.setString(1, authorName);
                 ResultSet rs2 = stm2.executeQuery();
                 rs2.next();
-                return AuthorFactory.createAuthor(rs2.getInt("authorID"),
+                return AuthorFactory.getInstance().createAuthor(rs2.getInt("authorID"),
                         rs2.getString("authorName"));
             }
         }
@@ -44,7 +44,7 @@ public class PostgreSQLAuthorDAO implements AuthorDAO {
             stm.setInt(1, authorID);
             ResultSet rs = stm.executeQuery();
             rs.next();
-            return AuthorFactory.createAuthor(rs.getInt("authorID"), rs.getString("authorName"));
+            return AuthorFactory.getInstance().createAuthor(rs.getInt("authorID"), rs.getString("authorName"));
         }
     }
 
@@ -74,7 +74,7 @@ public class PostgreSQLAuthorDAO implements AuthorDAO {
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
-                list.add(AuthorFactory.createAuthor(rs.getInt("authorID"),
+                list.add(AuthorFactory.getInstance().createAuthor(rs.getInt("authorID"),
                         rs.getString("authorName")));
             }
         }

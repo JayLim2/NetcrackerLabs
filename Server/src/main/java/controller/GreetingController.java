@@ -22,7 +22,7 @@ public class GreetingController {
     public String greeting(@RequestParam(name="name", required=false, defaultValue="World") String name, Model model) {
         PostgreSQLDAOFactory daoFactory;
         try {
-            daoFactory = PostgreSQLDAOFactory.getInstance("C:\\Users\\Алескандр\\Documents\\GitHub\\NetLabsStage2\\NetcrackerLabs\\Server\\src\\main\\java\\database\\databaseStartScript.sql");
+            daoFactory = PostgreSQLDAOFactory.getInstance("Server/src/main/java/database/databaseStartScript.sql");
             PostgreSQLAuthorDAO postgreSQLAuthorDAO = daoFactory.getAuthorDAO();
             model.addAttribute("name", postgreSQLAuthorDAO.read(Integer.parseInt(name)).getAuthorName());
         } catch (SQLException ex) {

@@ -30,7 +30,7 @@ public class PostgreSQLPublisherDAO implements PublisherDAO {
                 stm2.setString(1, publisherName);
                 ResultSet rs2 = stm2.executeQuery();
                 rs2.next();
-                return PublisherFactory.createPublisher(rs2.getInt("publisherID"),
+                return PublisherFactory.getInstance().createPublisher(rs2.getInt("publisherID"),
                         rs2.getString("publisherName"));
             }
         }
@@ -43,7 +43,7 @@ public class PostgreSQLPublisherDAO implements PublisherDAO {
             stm.setInt(1, publisherID);
             ResultSet rs = stm.executeQuery();
             rs.next();
-            return PublisherFactory.createPublisher(rs.getInt("publisherID"), rs.getString("publisherName"));
+            return PublisherFactory.getInstance().createPublisher(rs.getInt("publisherID"), rs.getString("publisherName"));
         }
     }
 
@@ -73,7 +73,7 @@ public class PostgreSQLPublisherDAO implements PublisherDAO {
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
-                list.add(PublisherFactory.createPublisher(rs.getInt("publisherID"),
+                list.add(PublisherFactory.getInstance().createPublisher(rs.getInt("publisherID"),
                         rs.getString("publisherName")));
             }
         }

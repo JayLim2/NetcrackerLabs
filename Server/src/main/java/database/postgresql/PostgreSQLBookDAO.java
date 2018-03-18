@@ -33,7 +33,7 @@ public class PostgreSQLBookDAO implements BookDAO {
                 stm2.setString(1, bookName);
                 ResultSet rs2 = stm2.executeQuery();
                 rs2.next();
-                return BookFactory.createBook(rs2.getInt("bookID"),
+                return BookFactory.getInstance().createBook(rs2.getInt("bookID"),
                         rs2.getString("bookName"),
                         rs2.getInt("publishYear"),
                         rs2.getString("brief"),
@@ -49,7 +49,7 @@ public class PostgreSQLBookDAO implements BookDAO {
             stm.setInt(1, bookID);
             ResultSet rs = stm.executeQuery();
             rs.next();
-            return BookFactory.createBook(rs.getInt("bookID"),
+            return BookFactory.getInstance().createBook(rs.getInt("bookID"),
                     rs.getString("bookName"),
                     rs.getInt("publishYear"),
                     rs.getString("brief"),
@@ -87,7 +87,7 @@ public class PostgreSQLBookDAO implements BookDAO {
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
-                list.add(BookFactory.createBook(rs.getInt("bookID"),
+                list.add(BookFactory.getInstance().createBook(rs.getInt("bookID"),
                         rs.getString("bookName"),
                         rs.getInt("publishYear"),
                         rs.getString("brief"),
