@@ -3,8 +3,25 @@
 <head>
     <title>Getting Started: Serving Web Content</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script>
+        function deleteBook(x){
+            window.location.href = "/delete?id=" + x;
+        }
+    </script>
 </head>
 <body>
-    <p th:text="'Hello, ' + ${name} + '!'" />
+    <table>
+        <tr>
+          <th>BookNAME</th>
+          <th>BookPubyear</th>
+          <th>BookID</th>
+        </tr>
+        <tr th:each="book : ${books}">
+          <td th:text="${book.bookName}"></td>
+          <td th:text="${book.publushYear}"></td>
+          <td th:text="${book.bookID}"></td>
+          <td><button th:id="${book.bookID}" onclick="deleteBook(this.id)">Удалить</button></td>
+        </tr>
+      </table>
 </body>
 </html>
