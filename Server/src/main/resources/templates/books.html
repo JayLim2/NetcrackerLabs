@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Список книг</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script type="text/javascript">
+        function deleteBook(x) {
+            window.location.href = "/delete?id=" + x;
+        }
+    </script>
+    <link type="text/css" rel="stylesheet" href="../static/css/main.css" th:href="@{/css/main.css}" />
+
+</head>
+<body>
+Все книги | <a href="authors?name=0">Все авторы</a>
+<h1>Список всех книг</h1>
+<table style="width:100%;">
+    <tr>
+        <th>ID</th>
+        <th>Название книги</th>
+        <th>Год издания</th>
+        <th class="controlPanel">Управление объектом</th>
+    </tr>
+    <tr th:each="book : ${books}">
+
+        <td th:text="${book.bookID}"></td>
+        <td th:text="${book.bookName}"></td>
+        <td th:text="${book.publushYear}"></td>
+        <td class="controlPanel">
+            <input type="button" th:id="${book.bookID}" onclick="deleteBook(this.id)" value="Удалить">
+        </td>
+
+    </tr>
+</table>
+</body>
+</html>

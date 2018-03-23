@@ -1,0 +1,39 @@
+body {
+    padding: 20px 100px 20px;
+}
+
+body, td, th {
+    font-size: 11pt;
+    font-family: "Arial";
+}
+
+h1 {
+    font-family: "Franklin Gothic Medium";
+    font-size: 30pt;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td, th {
+    padding: 15px;
+    border: 1px solid black;
+    margin: 5px;
+    text-align: center;
+}
+
+.controlPanel {
+    background: #F3F2F2;
+}
+
+a {
+    text-decoration: underline;
+    font-size:11pt;
+    color:#03478C;
+    margin:7px 0;
+}
+
+a:hover {
+    color:#ED2D0C;
+}

@@ -5,12 +5,12 @@
  */
 package controller;
 
-import database.postgresql.PostgreSQLAuthorDAO;
-import database.postgresql.PostgreSQLDAOFactory;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import model.Author;
 import model.Book;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class GreetingController {
- 
-    @GetMapping("/greeting")
+
+    @GetMapping("/books")
     public String greeting(@RequestParam(name="name", required=false, defaultValue="World") String name, Model model) {
         ControllerW daoInterface;
         try {
@@ -30,7 +30,7 @@ public class GreetingController {
         } catch (SQLException ex) {
             Logger.getLogger(GreetingController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return "greeting";
+        return "books";
     }
 
     @GetMapping("/delete")
@@ -44,6 +44,33 @@ public class GreetingController {
         } catch (SQLException ex) {
             Logger.getLogger(GreetingController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return "greeting";
+        return "books";
+    }
+
+    @GetMapping("/authors")
+    public String authors(@RequestParam(name="name", required=false, defaultValue="World") String name, Model model) {
+        ControllerW daoInterface;
+        try {
+            daoInterface = ControllerW.getInstance();
+            List<Author> authors = daoInterface.getAllAuthors();
+            model.addAttribute("authors", authors);
+        } catch (SQLException ex) {
+            Logger.getLogger(GreetingController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "authors";
+    }
+
+    @GetMapping("/deleteAuthor")
+    public String deleteAuthor(@RequestParam(name="id", required=true) String id, Model model) {
+        ControllerW daoInterface;
+        try {
+            daoInterface = ControllerW.getInstance();
+            daoInterface.deleteAuthor(Integer.parseInt(id));
+            List<Author> authors = daoInterface.getAllAuthors();
+            model.addAttribute("authors", authors);
+        } catch (SQLException ex) {
+            Logger.getLogger(GreetingController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "authors";
     }
 }

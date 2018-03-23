@@ -97,9 +97,13 @@ public class ControllerW {
         Book book = bookDAO.create(bookName, publishYear, brief, publisherID);
         authorContainer.getAuthor(authorID).addBook(book);
     }
-    
-    public List<Book> getAllBooks() throws SQLException{
+
+    public List<Book> getAllBooks() throws SQLException {
         return bookDAO.getAll();
+    }
+
+    public List<Author> getAllAuthors() throws SQLException {
+        return authorDAO.getAll();
     }
 
     public Book readBook(int authorID, int bookID) {
