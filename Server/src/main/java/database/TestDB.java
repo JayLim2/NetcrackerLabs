@@ -23,13 +23,13 @@ public class TestDB {
             PostgreSQLBookDAO postgreSQLBookDAO = daoFactory.getBookDAO();
             PostgreSQLPublisherDAO postgreSQLPublisherDAO = daoFactory.getPublisherDAO();
 
-            System.out.println(postgreSQLAuthorDAO.create("11Esenin22381_eeee"));
-            Author a = postgreSQLAuthorDAO.read(0);
-            a.setAuthorName("Esenin");
-            postgreSQLAuthorDAO.update(a);
-            System.out.println(postgreSQLAuthorDAO.read(0));
+            //System.out.println(postgreSQLAuthorDAO.create("151Esenin22381_eeee"));
+//            Author a = postgreSQLAuthorDAO.read(0);
+//            a.setAuthorName("Esenin");
+//            postgreSQLAuthorDAO.update(a);
+//            System.out.println(postgreSQLAuthorDAO.read(0));
 
-            System.out.println(postgreSQLPublisherDAO.create("publisherrrr"));
+            System.out.println(postgreSQLPublisherDAO.create("publis66herrrr"));
             Publisher p = postgreSQLPublisherDAO.read(0);
             p.setPublisherName("newPublisher");
             postgreSQLPublisherDAO.update(p);

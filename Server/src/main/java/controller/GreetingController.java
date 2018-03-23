@@ -15,13 +15,14 @@ import model.Book;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class GreetingController {
 
     @GetMapping("/books")
-    public String greeting(@RequestParam(name="name", required=false, defaultValue="World") String name, Model model) {
+    public String greeting(Model model) {
         ControllerW daoInterface;
         try {
             daoInterface = ControllerW.getInstance();
@@ -33,7 +34,7 @@ public class GreetingController {
         return "books";
     }
 
-    @GetMapping("/delete")
+    @PostMapping("/delete")
     public String delete(@RequestParam(name="id", required=true) String id, Model model) {
         ControllerW daoInterface;
         try {
@@ -48,7 +49,7 @@ public class GreetingController {
     }
 
     @GetMapping("/authors")
-    public String authors(@RequestParam(name="name", required=false, defaultValue="World") String name, Model model) {
+    public String authors(Model model) {
         ControllerW daoInterface;
         try {
             daoInterface = ControllerW.getInstance();
@@ -60,7 +61,7 @@ public class GreetingController {
         return "authors";
     }
 
-    @GetMapping("/deleteAuthor")
+    @PostMapping("/deleteAuthor")
     public String deleteAuthor(@RequestParam(name="id", required=true) String id, Model model) {
         ControllerW daoInterface;
         try {
