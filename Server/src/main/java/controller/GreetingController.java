@@ -6,12 +6,15 @@
 package controller;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import model.Author;
 import model.Book;
+import model.Publisher;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,6 +43,44 @@ public class GreetingController {
         try {
             daoInterface = ControllerW.getInstance();
             daoInterface.deleteBook(0, Integer.parseInt(id));
+            List<Book> books = daoInterface.getAllBooks();
+            model.addAttribute("books", books);
+        } catch (SQLException ex) {
+            Logger.getLogger(GreetingController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "books";
+    }
+    
+    @PostMapping("/edit")
+    public String edit(@RequestParam(name="id", required=true) String id, Model model) {
+        ControllerW daoInterface;
+        try {
+            daoInterface = ControllerW.getInstance();
+            Book b = daoInterface.readBook(Integer.parseInt(id));
+            model.addAttribute("book", daoInterface.readBook(Integer.parseInt(id)));
+            model.addAttribute("publisher", daoInterface.readPublisher(b.getPublisherID()));
+        } catch (SQLException ex) {
+            Logger.getLogger(GreetingController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "edit";
+    }
+    
+    @PostMapping("/submitEdit")
+    public String submitEdit(@RequestParam Map<String,String> params, Model model) {
+        ControllerW daoInterface;
+        try {
+            daoInterface = ControllerW.getInstance();
+            Publisher pub = daoInterface.readPublisher(params.get("publisher"));
+            String[] authorNames = params.get("authors").split(",");
+            int[] aIds = new int[authorNames.length];
+            int i = 0;
+            for(String aname:authorNames){
+                aIds[i] = daoInterface.readAuthor(aname).getAuthorID();
+                i++;
+            }
+            daoInterface.updateBook(Integer.parseInt(params.get("id")), params.get("booktitle"),
+                    Integer.parseInt(params.get("publishYear")),
+                    params.get("brief"), pub.getPublisherID(), aIds);
             List<Book> books = daoInterface.getAllBooks();
             model.addAttribute("books", books);
         } catch (SQLException ex) {

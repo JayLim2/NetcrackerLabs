@@ -48,13 +48,17 @@ public class ControllerW {
     //todo написать проверки вводимых данных в методах
     public void createAuthor(String authorName) throws SQLException {
         Author author = authorDAO.create(authorName);
-        authorContainer.addAuthor(author);
+        //authorContainer.addAuthor(author);
     }
 
     public Author readAuthor(int authorID) {
         return authorContainer.getAuthor(authorID);
     }
 
+    public Author readAuthor(String authorName) throws SQLException {
+        return authorDAO.read(authorName);
+    }
+    
     public void updateAuthor(int authorID, String authorName) throws SQLException {
         Author author = authorContainer.getAuthor(authorID);
         author.setAuthorName(authorName);
@@ -71,10 +75,16 @@ public class ControllerW {
         publisherContainer.addPublisher(publisher);
     }
 
-    public Publisher readPublisher(int publisherID) {
+    public Publisher readPublisher(int publisherID) throws SQLException {
 //todo возвращать сразу в стринге для методов чтения
-        Publisher publisher = publisherContainer.getPublisher(publisherID);
-        return publisher;
+        //Publisher publisher = publisherContainer.getPublisher(publisherID);
+        return publisherDAO.read(publisherID);
+    }
+    
+    public Publisher readPublisher(String publisherName) throws SQLException {
+//todo возвращать сразу в стринге для методов чтения
+        //Publisher publisher = publisherContainer.getPublisher(publisherID);
+        return publisherDAO.read(publisherName);
     }
 
     public void updatePublisher(int publisherID, String publisherName) throws SQLException {
@@ -93,9 +103,9 @@ public class ControllerW {
                            int publishYear,
                            String brief,
                            int publisherID,
-                           int authorID) throws SQLException {
-        Book book = bookDAO.create(bookName, publishYear, brief, publisherID);
-        authorContainer.getAuthor(authorID).addBook(book);
+                           int[] authorIDs) throws SQLException {
+        Book book = bookDAO.create(bookName, publishYear, brief, publisherID, authorIDs);
+        //authorContainer.getAuthor(authorID).addBook(book);
     }
 
     public List<Book> getAllBooks() throws SQLException {
@@ -106,8 +116,8 @@ public class ControllerW {
         return authorDAO.getAll();
     }
 
-    public Book readBook(int authorID, int bookID) {
-        return authorContainer.getAuthor(authorID).getBook(bookID);
+    public Book readBook(int bookID) throws SQLException {
+        return bookDAO.read(bookID);
     }
 
     public void updateBook(int bookID,
@@ -115,13 +125,10 @@ public class ControllerW {
                            int publishYear,
                            String brief,
                            int publisherID,
-                           int authorID) throws SQLException {
-        Book book = authorContainer.getAuthor(authorID).getBook(bookID);
-        book.setBookName(bookName);
-        book.setPublushYear(publishYear);
-        book.setBrief(brief);
-        book.setPublisherID(publisherID);
-        bookDAO.update(book);
+                           int[] authorIDs) throws SQLException {
+        ///Book book = authorContainer.getAuthor(authorIDs[0]).getBook(bookID);//fix this.
+        Book book = new Book(bookID, bookName, publishYear, brief, publisherID, null);
+        bookDAO.update(book,authorIDs);
     }
 
     public synchronized void deleteBook(int authorID, int bookID) throws SQLException {

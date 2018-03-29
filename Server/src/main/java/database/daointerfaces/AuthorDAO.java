@@ -9,6 +9,8 @@ public interface AuthorDAO {
     Author create(String authorName) throws SQLException;
 
     Author read(int authorID) throws SQLException;
+    
+    Author read(String authorName) throws SQLException;
 
     void update(Author book) throws SQLException;
 

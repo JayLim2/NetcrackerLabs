@@ -1,5 +1,6 @@
 package factories;
 
+import java.util.List;
 import model.Book;
 
 public class BookFactory {
@@ -12,7 +13,7 @@ public class BookFactory {
         return instance;
     }
 
-    public Book createBook(int bookID, String bookName, int publishYear, String brief, int publisherID) {
-        return new Book(bookID, bookName, publishYear, brief, publisherID);
+    public Book createBook(int bookID, String bookName, int publishYear, String brief, int publisherID, List<String> authorNames) {
+        return new Book(bookID, bookName, publishYear, brief, publisherID, authorNames);
     }
 }

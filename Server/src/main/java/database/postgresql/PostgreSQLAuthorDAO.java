@@ -80,4 +80,15 @@ public class PostgreSQLAuthorDAO implements AuthorDAO {
         }
         return Collections.unmodifiableList(list);
     }
+
+    @Override
+    public Author read(String authorName) throws SQLException {
+        String sql = "SELECT * FROM  \"author\" WHERE \"authorName\" = ?;";
+        try (PreparedStatement stm = connection.prepareStatement(sql)) {
+            stm.setString(1, authorName);
+            ResultSet rs = stm.executeQuery();
+            rs.next();
+            return AuthorFactory.getInstance().createAuthor(rs.getInt("authorID"), rs.getString("authorName"));
+        }
+    }
 }

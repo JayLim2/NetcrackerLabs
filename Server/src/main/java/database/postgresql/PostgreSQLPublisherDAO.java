@@ -46,6 +46,17 @@ public class PostgreSQLPublisherDAO implements PublisherDAO {
             return PublisherFactory.getInstance().createPublisher(rs.getInt("publisherID"), rs.getString("publisherName"));
         }
     }
+    
+    @Override
+    public Publisher read(String publisherName) throws SQLException {
+        String sql = "SELECT * FROM  \"publisher\" WHERE \"publisherName\" = ?;";
+        try (PreparedStatement stm = connection.prepareStatement(sql)) {
+            stm.setString(1, publisherName);
+            ResultSet rs = stm.executeQuery();
+            rs.next();
+            return PublisherFactory.getInstance().createPublisher(rs.getInt("publisherID"), rs.getString("publisherName"));
+        }
+    }
 
     @Override
     public void update(Publisher publisher) throws SQLException {

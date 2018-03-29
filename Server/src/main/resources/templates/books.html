@@ -8,6 +8,11 @@
             document.getElementById("hiddenDeleteField").value = x;
             document.getElementById("deleteForm").submit();
         }
+        function editBook(x) {
+            document.getElementById("hiddenDeleteField").value = x;
+            document.getElementById("deleteForm").action = "edit";
+            document.getElementById("deleteForm").submit();
+        }
     </script>
     <link type="text/css" rel="stylesheet" href="../static/css/main.css" th:href="@{/css/main.css}"/>
 
@@ -29,11 +34,14 @@
 
         <td th:text="${book.bookID}"></td>
         <td th:text="${book.bookName}"></td>
-        <td th:text="${book.publushYear}"></td>
+        <td th:text="${book.publishYear}"></td>
+        <td th:text="${#strings.listJoin(book.authorNames,',')}"></td>
         <td class="controlPanel">
             <input type="button" th:id="${book.bookID}" onclick="deleteBook(this.id)" value="Удалить">
         </td>
-
+        <td class="controlPanel">
+            <input type="button" th:id="${book.bookID}" onclick="editBook(this.id)" value="Редактировать">
+        </td>
     </tr>
 </table>
 </body>

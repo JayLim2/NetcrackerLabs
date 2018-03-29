@@ -1,24 +1,38 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Book {
 
     private int bookID;
     private String bookName;
-    private int publushYear;
+    private int publishYear;
     private String brief;
     private int publisherID;
+    private List<String> authorNames;
 
     public Book() {
+        authorNames = new ArrayList<String>();
     }
 
-    public Book(int bookID, String bookName, int publushYear, String brief, int publisherID) {
+    public Book(int bookID, String bookName, int publishYear, String brief, int publisherID, List<String> authorNames) {
         this.bookID = bookID;
         this.bookName = bookName;
-        this.publushYear = publushYear;
+        this.publishYear = publishYear;
         this.brief = brief;
         this.publisherID = publisherID;
+        this.authorNames = authorNames;
     }
 
+    public List<String> getAuthorNames() {
+        return authorNames;
+    }
+
+    public void setAuthorNames(List<String> authorNames) {
+        this.authorNames = authorNames;
+    }
+    
     public int getBookID() {
         return bookID;
     }
@@ -35,12 +49,12 @@ public class Book {
         this.bookName = bookName;
     }
 
-    public int getPublushYear() {
-        return publushYear;
+    public int getPublishYear() {
+        return publishYear;
     }
 
-    public void setPublushYear(int publushYear) {
-        this.publushYear = publushYear;
+    public void setPublishYear(int publishYear) {
+        this.publishYear = publishYear;
     }
 
     public String getBrief() {
@@ -63,7 +77,11 @@ public class Book {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(this.getClass().getSimpleName() + " (" + bookID
-                + ", " + bookName + ", " + publushYear + ", " + brief + ")");
+                + ", " + bookName + ", " + publishYear + ", " + brief + "{");
+        for(String aname:authorNames ){
+            stringBuilder.append(aname + ", ");   
+        }
+        stringBuilder.append("} )");
         return stringBuilder.toString();
     }
 }

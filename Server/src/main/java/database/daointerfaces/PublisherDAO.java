@@ -10,6 +10,8 @@ public interface PublisherDAO {
     Publisher create(String publisherName) throws SQLException;
 
     Publisher read(int publisherID) throws SQLException;
+    
+    Publisher read(String publisherName) throws SQLException;
 
     void update(Publisher publisher) throws SQLException;
 
