@@ -65,6 +65,16 @@ public class GreetingController {
         return "edit";
     }
     
+    @PostMapping("/add")
+    public String add( Model model) {
+        ControllerW daoInterface;
+//        try {
+//        } catch (SQLException ex) {
+//            Logger.getLogger(GreetingController.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+        return "add";
+    }
+    
     @PostMapping("/submitEdit")
     public String submitEdit(@RequestParam Map<String,String> params, Model model) {
         ControllerW daoInterface;
@@ -79,6 +89,30 @@ public class GreetingController {
                 i++;
             }
             daoInterface.updateBook(Integer.parseInt(params.get("id")), params.get("booktitle"),
+                    Integer.parseInt(params.get("publishYear")),
+                    params.get("brief"), pub.getPublisherID(), aIds);
+            List<Book> books = daoInterface.getAllBooks();
+            model.addAttribute("books", books);
+        } catch (SQLException ex) {
+            Logger.getLogger(GreetingController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "books";
+    }
+    
+    @PostMapping("/submitAdd")
+    public String submitAdd(@RequestParam Map<String,String> params, Model model) {
+        ControllerW daoInterface;
+        try {
+            daoInterface = ControllerW.getInstance();
+            Publisher pub = daoInterface.readPublisher(params.get("publisher"));
+            String[] authorNames = params.get("authors").split(",");
+            int[] aIds = new int[authorNames.length];
+            int i = 0;
+            for(String aname:authorNames){
+                aIds[i] = daoInterface.readAuthor(aname).getAuthorID();
+                i++;
+            }
+            daoInterface.createBook(params.get("booktitle"),
                     Integer.parseInt(params.get("publishYear")),
                     params.get("brief"), pub.getPublisherID(), aIds);
             List<Book> books = daoInterface.getAllBooks();

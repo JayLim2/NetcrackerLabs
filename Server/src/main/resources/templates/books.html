@@ -13,6 +13,10 @@
             document.getElementById("deleteForm").action = "edit";
             document.getElementById("deleteForm").submit();
         }
+        function addBook() {
+            document.getElementById("deleteForm").action = "add";
+            document.getElementById("deleteForm").submit();
+        }
     </script>
     <link type="text/css" rel="stylesheet" href="../static/css/main.css" th:href="@{/css/main.css}"/>
 
@@ -44,5 +48,6 @@
         </td>
     </tr>
 </table>
+<input type="button" onclick="addBook()" value="Добавить">
 </body>
 </html>

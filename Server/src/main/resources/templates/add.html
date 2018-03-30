@@ -1,16 +1,22 @@
-<!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-<html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Добавление Книги</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script type="text/javascript">
+    </script>
+    <link type="text/css" rel="stylesheet" href="../static/css/main.css" th:href="@{/css/main.css}"/>
+
+</head>
+<body>
+    <form id ="editForm" action="submitAdd" method="POST">
+        <input type="text" id = "booktitle" name = "booktitle" ><br>
+        <input type="text" id = "publishYear" name = "publishYear" ><br>
+        <input type="text" id = "brief" name = "brief" ><br>
+        <input type="text" id = "publisher" name = "publisher" ><br>
+        <input type="text" id = "authors" name ="authors" ><br>
+        <input type="submit" value="submit">
+    </form>
+</table>
+</body>
 </html>

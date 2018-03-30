@@ -98,7 +98,7 @@ public class ControllerW {
         publisherContainer.deletePublisher(publisherID);
     }
 
-    public void createBook(int bookID,
+    public void createBook(
                            String bookName,
                            int publishYear,
                            String brief,
