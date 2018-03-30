@@ -1,7 +1,18 @@
-body {
-    padding: 20px 100px 20px;
+*{
+    margin: 0;
+    padding: 0;
+    font-size:100%;
+    vertical-align: baseline;
 }
 
+body {
+    height:100%;
+    margin:0
+}
+html{
+    height: 100%;
+    margin:0
+}
 body, td, th {
     font-size: 11pt;
     font-family: "Arial";
@@ -14,6 +25,8 @@ h1 {
 
 table {
     border-collapse: collapse;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 td, th {
@@ -25,6 +38,42 @@ td, th {
 
 .controlPanel {
     background: #F3F2F2;
+}
+
+.mainBox{
+    height: 100%;
+    margin:0;
+}
+
+.leftSide{
+    width: 200px;
+    height: 100%;
+    border-right: 5px solid black;
+    padding-top: 20px;
+    float: left;
+    text-align: center;
+}
+
+.header{
+    height: 100px;
+    border-bottom:  5px solid black;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+li{
+    margin-top: 10px;
+}
+
+.rightSide{
+    text-align: center;
+    padding-top: 20px;
+    height: 100%;
+    overflow: hidden;
+}
+
+.inputField{
+    margin-top: 10px
 }
 
 a {
