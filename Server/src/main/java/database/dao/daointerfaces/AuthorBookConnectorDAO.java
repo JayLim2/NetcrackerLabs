@@ -1,6 +1,6 @@
-package database.daointerfaces;
+package database.dao.daointerfaces;
 
-import model.AuthorBookConnector;
+import entity.AuthorBookConnector;
 
 import java.sql.SQLException;
 import java.util.List;

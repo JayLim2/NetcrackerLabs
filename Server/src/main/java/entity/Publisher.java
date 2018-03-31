@@ -1,10 +1,21 @@
-package spring.entity;
+package entity;
 
 
+import javax.persistence.*;
+import java.util.List;
+
+@Entity
+@Table(name = "\"publisher\"", schema = "public", catalog = "postgres")
 public class Publisher {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "auto_increment_publisher")
+    @SequenceGenerator(name = "auto_increment_publisher", sequenceName = "\"auto_increment_publisher\"", allocationSize = 1)
     private int publisherID;
+    @Column (name = "\"publisherName\"")
     private String publisherName;
+//    пока не понял, нужно ли объявлять @OneToMany в издателе, если объявлено ManyToOne в книгу с указанием publisher_id
+//    @OneToMany (fetch = FetchType.EAGER, mappedBy = "book")
+//    private List<Book> books;
 
     public Publisher() {
     }
@@ -13,6 +24,14 @@ public class Publisher {
         this.publisherID = publisherID;
         this.publisherName = publisherName;
     }
+
+//    public List<Book> getBooks() {
+//        return books;
+//    }
+//
+//    public void setBooks(List<Book> books) {
+//        this.books = books;
+//    }
 
     public int getPublisherID() {
         return publisherID;

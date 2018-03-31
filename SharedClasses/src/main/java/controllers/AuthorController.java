@@ -9,7 +9,7 @@ import models.Book;
  */
 public class AuthorController {
     /**
-     * Encapsulated Author model.
+     * Encapsulated Author entity.
      */
     private Author author;
 
@@ -22,7 +22,7 @@ public class AuthorController {
 
     /**
      * Default constructor.
-     * @param newAuthor model to wrap
+     * @param newAuthor entity to wrap
      */
     public AuthorController(final Author newAuthor) {
         this.author = newAuthor;

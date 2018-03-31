@@ -1,8 +1,8 @@
-package database.postgresql;
+package database.dao.postgresql;
 
-import database.daointerfaces.AuthorDAO;
+import database.dao.daointerfaces.AuthorDAO;
 import factories.AuthorFactory;
-import model.Author;
+import entity.Author;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

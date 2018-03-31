@@ -1,9 +1,8 @@
-package database.postgresql;
+package database.dao.postgresql;
 
-import database.daointerfaces.AuthorBookConnectorDAO;
-import model.AuthorBookConnector;
+import database.dao.daointerfaces.AuthorBookConnectorDAO;
+import entity.AuthorBookConnector;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class PostgreSQLAuthorBookConnectorDAO implements AuthorBookConnectorDAO {

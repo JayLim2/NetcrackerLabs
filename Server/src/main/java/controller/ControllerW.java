@@ -1,10 +1,10 @@
 package controller;
 
-import database.postgresql.PostgreSQLAuthorDAO;
-import database.postgresql.PostgreSQLBookDAO;
-import database.postgresql.PostgreSQLDAOFactory;
-import database.postgresql.PostgreSQLPublisherDAO;
-import model.*;
+import database.dao.postgresql.PostgreSQLAuthorDAO;
+import database.dao.postgresql.PostgreSQLBookDAO;
+import database.dao.postgresql.PostgreSQLDAOFactory;
+import database.dao.postgresql.PostgreSQLPublisherDAO;
+import entity.*;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

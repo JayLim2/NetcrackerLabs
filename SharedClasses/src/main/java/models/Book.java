@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * the book model class
+ * the book entity class
  * book consists of title(String), auhtor(Author),
  * publishYear(int), publisher(String), breif(String)
  *

@@ -5,12 +5,12 @@ import models.Book;
 import models.YearOutOfBoundsException;
 
 /**
- * A wrapper for book model to provide functionality.
+ * A wrapper for book entity to provide functionality.
  * @author Alexander
  */
 public class BookController  {
     /**
-     * Encapsulated Book model.
+     * Encapsulated Book entity.
      */
     private Book book;
 

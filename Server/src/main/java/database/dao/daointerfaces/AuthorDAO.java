@@ -1,6 +1,6 @@
-package database.daointerfaces;
+package database.dao.daointerfaces;
 
-import model.Author;
+import entity.Author;
 
 import java.sql.SQLException;
 import java.util.List;

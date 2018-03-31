@@ -1,6 +1,6 @@
 package factories;
 
-import model.Publisher;
+import entity.Publisher;
 
 public class PublisherFactory {
 

@@ -1,7 +1,7 @@
 package factories;
 
 import java.util.List;
-import model.Book;
+import entity.Book;
 
 public class BookFactory {
 

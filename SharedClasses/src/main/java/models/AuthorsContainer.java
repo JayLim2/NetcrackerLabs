@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
 /**
- * author container model. encapsulates a list of authors.
+ * author container entity. encapsulates a list of authors.
  * authors contain books
  * @author �lexader,Komarov,Korostelev
  */

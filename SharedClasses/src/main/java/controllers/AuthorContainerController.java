@@ -33,7 +33,7 @@ public class AuthorContainerController {
 
     /**
      * main constructor
-     * @param authorsContainer the controlled model in question
+     * @param authorsContainer the controlled entity in question
      */
     public AuthorContainerController(AuthorsContainer authorsContainer) {
         this.authorsContainer = authorsContainer;
@@ -53,7 +53,7 @@ public class AuthorContainerController {
     /**
      * retrieves an author based on its index
      * index in this case means unique index dispatched to a
-     * model upon addition to the container
+     * entity upon addition to the container
      * @param id index used for identifying the author needed
      * @return an author with the same id as the param id
      * if there is no such author an IndexOutOfBoundsExcepcion is thrown
@@ -73,7 +73,7 @@ public class AuthorContainerController {
     /**
      * retrieves a book based on its index
      * index in this case means unique index dispatched to a
-     * model upon addition to the container
+     * entity upon addition to the container
      * @param id index used for identifying the author needed
      * @return a book with the same id as the param id
      * if there is no such book an IndexOutOfBoundsExcepcion is thrown
@@ -135,7 +135,7 @@ public class AuthorContainerController {
     /**
      * removes a book based on its index
      * index in this case means unique index dispatched to a
-     * model upon addition to the container
+     * entity upon addition to the container
      * @param id index used for identifying the author needed
      * if there is no such book an IndexOutOfBoundsExcepcion is thrown
      */
@@ -163,7 +163,7 @@ public class AuthorContainerController {
     /**
      * removes an author and all its books based on its index
      * index in this case means unique index dispatched to a
-     * model upon addition to the container
+     * entity upon addition to the container
      * @param id index used for identifying the author needed
      * if there is no such author an IndexOutOfBoundsExcepcion is thrown
      */
@@ -186,7 +186,7 @@ public class AuthorContainerController {
 
     /**
      *
-     * @return the underlying authorsContainer model
+     * @return the underlying authorsContainer entity
      */
     public AuthorsContainer getAuthorsContainer() {
         return authorsContainer;

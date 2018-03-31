@@ -6,15 +6,14 @@
 package controller;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import model.Author;
-import model.Book;
-import model.Publisher;
+import entity.Author;
+import entity.Book;
+import entity.Publisher;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

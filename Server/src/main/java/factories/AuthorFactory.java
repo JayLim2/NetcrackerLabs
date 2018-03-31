@@ -1,6 +1,6 @@
 package factories;
 
-import model.Author;
+import entity.Author;
 
 public class AuthorFactory {
     private static AuthorFactory instance;

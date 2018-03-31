@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Author model. contains name and booklist
+ * Author entity. contains name and booklist
  * @author Alexander, Korostelev, Komarov
  */
 @XmlRootElement
