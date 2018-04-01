@@ -10,6 +10,7 @@ public class Publisher {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "auto_increment_publisher")
     @SequenceGenerator(name = "auto_increment_publisher", sequenceName = "\"auto_increment_publisher\"", allocationSize = 1)
+    @Column (name = "\"publisherID\"")
     private int publisherID;
     @Column (name = "\"publisherName\"")
     private String publisherName;

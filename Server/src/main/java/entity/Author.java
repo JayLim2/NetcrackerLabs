@@ -3,20 +3,22 @@ package entity;
 import javax.persistence.*;
 import java.util.*;
 
+@Entity
 public class Author {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "auto_increment_author")
     @SequenceGenerator(name = "auto_increment_author", sequenceName = "\"auto_increment_author\"", allocationSize = 1)
+    @Column (name = "\"authorID\"")
     private int authorID;
-    @Column (name = "authorName")
+    @Column (name = "\"authorName\"")
     private String authorName;
 
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name="authorBookConnector",
-            joinColumns = @JoinColumn(name="authorID"),
-            inverseJoinColumns = @JoinColumn(name="bookID")
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name="\"authorBookConnector\"",
+            joinColumns = @JoinColumn(name="\"authorID\""),
+            inverseJoinColumns = @JoinColumn(name="\"bookID\"")
     )
     private Set<Book> books;
 
@@ -69,10 +71,10 @@ public class Author {
 //    }
 
     @Override
-    public String toString() {
+    public String toString() {//Мне лень обертку для предачи в таимлиф делать 
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(this.getClass().getSimpleName() + " (" + authorID
-                + ", " + authorName + ", " + "{ " + books.toString() + " }" + " )");
-        return stringBuilder.toString();
+//        stringBuilder.append(this.getClass().getSimpleName() + " (" + authorID
+//                + ", " + authorName + " )");
+        return authorName;//stringBuilder.toString();
     }
 }

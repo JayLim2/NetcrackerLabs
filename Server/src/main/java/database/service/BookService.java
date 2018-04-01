@@ -3,6 +3,8 @@ package database.service;
 import entity.Book;
 
 import java.util.List;
+import org.springframework.stereotype.Service;
+
 
 public interface BookService {
 
@@ -12,6 +14,8 @@ public interface BookService {
     void delete(Book book);
 
     Book getByName(String name);
+    
+    Book getByID(int id);
 
     Book editBook(Book book);
 

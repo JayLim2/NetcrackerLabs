@@ -29,6 +29,11 @@ public class PublisherServiceImpl implements PublisherService {
     public Publisher getByName(String name) {
         return publisherRepository.findByName(name);
     }
+    
+    @Override
+    public Publisher getByID(int id) {
+        return publisherRepository.findByID(id);
+    }
 
     @Override
     public Publisher editPublisher(Publisher publisher) {

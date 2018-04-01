@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Добавление Книги</title>
+    <title>Добавление Издателя</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <script type="text/javascript">
     </script>
@@ -22,12 +22,9 @@
             <div class = "header">
                 <p>Тут будет тобешь заголовок</p>
             </div>
-            <form id ="editForm" action="submitAdd" method="POST">
-                <input class = "inputField" type="text" id = "booktitle" name = "booktitle" ><br>
-                <input class = "inputField" type="text" id = "publishYear" name = "publishYear" ><br>
-                <input class = "inputField" type="text" id = "brief" name = "brief" ><br>
-                <input class = "inputField" type="text" id = "publisher" name = "publisher" ><br>
-                <input class = "inputField" type="text" id = "authors" name ="authors" ><br>
+            <form id ="editForm" action="submitEditPublisher" method="POST">
+                <input type="hidden" id = "id" name = "id" th:value = "${publisher.publisherID}">
+                <input class = "inputField" type="text" id = "publishername" name = "publishername" th:value = "${publisher.publisherName}"><br>
                 <input type="submit" value="submit">
             </form>
         </div>

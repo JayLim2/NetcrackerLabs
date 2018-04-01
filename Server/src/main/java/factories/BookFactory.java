@@ -14,6 +14,6 @@ public class BookFactory {
     }
 
     public Book createBook(int bookID, String bookName, int publishYear, String brief, int publisherID, List<String> authorNames) {
-        return new Book(bookID, bookName, publishYear, brief, publisherID, authorNames);
+        return new Book(bookID, bookName, publishYear, brief);
     }
 }

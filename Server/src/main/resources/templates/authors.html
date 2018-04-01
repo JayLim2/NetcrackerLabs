@@ -8,6 +8,15 @@
             document.getElementById("hiddenDeleteField").value = x;
             document.getElementById("deleteForm").submit();
         }
+        function editAuthor(x) {
+            document.getElementById("hiddenDeleteField").value = x;
+            document.getElementById("deleteForm").action = "editAuthor";
+            document.getElementById("deleteForm").submit();
+        }
+        function addAuthor() {
+            document.getElementById("deleteForm").action = "addAuthor";
+            document.getElementById("deleteForm").submit();
+        }
     </script>
     <link type="text/css" rel="stylesheet" href="../static/css/main.css" th:href="@{/css/main.css}"/>
 
@@ -22,6 +31,7 @@
             <ul>
                 <li><a href="/books">Тут книги</a></li>
                 <li><a href="/authors">А тут авторы</a></li>
+                <li><a href="/publishers">А тут издатели</a></li>
             </ul>
         </div>
         <div class = "rightSide">
@@ -33,7 +43,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Имя автора</th>
-                    <th class="controlPanel">Управление объектом</th>
+                    <th class="controlPanel" colspan = 2>Управление объектом</th>
                 </tr>
                 <tr th:each="author : ${authors}">
 
@@ -42,8 +52,12 @@
                     <td class="controlPanel">
                         <input type="button" th:id="${author.authorID}" onclick="deleteAuthor(this.id)" value="Удалить">
                     </td>
+                    <td class="controlPanel">
+                        <input type="button" th:id="${author.authorID}" onclick="editAuthor(this.id)" value="Редактировать">
+                    </td>
                 </tr>
             </table>
+            <input type="button" onclick="addAuthor()" value="Добавить">
         </div>
     </div>
 </body>

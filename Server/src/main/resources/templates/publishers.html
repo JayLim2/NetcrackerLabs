@@ -1,20 +1,20 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Список книг</title>
+    <title>Список авторов</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <script type="text/javascript">
-        function deleteBook(x) {
+        function deletePublisher(x) {
             document.getElementById("hiddenDeleteField").value = x;
             document.getElementById("deleteForm").submit();
         }
-        function editBook(x) {
+        function editPublisher(x) {
             document.getElementById("hiddenDeleteField").value = x;
-            document.getElementById("deleteForm").action = "edit";
+            document.getElementById("deleteForm").action = "editPublisher";
             document.getElementById("deleteForm").submit();
         }
-        function addBook() {
-            document.getElementById("deleteForm").action = "add";
+        function addPublisher() {
+            document.getElementById("deleteForm").action = "addPublisher";
             document.getElementById("deleteForm").submit();
         }
     </script>
@@ -22,7 +22,7 @@
 
 </head>
 <body>
-    <form id ="deleteForm" action="delete" method="POST">
+    <form id ="deleteForm" action="deletePublisher" method="POST">
         <input type="hidden" id = "hiddenDeleteField" name = "id">
     </form>
 <div class="mainBox">
@@ -38,32 +38,26 @@
             <div class = "header">
                 <p>Тут будет тобешь заголовок</p>
             </div>
-            <h1>Список всех книг</h1>
+            <h1>Список всех издателей</h1>
             <table style="width:99%;">
                 <tr>
                     <th>ID</th>
-                    <th>Название книги</th>
                     <th>Издатель</th>
-                    <th>Год издания</th>
-                    <th>Авторы</th>
                     <th class="controlPanel" colspan = 2>Управление объектом</th>
                 </tr>
-                <tr th:each="book : ${books}">
+                <tr th:each="publisher : ${publishers}">
 
-                    <td th:text="${book.bookID}"></td>
-                    <td th:text="${book.bookName}"></td>
-                    <td th:text="${book.publisher.publisherName}"></td>
-                    <td th:text="${book.publishYear}"></td>
-                    <td th:text="${#strings.listJoin(book.authors,',')}"></td>
+                    <td th:text="${publisher.publisherID}"></td>
+                    <td th:text="${publisher.publisherName}"></td>
                     <td class="controlPanel">
-                        <input type="button" th:id="${book.bookID}" onclick="deleteBook(this.id)" value="Удалить">
+                        <input type="button" th:id="${publisher.publisherID}" onclick="deletePublisher(this.id)" value="Удалить">
                     </td>
                     <td class="controlPanel">
-                        <input type="button" th:id="${book.bookID}" onclick="editBook(this.id)" value="Редактировать">
+                        <input type="button" th:id="${publisher.publisherID}" onclick="editPublisher(this.id)" value="Редактировать">
                     </td>
                 </tr>
             </table>
-            <input type="button" onclick="addBook()" value="Добавить">
+            <input type="button" onclick="addPublisher()" value="Добавить">
         </div>
     </div>
 </body>

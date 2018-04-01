@@ -8,7 +8,9 @@ import entity.Book;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AuthorServiceImpl implements AuthorService {
 
     @Autowired
@@ -28,6 +30,11 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public Author getByName(String name) {
         return authorRepository.findByName(name);
+    }
+    
+    @Override
+    public Author getByID(int id) {
+        return authorRepository.findByID(id);
     }
 
     @Override

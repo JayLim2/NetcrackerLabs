@@ -98,7 +98,7 @@ public class PostgreSQLBookDAO implements BookDAO {
             stm.setString(1, book.getBookName());
             stm.setInt(2, book.getPublishYear());
             stm.setString(3, book.getBrief());
-            stm.setInt(4, book.getPublisherID());
+//            stm.setInt(4, book.getPublisherID());
             stm.setInt(5, book.getBookID());
             stm.executeUpdate();
             try (PreparedStatement stm2 = connection.prepareStatement(sqlClearConnection)){

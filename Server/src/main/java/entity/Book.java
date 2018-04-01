@@ -11,21 +11,20 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "auto_increment_book")
     @SequenceGenerator(name = "auto_increment_book", sequenceName = "\"auto_increment_book\"", allocationSize = 1)
+    @Column(name =  "\"bookID\"")
     private int bookID;
-    @Column(name =  "bookName")
+    @Column(name =  "\"bookName\"")
     private String bookName;
-    @Column(name = "publishYear")
+    @Column(name = "\"publishYear\"")
     private int publishYear;
     @Column(name = "brief")
     private String brief;
-    @Column(name = "publisherID")
-    private int publisherID;
 
     @ManyToOne
-    @JoinColumn(name = "publisherID")
+    @JoinColumn(name = "\"publisherID\"")
     private Publisher publisher;
 
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "books")
+    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "books")
     private Set<Author> authors;
 
     public Set<Author> getAuthors() {
@@ -44,27 +43,14 @@ public class Book {
         this.publisher = publisher;
     }
 
-    private List<String> authorNames;
-
     public Book() {
-        authorNames = new ArrayList<String>();
     }
 
-    public Book(int bookID, String bookName, int publishYear, String brief, int publisherID, List<String> authorNames) {
+    public Book(int bookID, String bookName, int publishYear, String brief) {
         this.bookID = bookID;
         this.bookName = bookName;
         this.publishYear = publishYear;
         this.brief = brief;
-        this.publisherID = publisherID;
-        this.authorNames = authorNames;
-    }
-
-    public List<String> getAuthorNames() {
-        return authorNames;
-    }
-
-    public void setAuthorNames(List<String> authorNames) {
-        this.authorNames = authorNames;
     }
 
     public int getBookID() {
@@ -99,21 +85,21 @@ public class Book {
         this.brief = brief;
     }
 
-    public int getPublisherID() {
-        return publisherID;
-    }
-
-    public void setPublisherID(int publisherID) {
-        this.publisherID = publisherID;
-    }
+//    public int getPublisherID() {
+//        return publisherID;
+//    }
+//
+//    public void setPublisherID(int publisherID) {
+//        this.publisherID = publisherID;
+//    }
 
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(this.getClass().getSimpleName() + " (" + bookID
-                + ", " + bookName + ", " + publishYear + ", " + brief + "{");
-        for (String aname : authorNames) {
-            stringBuilder.append(aname + ", ");
+                + ", " + bookName + ", " + publishYear + ", " + brief + publisher.toString() +"{");
+        for(Author author:authors){
+            stringBuilder.append(" "+author.toString()+" ");
         }
         stringBuilder.append("} )");
         return stringBuilder.toString();

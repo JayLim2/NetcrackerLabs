@@ -120,16 +120,16 @@ public class ControllerW {
         return bookDAO.read(bookID);
     }
 
-    public void updateBook(int bookID,
-                           String bookName,
-                           int publishYear,
-                           String brief,
-                           int publisherID,
-                           int[] authorIDs) throws SQLException {
-        ///Book book = authorContainer.getAuthor(authorIDs[0]).getBook(bookID);//fix this.
-        Book book = new Book(bookID, bookName, publishYear, brief, publisherID, null);
-        bookDAO.update(book,authorIDs);
-    }
+//    public void updateBook(int bookID,
+//                           String bookName,
+//                           int publishYear,
+//                           String brief,
+//                           int publisherID,
+//                           int[] authorIDs) throws SQLException {
+//        ///Book book = authorContainer.getAuthor(authorIDs[0]).getBook(bookID);//fix this.
+//        Book book = new Book(bookID, bookName, publishYear, brief, publisherID, null);
+//        bookDAO.update(book,authorIDs);
+//    }
 
     public synchronized void deleteBook(int authorID, int bookID) throws SQLException {
         //authorContainer.getAuthor(authorID).removeBook(bookID);

@@ -15,6 +15,7 @@
             <ul>
                 <li><a href="/books">Тут книги</a></li>
                 <li><a href="/authors">А тут авторы</a></li>
+                <li><a href="/publishers">А тут издатели</a></li>
             </ul>
         </div>
         <div class = "rightSide">
@@ -26,8 +27,8 @@
                 <input class = "inputField" type="text" id = "booktitle" name = "booktitle" th:value = "${book.bookName}"><br>
                 <input class = "inputField" type="text" id = "publishYear" name = "publishYear" th:value="${book.publishYear}"><br>
                 <input class = "inputField" type="text" id = "brief" name = "brief" th:value = "${book.brief}"><br>
-                <input class = "inputField" type="text" id = "publisher" name = "publisher" th:value="${publisher.publisherName}"><br>
-                <input class = "inputField" type="text" id = "authors" name ="authors" th:value="${#strings.listJoin(book.authorNames,',')}"> <br>
+                <input class = "inputField" type="text" id = "publisher" name = "publisher" th:value="${book.publisher.publisherName}"><br>
+                <input class = "inputField" type="text" id = "authors" name ="authors" th:value="${#strings.listJoin(book.authors,',')}"> <br>
                 <input type="submit" value="submit">
             </form>
         </div>
