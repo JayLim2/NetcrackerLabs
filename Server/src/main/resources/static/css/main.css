@@ -86,3 +86,23 @@ a {
 a:hover {
     color:#ED2D0C;
 }
+
+.error {
+    background: #FFEBEB;
+    border:2px solid #ff4b48;
+    padding:10px;
+    font-size:11pt;
+    color: #ff4b48;
+    text-align: left;
+    margin:10px 5px;
+}
+
+.success {
+    background: #c3ffb8;
+    border: 2px solid #216200;
+    padding: 10px;
+    font-size: 11pt;
+    color: #216200;
+    text-align: left;
+    margin:10px 5px;
+}

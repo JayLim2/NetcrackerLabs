@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -105,13 +106,20 @@ public class GreetingController {
         return "editPublisher";
     }
     
-    @PostMapping("/submitAddAuthor")
+    @PostMapping("/authors")
     public String submitAddAuthor(@RequestParam Map<String,String> params, Model model) {
-        Author a = new Author();
-        a.setAuthorName(params.get("authorname"));
-        authorService.addAuthor(a);
+        byte status = 0;
+        try {
+            Author a = new Author();
+            a.setAuthorName(params.get("authorname"));
+            authorService.addAuthor(a);
+        } catch (JpaSystemException ex) {
+            System.out.println("Нарушение целостности.");
+            status = 1;
+        }
         List<Author> authors = authorService.getAll();
         model.addAttribute("authors", authors);
+        model.addAttribute("submitStatus", status);
         return "authors";
     }
     

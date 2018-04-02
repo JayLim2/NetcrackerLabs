@@ -17,6 +17,14 @@
             document.getElementById("deleteForm").action = "addAuthor";
             document.getElementById("deleteForm").submit();
         }
+
+        function $_GET(key) {
+            var p = window.location.search;
+            p = p.match(new RegExp(key + '=([^&=]+)'));
+            return p ? p[1] : false;
+        }
+
+
     </script>
     <link type="text/css" rel="stylesheet" href="../static/css/main.css" th:href="@{/css/main.css}"/>
 
@@ -39,6 +47,17 @@
                 <p>Тут будет тобешь заголовок</p>
             </div>
             <h1>Список всех авторов</h1>
+
+
+            <div th:switch="${submitStatus}">
+                <div th:case="'0'" class="success">
+                    Автор добавлен.
+                </div>
+                <div th:case="'1'" class="error">
+                    Нарушение ограничения целостности.
+                </div>
+            </div>
+
             <table style="width:99%;">
                 <tr>
                     <th>ID</th>

@@ -13,6 +13,7 @@ import entity.Book;
 
 import java.sql.SQLException;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -23,7 +24,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @ComponentScan("configuration")
-public class TestDB implements CommandLineRunner{
+public class TestDB implements CommandLineRunner {
 //    public static void main(String[] args) {
 //        try {
 //            PostgreSQLDAOFactory daoFactory = PostgreSQLDAOFactory.getInstance();
@@ -77,14 +78,14 @@ public class TestDB implements CommandLineRunner{
 //
 //    }
 
-    
+
     @Autowired
     BookService bookRepository;
-    
+
     public static void main(String[] args) {
         SpringApplication.run(TestDB.class, args);
     }
-    
+
     @Override
     public void run(String... args) throws Exception {
         List<Book> bookList = bookRepository.getAll();
