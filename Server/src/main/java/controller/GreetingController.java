@@ -18,6 +18,7 @@ import entity.Author;
 import entity.Book;
 import entity.Publisher;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -56,6 +57,10 @@ public class GreetingController {
     @PostMapping("/delete")
     public String delete(@RequestParam(name="id", required=true) String id, Model model) {
         Book book = bookService.getByID(Integer.parseInt(id));
+        for(Author author:book.getAuthors()){
+            author.getBooks().remove(book);
+            authorService.editAuthor(author);
+        }
         bookService.delete(book);
         List<Book> books = bookService.getAll();
         model.addAttribute("books", books);
@@ -150,8 +155,12 @@ public class GreetingController {
     @PostMapping("/submitEdit")
     public String submitEdit(@RequestParam Map<String,String> params, Model model) {
         Book b = bookService.getByID(Integer.parseInt(params.get("id")));
+        for(Author author:b.getAuthors()){
+            author.getBooks().remove(b);
+            authorService.editAuthor(author);
+        }
         String[] aNames = params.get("authors").split(",");
-        Set<Author> newAuthors = new HashSet<>();
+        List<Author> newAuthors = new LinkedList<>();
         for(String aname:aNames){
             newAuthors.add(authorService.getByName(aname));
         }
@@ -161,7 +170,11 @@ public class GreetingController {
         b.setPublishYear(Integer.parseInt(params.get("publishYear")));
         b.setPublisher(p);
         b.setAuthors(newAuthors);
-        Book nb = bookService.editBook(b);
+        bookService.editBook(b);
+        for(int i = 0; i < newAuthors.size(); i++){
+            newAuthors.get(i).getBooks().add(b);
+            authorService.editAuthor(newAuthors.get(i));
+        }
         List<Book> books = bookService.getAll();
         model.addAttribute("books", books);
         return "books";
@@ -171,7 +184,7 @@ public class GreetingController {
     public String submitAdd(@RequestParam Map<String,String> params, Model model) {
         Book b = new Book();
         String[] aNames = params.get("authors").split(",");
-        Set<Author> newAuthors = new HashSet<>();
+        List<Author> newAuthors = new LinkedList<>();
         for(String aname:aNames){
             newAuthors.add(authorService.getByName(aname));
         }
@@ -181,7 +194,12 @@ public class GreetingController {
         b.setPublishYear(Integer.parseInt(params.get("publishYear")));
         b.setPublisher(p);
         b.setAuthors(newAuthors);
-        Book nb = bookService.editBook(b);
+        Book nb = bookService.addBook(b);
+        for(int i = 0; i < newAuthors.size(); i++){
+            newAuthors.get(i).getBooks().add(nb);
+            authorService.editAuthor(newAuthors.get(i));
+        }
+        //if (b.getAuthors().isEmpty()) bookService.addBook(b);
         List<Book> books = bookService.getAll();
         model.addAttribute("books", books);
         return "books";
@@ -197,6 +215,13 @@ public class GreetingController {
     @PostMapping("/deleteAuthor")
     public String deleteAuthor(@RequestParam(name="id", required=true) String id, Model model) {
         Author author = authorService.getByID(Integer.parseInt(id));
+        List<Book> books = author.getBooks();
+        for(int i = 0; i < books.size(); i++){
+            books.get(i).getAuthors().remove(author);
+            bookService.editBook(books.get(i));
+        }
+//        authorService.editAuthor(author);
+//        author = authorService.getByID(Integer.parseInt(id));
         authorService.delete(author);
         List<Author> authors = authorService.getAll();
         model.addAttribute("authors", authors);

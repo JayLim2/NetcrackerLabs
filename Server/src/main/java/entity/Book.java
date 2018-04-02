@@ -24,14 +24,18 @@ public class Book {
     @JoinColumn(name = "\"publisherID\"")
     private Publisher publisher;
 
-    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "books")
-    private Set<Author> authors;
+    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH}, mappedBy="books")
+//    @JoinTable(name="\"authorBookConnector\"",
+//            inverseJoinColumns = @JoinColumn(name="\"authorID\""),
+//            joinColumns = @JoinColumn(name="\"bookID\"")
+//    )
+    private List<Author> authors;
 
-    public Set<Author> getAuthors() {
+    public List<Author> getAuthors() {
         return authors;
     }
 
-    public void setAuthors(Set<Author> authors) {
+    public void setAuthors(List<Author> authors) {
         this.authors = authors;
     }
 

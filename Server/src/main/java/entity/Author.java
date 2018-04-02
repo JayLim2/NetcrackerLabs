@@ -15,18 +15,18 @@ public class Author {
     private String authorName;
 
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH}, fetch = FetchType.EAGER)
     @JoinTable(name="\"authorBookConnector\"",
             joinColumns = @JoinColumn(name="\"authorID\""),
             inverseJoinColumns = @JoinColumn(name="\"bookID\"")
     )
-    private Set<Book> books;
+    private List<Book> books;
 
-    public Set<Book> getBooks() {
+    public List<Book> getBooks() {
         return books;
     }
 
-    public void setBooks(Set<Book> books) {
+    public void setBooks(List<Book> books) {
         this.books = books;
     }
 
