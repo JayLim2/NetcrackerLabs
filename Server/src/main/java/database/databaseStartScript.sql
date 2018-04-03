@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS book (
   "brief"       CHARACTER VARYING(2500)                                   NOT NULL,
   "publisherID" BIGINT                                                    NOT NULL,
   PRIMARY KEY ("bookID"),
-  FOREIGN KEY ("publisherID") REFERENCES "publisher" ("publisherID") ON UPDATE CASCADE ON DELETE CASCADE
+  FOREIGN KEY ("publisherID") REFERENCES "publisher" ("publisherID")
 );
 
 
@@ -74,8 +74,8 @@ CREATE TABLE IF NOT EXISTS "authorBookConnector" (
   "bookID"   BIGINT NOT NULL,
 
 
-  FOREIGN KEY ("authorID") REFERENCES author ("authorID") ON UPDATE CASCADE ON DELETE CASCADE,
-  FOREIGN KEY ("bookID") REFERENCES book ("bookID") ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY ("authorID") REFERENCES author ("authorID"),
+  FOREIGN KEY ("bookID") REFERENCES book ("bookID"),
   PRIMARY KEY ("authorID", "bookID")
 );
 
