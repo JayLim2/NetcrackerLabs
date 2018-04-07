@@ -22,7 +22,20 @@
             <div class = "header">
                 <p>Тут будет тобешь заголовок</p>
             </div>
-            <form id ="editForm" action="submitEditPublisher" method="POST">
+
+            <div th:switch="${submitEditStatus}">
+                <div th:case="'0'" class="success">
+                    Издатель изменен.
+                </div>
+                <div th:case="'1'" class="error">
+                    Такой издатель уже существует.
+                </div>
+                <div th:case="'2'" class="error">
+                    Такого издателя не существует.
+                </div>
+            </div>
+
+            <form id="editForm" action="editPublisher" method="POST">
                 <input type="hidden" id = "id" name = "id" th:value = "${publisher.publisherID}">
                 <input class = "inputField" type="text" id = "publishername" name = "publishername" th:value = "${publisher.publisherName}"><br>
                 <input type="submit" value="submit">

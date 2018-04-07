@@ -22,7 +22,23 @@
             <div class = "header">
                 <p>Тут будет тобешь заголовок</p>
             </div>
-            <form id ="editForm" action="submitEdit" method="POST">
+
+            <div th:switch="${submitEditStatus}">
+                <div th:case="'0'" class="success">
+                    Книга изменена.
+                </div>
+                <div th:case="'1'" class="error">
+                    Такая книга уже существует или нарушение ограничений таблицы.
+                </div>
+                <div th:case="'2'" class="error">
+                    Год должен быть не менее 0 и не более текущего.
+                </div>
+                <div th:case="'3'" class="error">
+                    Год должен быть числом.
+                </div>
+            </div>
+
+            <form id="editForm" action="edit" method="POST">
                 <input type="hidden" id = "id" name = "id" th:value = "${book.bookID}">
                 <input class = "inputField" type="text" id = "booktitle" name = "booktitle" th:value = "${book.bookName}"><br>
                 <input class = "inputField" type="text" id = "publishYear" name = "publishYear" th:value="${book.publishYear}"><br>

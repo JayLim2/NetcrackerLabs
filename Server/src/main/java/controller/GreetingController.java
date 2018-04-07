@@ -8,26 +8,22 @@ package controller;
 import database.service.AuthorService;
 import database.service.BookService;
 import database.service.PublisherService;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import entity.Author;
 import entity.Book;
 import entity.Publisher;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
+import models.YearOutOfBoundsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 public class GreetingController {
@@ -40,12 +36,20 @@ public class GreetingController {
     
     @Autowired
     PublisherService publisherService;
-    
+
+    //ОСНОВНЫЕ СПИСКИ
     @GetMapping("/books")
     public String greeting(Model model) {
         List<Book> books = bookService.getAll();
         model.addAttribute("books", books);
         return "books";
+    }
+
+    @GetMapping("/authors")
+    public String authors(Model model) {
+        List<Author> authors = authorService.getAll();
+        model.addAttribute("authors", authors);
+        return "authors";
     }
     
     @GetMapping("/publishers")
@@ -55,58 +59,13 @@ public class GreetingController {
         return "publishers";
     }
 
-    @PostMapping("/delete")
-    public String delete(@RequestParam(name="id", required=true) String id, Model model) {
-        Book book = bookService.getByID(Integer.parseInt(id));
-        for(Author author:book.getAuthors()){
-            author.getBooks().remove(book);
-            authorService.editAuthor(author);
-        }
-        bookService.delete(book);
-        List<Book> books = bookService.getAll();
-        model.addAttribute("books", books);
-        return "books";
-    }
-    
-    @PostMapping("/deletePublisher")
-    public String deletePublisher(@RequestParam(name="id", required=true) String id, Model model) {
-        Publisher publisher = publisherService.getByID(Integer.parseInt(id));
-        publisherService.delete(publisher);
-        List<Publisher> publishers = publisherService.getAll();
-        model.addAttribute("publishers", publishers);
-        return "publishers";
-    }
-    
-    @PostMapping("/edit")
-    public String edit(@RequestParam(name="id", required=true) String id, Model model) {
-            Book b = bookService.getByID(Integer.parseInt(id));
-            model.addAttribute("book", b);
-        return "edit";
-    }
-    
-    @PostMapping("/add")
-    public String add( Model model) {
-        return "add";
-    }
-    
+    //АВТОРЫ
     @PostMapping("/addAuthor")
     public String addAuthor( Model model) {
         return "addAuthor";
     }
-    
-    @PostMapping("/addPublisher")
-    public String addPublisher( Model model) {
-        return "addPublisher";
-    }
-    
-    @PostMapping("/editPublisher")
-    public String editPublisher(@RequestParam(name="id", required=true) String id, Model model) {
-        Publisher p = publisherService.getByID(Integer.parseInt(id));
-        model.addAttribute("publisher", p);
-        return "editPublisher";
-    }
-    
-    @PostMapping("/authors")
+
+    @PostMapping("/submitAddAuthor")
     public String submitAddAuthor(@RequestParam Map<String,String> params, Model model) {
         byte status = 0;
         try {
@@ -119,120 +78,247 @@ public class GreetingController {
         }
         List<Author> authors = authorService.getAll();
         model.addAttribute("authors", authors);
-        model.addAttribute("submitStatus", status);
+        model.addAttribute("submitAddStatus", status);
         return "authors";
     }
-    
-    @PostMapping("/submitAddPublisher")
-    public String submitAddPublisher(@RequestParam Map<String,String> params, Model model) {
-        Publisher p = new Publisher();
-        p.setPublisherName(params.get("publishername"));
-        publisherService.addPublisher(p);
-        List<Publisher> publishers = publisherService.getAll();
-        model.addAttribute("publishers", publishers);
-        return "publishers";
-    }
-    
+
     @PostMapping("/editAuthor")
     public String editAuthor(@RequestParam(name="id", required=true) String id, Model model) {
         Author a = authorService.getByID(Integer.parseInt(id));
         model.addAttribute("author", a);
         return "editAuthor";
     }
-    
+
     @PostMapping("/submitEditAuthor")
     public String submitEditAuthor(@RequestParam Map<String,String> params, Model model) {
-        Author a = authorService.getByID(Integer.parseInt(params.get("id")));
-        a.setAuthorName(params.get("authorname"));
-        authorService.addAuthor(a);
+        byte status = 0;
+        Author a = null;
+        try {
+            a = authorService.getByID(Integer.parseInt(params.get("id")));
+            a.setAuthorName(params.get("authorname"));
+            model.addAttribute("author", a);
+            authorService.addAuthor(a);
+        } catch (JpaSystemException ex) {
+            System.out.println("Нарушение целостности.");
+            status = 1;
+        } catch (NullPointerException ex) {
+            System.out.println("Null pointer exception.");
+            status = 2;
+        }
+        model.addAttribute("submitEditStatus", status);
+        return "editAuthor";
+    }
+
+    @PostMapping("/deleteAuthor")
+    public String deleteAuthor(@RequestParam(name = "id", required = true) String id, Model model) {
+        byte status = 0;
+        try {
+            Author author = authorService.getByID(Integer.parseInt(id));
+            List<Book> books = author.getBooks();
+            for (int i = 0; i < books.size(); i++) {
+                books.get(i).getAuthors().remove(author);
+                bookService.editBook(books.get(i));
+            }
+//        authorService.editAuthor(author);
+//        author = authorService.getByID(Integer.parseInt(id));
+            authorService.delete(author);
+        } catch (JpaSystemException ex) {
+            System.out.println("Невозможно удалить автора.");
+            status = 1;
+        } catch (NullPointerException ex) {
+            System.out.println("Такого автора не существует. Удаление невозможно.");
+            status = 2;
+        }
+
         List<Author> authors = authorService.getAll();
         model.addAttribute("authors", authors);
+        model.addAttribute("submitDelStatus", status);
+
         return "authors";
+    }
+
+    //ИЗДАТЕЛИ
+    @PostMapping("/addPublisher")
+    public String addPublisher(Model model) {
+        return "addPublisher";
+    }
+
+    @PostMapping("/submitAddPublisher")
+    public String submitAddPublisher(@RequestParam Map<String, String> params, Model model) {
+        byte status = 0;
+        try {
+            Publisher p = new Publisher();
+            p.setPublisherName(params.get("publishername"));
+            publisherService.addPublisher(p);
+        } catch (JpaSystemException ex) {
+            System.out.println("Нарушение ограничений при добавлении издателя.");
+            status = 1;
+        }
+        List<Publisher> publishers = publisherService.getAll();
+        model.addAttribute("publishers", publishers);
+        model.addAttribute("submitAddStatus", status);
+        return "publishers";
+    }
+
+    @PostMapping("/editPublisher")
+    public String editPublisher(@RequestParam(name = "id", required = true) String id, Model model) {
+        Publisher p = publisherService.getByID(Integer.parseInt(id));
+        model.addAttribute("publisher", p);
+        return "editPublisher";
     }
     
     @PostMapping("/submitEditPublisher")
     public String submitEditPublisher(@RequestParam Map<String,String> params, Model model) {
-        Publisher p = publisherService.getByID(Integer.parseInt(params.get("id")));
-        p.setPublisherName(params.get("publishername"));
-        publisherService.addPublisher(p);
+        byte status = 0;
+        try {
+            Publisher p = publisherService.getByID(Integer.parseInt(params.get("id")));
+            p.setPublisherName(params.get("publishername"));
+            model.addAttribute("publisher", p);
+            publisherService.addPublisher(p);
+        } catch (JpaSystemException ex) {
+            System.out.println("Такой издатель уже существует.");
+            System.out.println(ex.getCause());
+            status = 1;
+        } catch (NullPointerException ex) {
+            System.out.println("Такого издателя не существует.");
+            status = 2;
+        }
+        model.addAttribute("submitEditStatus", status);
+        return "editPublisher";
+    }
+
+    @PostMapping("/deletePublisher")
+    public String deletePublisher(@RequestParam(name = "id", required = true) String id, Model model) {
+        byte status = 0;
+        try {
+            Publisher publisher = publisherService.getByID(Integer.parseInt(id));
+            publisherService.delete(publisher);
+        } catch (JpaSystemException ex) {
+            System.out.println("Невозможно удалить издателя.");
+            status = 1;
+        } catch (NullPointerException ex) {
+            System.out.println("Такого издателя не существует.");
+            status = 2;
+        }
         List<Publisher> publishers = publisherService.getAll();
         model.addAttribute("publishers", publishers);
+        model.addAttribute("submitDelStatus", status);
         return "publishers";
     }
-    
-    @PostMapping("/submitEdit")
-    public String submitEdit(@RequestParam Map<String,String> params, Model model) {
-        Book b = bookService.getByID(Integer.parseInt(params.get("id")));
-        for(Author author:b.getAuthors()){
-            author.getBooks().remove(b);
-            authorService.editAuthor(author);
-        }
-        String[] aNames = params.get("authors").split(",");
-        List<Author> newAuthors = new LinkedList<>();
-        for(String aname:aNames){
-            newAuthors.add(authorService.getByName(aname));
-        }
-        Publisher p = publisherService.getByName(params.get("publisher"));
-        b.setBookName(params.get("booktitle"));
-        b.setBrief(params.get("brief"));
-        b.setPublishYear(Integer.parseInt(params.get("publishYear")));
-        b.setPublisher(p);
-        b.setAuthors(newAuthors);
-        bookService.editBook(b);
-        for(int i = 0; i < newAuthors.size(); i++){
-            newAuthors.get(i).getBooks().add(b);
-            authorService.editAuthor(newAuthors.get(i));
-        }
-        List<Book> books = bookService.getAll();
-        model.addAttribute("books", books);
-        return "books";
+
+    //КНИГИ
+    @PostMapping("/add")
+    public String add(Model model) {
+        return "add";
     }
-    
+
     @PostMapping("/submitAdd")
-    public String submitAdd(@RequestParam Map<String,String> params, Model model) {
-        Book b = new Book();
-        String[] aNames = params.get("authors").split(",");
-        List<Author> newAuthors = new LinkedList<>();
-        for(String aname:aNames){
-            newAuthors.add(authorService.getByName(aname));
+    public String submitAdd(@RequestParam Map<String, String> params, Model model) {
+        byte status = 0;
+        try {
+            Book b = new Book();
+            String[] aNames = params.get("authors").split(",");
+            List<Author> newAuthors = new LinkedList<>();
+            for (String aname : aNames) {
+                newAuthors.add(authorService.getByName(aname));
+            }
+            Publisher p = publisherService.getByName(params.get("publisher"));
+            b.setBookName(params.get("booktitle"));
+            b.setBrief(params.get("brief"));
+            b.setPublishYear(Integer.parseInt(params.get("publishYear")));
+            if (b.getPublishYear() < 0 && b.getPublishYear() > Calendar.YEAR) {
+                throw new YearOutOfBoundsException();
+            }
+            b.setPublisher(p);
+            b.setAuthors(newAuthors);
+            Book nb = bookService.addBook(b);
+            for (int i = 0; i < newAuthors.size(); i++) {
+                newAuthors.get(i).getBooks().add(nb);
+                authorService.editAuthor(newAuthors.get(i));
+            }
+        } catch (JpaSystemException ex) {
+            System.out.println("Такая книга уже существует или иное нарушение ограничений.");
+            status = 1;
+        } catch (YearOutOfBoundsException ex) {
+            System.out.println("Неверный год.");
+            status = 2;
+        } catch (NumberFormatException ex) {
+            System.out.println("Год должен быть числом.");
+            status = 3;
         }
-        Publisher p = publisherService.getByName(params.get("publisher"));
-        b.setBookName(params.get("booktitle"));
-        b.setBrief(params.get("brief"));
-        b.setPublishYear(Integer.parseInt(params.get("publishYear")));
-        b.setPublisher(p);
-        b.setAuthors(newAuthors);
-        Book nb = bookService.addBook(b);
-        for(int i = 0; i < newAuthors.size(); i++){
-            newAuthors.get(i).getBooks().add(nb);
-            authorService.editAuthor(newAuthors.get(i));
-        }
-        //if (b.getAuthors().isEmpty()) bookService.addBook(b);
         List<Book> books = bookService.getAll();
         model.addAttribute("books", books);
+        model.addAttribute("submitAddStatus", status);
         return "books";
     }
 
-    @GetMapping("/authors")
-    public String authors(Model model) {
-        List<Author> authors = authorService.getAll();
-        model.addAttribute("authors", authors);
-        return "authors";
+    @PostMapping("/edit")
+    public String edit(@RequestParam(name = "id", required = true) String id, Model model) {
+        Book b = bookService.getByID(Integer.parseInt(id));
+        model.addAttribute("book", b);
+        return "edit";
     }
 
-    @PostMapping("/deleteAuthor")
-    public String deleteAuthor(@RequestParam(name="id", required=true) String id, Model model) {
-        Author author = authorService.getByID(Integer.parseInt(id));
-        List<Book> books = author.getBooks();
-        for(int i = 0; i < books.size(); i++){
-            books.get(i).getAuthors().remove(author);
-            bookService.editBook(books.get(i));
+    @PostMapping("/submitEdit")
+    public String submitEdit(@RequestParam Map<String, String> params, Model model) {
+        byte status = 0;
+        try {
+            Book b = bookService.getByID(Integer.parseInt(params.get("id")));
+            for (Author author : b.getAuthors()) {
+                author.getBooks().remove(b);
+                authorService.editAuthor(author);
+            }
+            String[] aNames = params.get("authors").split(",");
+            List<Author> newAuthors = new LinkedList<>();
+            for (String aname : aNames) {
+                newAuthors.add(authorService.getByName(aname));
+            }
+            Publisher p = publisherService.getByName(params.get("publisher"));
+            b.setBookName(params.get("booktitle"));
+            b.setBrief(params.get("brief"));
+            b.setPublishYear(Integer.parseInt(params.get("publishYear")));
+            if (b.getPublishYear() < 0 && b.getPublishYear() > Calendar.YEAR) {
+                throw new YearOutOfBoundsException();
+            }
+            b.setPublisher(p);
+            b.setAuthors(newAuthors);
+            model.addAttribute("books", b);
+            bookService.editBook(b);
+            for (int i = 0; i < newAuthors.size(); i++) {
+                newAuthors.get(i).getBooks().add(b);
+                authorService.editAuthor(newAuthors.get(i));
+            }
+        } catch (JpaSystemException ex) {
+            System.out.println("Такая книга уже существует или иное нарушение ограничений.");
+            status = 1;
+        } catch (YearOutOfBoundsException ex) {
+            System.out.println("Неверный год.");
+            status = 2;
+        } catch (NumberFormatException ex) {
+            System.out.println("Год должен быть числом.");
+            status = 3;
         }
-//        authorService.editAuthor(author);
-//        author = authorService.getByID(Integer.parseInt(id));
-        authorService.delete(author);
-        List<Author> authors = authorService.getAll();
-        model.addAttribute("authors", authors);
-        return "authors";
+        model.addAttribute("submitEditStatus", status);
+        return "editBook";
+    }
+
+    @PostMapping("/delete")
+    public String delete(@RequestParam(name = "id", required = true) String id, Model model) {
+        byte status = 0;
+        try {
+            Book book = bookService.getByID(Integer.parseInt(id));
+            for (Author author : book.getAuthors()) {
+                author.getBooks().remove(book);
+                authorService.editAuthor(author);
+            }
+            bookService.delete(book);
+        } catch (JpaSystemException ex) {
+            System.out.println("Невозможно удалить книгу.");
+            status = 1;
+        }
+        List<Book> books = bookService.getAll();
+        model.addAttribute("books", books);
+        model.addAttribute("submitDelStatus", status);
+        return "books";
     }
 }

@@ -15,8 +15,8 @@ public class PostgreSQLDAOFactory implements DAOFactory {
     private static final String USER = "postgres";
     private static final String PASS = "root";
     //private static final String DRIVER_NAME = "org.postgresql.Driver";
-    private static final String START_SCRIPT_NAME = "C:\\Users\\Алескандр\\Documents\\GitHub\\NetLabsStage2\\NetcrackerLabs\\Server\\src\\main\\java\\database\\databaseStartScript.sql";
-    //private static final String START_SCRIPT_NAME = "D:\\$$$_Git\\Lab3-5\\NetcrackerLabs\\Server\\src\\main\\java\\database\\databaseStartScript.sql";
+    //private static final String START_SCRIPT_NAME = "C:\\Users\\Алескандр\\Documents\\GitHub\\NetLabsStage2\\NetcrackerLabs\\Server\\src\\main\\java\\database\\databaseStartScript.sql";
+    private static final String START_SCRIPT_NAME = "D:\\$$$_Git\\Lab3-5\\NetcrackerLabs\\Server\\src\\main\\java\\database\\databaseStartScript.sql";
     private static PostgreSQLDAOFactory instance;
     private Connection connection;
 
