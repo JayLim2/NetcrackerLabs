@@ -9,48 +9,51 @@
 
 </head>
 <body>
-    <div class="mainBox">
-        <div class = "leftSide">
-            <p> А тут менюшка</p><br>
-            <ul>
-                <li><a href="/books">Тут книги</a></li>
-                <li><a href="/authors">А тут авторы</a></li>
-                <li><a href="/publishers">А тут издатели</a></li>
-            </ul>
-        </div>
-        <div class = "rightSide">
-            <div class = "header">
-                <p>Тут будет тобешь заголовок</p>
-            </div>
-
-            <div th:switch="${submitAddStatus}">
-                <div th:case="'0'" class="success">
-                    Книга добавлена.
-                </div>
-                <div th:case="'1'" class="error">
-                    Такая книга уже существует или нарушение ограничений таблицы.
-                </div>
-                <div th:case="'2'" class="error">
-                    Год должен быть не менее 0 и не более текущего.
-                </div>
-                <div th:case="'3'" class="error">
-                    Год должен быть числом.
-                </div>
-            </div>
-
-            <form id ="editForm" action="submitAdd" method="POST">
-                <input class = "inputField" type="text" id = "booktitle" name = "booktitle" placeholder="booktitle" ><br>
-                <input class = "inputField" type="text" id = "publishYear" name = "publishYear" placeholder="publishYear" ><br>
-                <input class = "inputField" type="text" id = "brief" name = "brief" placeholder="brief"><br>
-                <select name = "publisher">
-                    <option th:each = "publisher : ${publishers}" th:value="${publisher.publisherName}" th:label ="${publisher.publisherName}" th:selected='${publisher.equals(bpublisher)}'></option>
-                </select><br>
-                <select name = "author" multiple>
-                    <option th:each = "author : ${authors}" th:value="${author.authorName}" th:label ="${author.authorName}" th:selected="${bauthors != null} ? ${#lists.contains(bauthors, author)}"></option>
-                </select><br>
-                <input type="submit" value="submit">
-            </form>
-        </div>
+<div class="mainBox">
+    <div class="leftSide">
+        <p> А тут менюшка</p><br>
+        <ul>
+            <li><a href="/books">Тут книги</a></li>
+            <li><a href="/authors">А тут авторы</a></li>
+            <li><a href="/publishers">А тут издатели</a></li>
+        </ul>
     </div>
+    <div class="rightSide">
+        <div class="header">
+            <p>Тут будет тобешь заголовок</p>
+        </div>
+
+        <div th:switch="${submitAddStatus}">
+            <div th:case="'1'" class="error">
+                Такая книга уже существует или нарушение ограничений таблицы.
+            </div>
+            <div th:case="'2'" class="error">
+                Год должен быть не менее 0 и не более текущего.
+            </div>
+            <div th:case="'3'" class="error">
+                Год должен быть числом.
+            </div>
+        </div>
+
+        <form id="editForm" action="submitAdd" method="POST">
+            <input class="inputField" type="text" id="booktitle" name="booktitle" placeholder="booktitle"
+                   th:value="${bookTitle}"><br>
+            <input class="inputField" type="text" id="publishYear" name="publishYear" placeholder="publishYear"
+                   th:value="${publishYear}"><br>
+            <input class="inputField" type="text" id="brief" name="brief" placeholder="brief" th:value="${brief}"><br>
+            <div th:text="${bpublisher}"></div>
+            <select name="publisher">
+                <option th:each="publisher : ${publishers}" th:value="${publisher.publisherName}"
+                        th:label="${publisher.publisherName}" th:selected='${publisher.equals(bpublisher)}'></option>
+            </select><br>
+            <div th:text="${bauthors}"></div>
+            <select name="author" multiple>
+                <option th:each="author : ${authors}" th:value="${author.authorName}" th:label="${author.authorName}"
+                        th:selected="${bauthors != null} ? ${#lists.contains(bauthors, author)}"></option>
+            </select><br>
+            <input type="submit" value="submit">
+        </form>
+    </div>
+</div>
 </body>
 </html>

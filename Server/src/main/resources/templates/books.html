@@ -40,7 +40,16 @@
             </div>
             <h1>Список всех книг</h1>
 
-
+            <div th:switch="${submitAddStatus}">
+                <div th:case="'0'" class="success">
+                    Книга добавлена.
+                </div>
+            </div>
+            <div th:switch="${submitEditStatus}">
+                <div th:case="'0'" class="success">
+                    Книга изменена.
+                </div>
+            </div>
             <div th:switch="${submitDelStatus}">
                 <div th:case="'0'" class="success">
                     Книга удалена.

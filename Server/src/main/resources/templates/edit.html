@@ -24,9 +24,6 @@
             </div>
 
             <div th:switch="${submitEditStatus}">
-                <div th:case="'0'" class="success">
-                    Книга изменена.
-                </div>
                 <div th:case="'1'" class="error">
                     Такая книга уже существует или нарушение ограничений таблицы.
                 </div>

@@ -16,15 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Calendar;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import org.springframework.util.MultiValueMap;
+import java.util.*;
 
 @Controller
 public class GreetingController {
@@ -250,15 +247,42 @@ public class GreetingController {
             System.out.println(ex.getCause());
             System.out.println("Такая книга уже существует или иное нарушение ограничений.");
             status = 1;
+
+            return onWrongSubmitAddBook(params, model, status);
         } catch (YearOutOfBoundsException ex) {
             System.out.println("Неверный год.");
             status = 2;
+
+            return onWrongSubmitAddBook(params, model, status);
         } catch (NumberFormatException ex) {
             System.out.println("Год должен быть числом.");
             status = 3;
+
+            return onWrongSubmitAddBook(params, model, status);
         }
         List<Book> books = bookService.getAll();
         model.addAttribute("books", books);
+        model.addAttribute("submitAddStatus", status);
+        return "books";
+    }
+
+    private String onWrongSubmitAddBook(MultiValueMap<String, String> params, Model model, byte status) {
+        model.addAttribute("bookTitle", params.get("booktitle").get(0));
+        model.addAttribute("publishYear", params.get("publishYear").get(0));
+        model.addAttribute("brief", params.get("brief").get(0));
+
+        model.addAttribute("publishers", publisherService.getAll());
+        model.addAttribute("bpublisher", publisherService.getByName(params.get("publisher").get(0)));
+
+        model.addAttribute("authors", authorService.getAll());
+        List<Author> bauthors = new ArrayList<>();
+        List<String> bauthors_s = params.get("author");
+        for (String bauthor : bauthors_s) {
+            bauthors.add(authorService.getByName(bauthor));
+        }
+        model.addAttribute("bauthors", bauthors);
+        model.addAttribute("author", authorService.getByName(params.get("author").get(0)));
+
         model.addAttribute("submitAddStatus", status);
         return "add";
     }
@@ -309,16 +333,39 @@ public class GreetingController {
             System.out.println(ex.getCause());
             System.out.println("Такая книга уже существует или иное нарушение ограничений.");
             status = 1;
+
+            return onWrongSubmitEditBook(params, model, status);
         } catch (YearOutOfBoundsException ex) {
             System.out.println("Неверный год.");
             status = 2;
+
+            return onWrongSubmitEditBook(params, model, status);
         } catch (NumberFormatException ex) {
             System.out.println("Год должен быть числом.");
             status = 3;
+
+            return onWrongSubmitEditBook(params, model, status);
         }
         model.addAttribute("books", bookService.getAll());
         model.addAttribute("submitEditStatus", status);
         return "books";
+    }
+
+    private String onWrongSubmitEditBook(MultiValueMap<String, String> params, Model model, byte status) {
+        Book b = bookService.getByID(Integer.parseInt(params.get("id").get(0)));
+        model.addAttribute("book", b);
+        model.addAttribute("bpublisher", b.getPublisher());
+        model.addAttribute("bauthors", b.getAuthors());
+        for (Author author : b.getAuthors()) {
+            System.out.println(author);
+        }
+        List<Publisher> p = publisherService.getAll();
+        List<Author> a = authorService.getAll();
+        model.addAttribute("publishers", p);
+        model.addAttribute("authors", a);
+
+        model.addAttribute("submitEditStatus", status);
+        return "edit";
     }
 
     @PostMapping("/delete")
