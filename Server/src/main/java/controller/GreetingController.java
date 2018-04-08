@@ -73,13 +73,14 @@ public class GreetingController {
             a.setAuthorName(params.get("authorname"));
             authorService.addAuthor(a);
         } catch (JpaSystemException ex) {
+            System.out.println(ex.getCause());
             System.out.println("Нарушение целостности.");
             status = 1;
         }
         List<Author> authors = authorService.getAll();
         model.addAttribute("authors", authors);
         model.addAttribute("submitAddStatus", status);
-        return "authors";
+        return "addAuthor";
     }
 
     @PostMapping("/editAuthor")
@@ -99,6 +100,7 @@ public class GreetingController {
             model.addAttribute("author", a);
             authorService.addAuthor(a);
         } catch (JpaSystemException ex) {
+            System.out.println(ex.getCause());
             System.out.println("Нарушение целостности.");
             status = 1;
         } catch (NullPointerException ex) {
@@ -123,6 +125,7 @@ public class GreetingController {
 //        author = authorService.getByID(Integer.parseInt(id));
             authorService.delete(author);
         } catch (JpaSystemException ex) {
+            System.out.println(ex.getCause());
             System.out.println("Невозможно удалить автора.");
             status = 1;
         } catch (NullPointerException ex) {
@@ -151,13 +154,14 @@ public class GreetingController {
             p.setPublisherName(params.get("publishername"));
             publisherService.addPublisher(p);
         } catch (JpaSystemException ex) {
+            System.out.println(ex.getCause());
             System.out.println("Нарушение ограничений при добавлении издателя.");
             status = 1;
         }
         List<Publisher> publishers = publisherService.getAll();
         model.addAttribute("publishers", publishers);
         model.addAttribute("submitAddStatus", status);
-        return "publishers";
+        return "addPublisher";
     }
 
     @PostMapping("/editPublisher")
@@ -176,8 +180,8 @@ public class GreetingController {
             model.addAttribute("publisher", p);
             publisherService.addPublisher(p);
         } catch (JpaSystemException ex) {
-            System.out.println("Такой издатель уже существует.");
             System.out.println(ex.getCause());
+            System.out.println("Такой издатель уже существует.");
             status = 1;
         } catch (NullPointerException ex) {
             System.out.println("Такого издателя не существует.");
@@ -194,6 +198,7 @@ public class GreetingController {
             Publisher publisher = publisherService.getByID(Integer.parseInt(id));
             publisherService.delete(publisher);
         } catch (JpaSystemException ex) {
+            System.out.println(ex.getCause());
             System.out.println("Невозможно удалить издателя.");
             status = 1;
         } catch (NullPointerException ex) {
@@ -237,6 +242,7 @@ public class GreetingController {
                 authorService.editAuthor(newAuthors.get(i));
             }
         } catch (JpaSystemException ex) {
+            System.out.println(ex.getCause());
             System.out.println("Такая книга уже существует или иное нарушение ограничений.");
             status = 1;
         } catch (YearOutOfBoundsException ex) {
@@ -249,7 +255,7 @@ public class GreetingController {
         List<Book> books = bookService.getAll();
         model.addAttribute("books", books);
         model.addAttribute("submitAddStatus", status);
-        return "books";
+        return "add";
     }
 
     @PostMapping("/edit")
@@ -289,6 +295,7 @@ public class GreetingController {
                 authorService.editAuthor(newAuthors.get(i));
             }
         } catch (JpaSystemException ex) {
+            System.out.println(ex.getCause());
             System.out.println("Такая книга уже существует или иное нарушение ограничений.");
             status = 1;
         } catch (YearOutOfBoundsException ex) {
@@ -313,6 +320,7 @@ public class GreetingController {
             }
             bookService.delete(book);
         } catch (JpaSystemException ex) {
+            System.out.println(ex.getCause());
             System.out.println("Невозможно удалить книгу.");
             status = 1;
         }

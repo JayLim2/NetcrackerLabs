@@ -40,14 +40,6 @@
             </div>
             <h1>Список всех издателей</h1>
 
-            <div th:switch="${submitAddStatus}">
-                <div th:case="'0'" class="success">
-                    Издатель добавлен.
-                </div>
-                <div th:case="'1'" class="error">
-                    Такой издатель уже существует.
-                </div>
-            </div>
             <div th:switch="${submitDelStatus}">
                 <div th:case="'0'" class="success">
                     Издатель удален.

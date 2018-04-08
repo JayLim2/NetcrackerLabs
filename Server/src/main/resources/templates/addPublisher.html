@@ -22,6 +22,16 @@
             <div class = "header">
                 <p>Тут будет тобешь заголовок</p>
             </div>
+
+            <div th:switch="${submitAddStatus}">
+                <div th:case="'0'" class="success">
+                    Издатель добавлен.
+                </div>
+                <div th:case="'1'" class="error">
+                    Такой издатель уже существует.
+                </div>
+            </div>
+
             <form id ="editForm" action="submitAddPublisher" method="POST">
                 <input class = "inputField" type="text" id = "publishername" name = "publishername" placeholder="publisherName"><br>
                 <input type="submit" value="submit">

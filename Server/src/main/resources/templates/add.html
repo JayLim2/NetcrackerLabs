@@ -22,6 +22,22 @@
             <div class = "header">
                 <p>Тут будет тобешь заголовок</p>
             </div>
+
+            <div th:switch="${submitAddStatus}">
+                <div th:case="'0'" class="success">
+                    Книга добавлена.
+                </div>
+                <div th:case="'1'" class="error">
+                    Такая книга уже существует или нарушение ограничений таблицы.
+                </div>
+                <div th:case="'2'" class="error">
+                    Год должен быть не менее 0 и не более текущего.
+                </div>
+                <div th:case="'3'" class="error">
+                    Год должен быть числом.
+                </div>
+            </div>
+
             <form id ="editForm" action="submitAdd" method="POST">
                 <input class = "inputField" type="text" id = "booktitle" name = "booktitle" placeholder="booktitle" ><br>
                 <input class = "inputField" type="text" id = "publishYear" name = "publishYear" placeholder="publishYear" ><br>
