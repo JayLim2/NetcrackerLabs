@@ -11,6 +11,8 @@ import database.service.PublisherService;
 import entity.Author;
 import entity.Book;
 import entity.Publisher;
+import java.sql.SQLException;
+import java.sql.Savepoint;
 import models.YearOutOfBoundsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jpa.JpaSystemException;
@@ -22,10 +24,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.*;
+import javax.annotation.Resource;
+import javax.persistence.PersistenceException;
+import javax.sql.DataSource;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Controller
 public class GreetingController {
 
+    @Autowired
+    DataSource dataSource;
+    
     @Autowired
     BookService bookService;
     
@@ -301,34 +314,10 @@ public class GreetingController {
     }
 
     @PostMapping("/submitEdit")
-    public String submitEdit(@RequestParam MultiValueMap<String, String> params, Model model) {
+    public String submitEdit(@RequestParam MultiValueMap<String, String> params, Model model) throws SQLException {
         byte status = 0;
         try {
-            Book b = bookService.getByID(Integer.parseInt(params.get("id").get(0)));
-            for (Author author : b.getAuthors()) {
-                author.getBooks().remove(b);
-                authorService.editAuthor(author);
-            }
-            List<String> aNames = params.get("author");
-            List<Author> newAuthors = new LinkedList<>();
-            for (String aname : aNames) {
-                newAuthors.add(authorService.getByName(aname));
-            }
-            Publisher p = publisherService.getByName(params.get("publisher").get(0));
-            b.setBookName(params.get("booktitle").get(0));
-            b.setBrief(params.get("brief").get(0));
-            b.setPublishYear(Integer.parseInt(params.get("publishYear").get(0)));
-            if (b.getPublishYear() < 0 && b.getPublishYear() > Calendar.YEAR) {
-                throw new YearOutOfBoundsException();
-            }
-            b.setPublisher(p);
-            b.setAuthors(newAuthors);
-            
-            bookService.editBook(b);
-            for (int i = 0; i < newAuthors.size(); i++) {
-                newAuthors.get(i).getBooks().add(b);
-                authorService.editAuthor(newAuthors.get(i));
-            }
+            bookEditTransaction(params,model);
         } catch (JpaSystemException ex) {
             System.out.println(ex.getCause());
             System.out.println("Такая книга уже существует или иное нарушение ограничений.");
@@ -351,8 +340,41 @@ public class GreetingController {
         return "books";
     }
 
+    
+    @Transactional(propagation = Propagation.REQUIRED,rollbackFor = Exception.class)
+    private void bookEditTransaction(MultiValueMap<String, String> params, Model model) throws YearOutOfBoundsException{
+        Book b = bookService.getByID(Integer.parseInt(params.get("id").get(0)));
+           
+            List<String> aNames = params.get("author");
+            List<Author> newAuthors = new LinkedList<>();
+            for (String aname : aNames) {
+                newAuthors.add(authorService.getByName(aname));
+            }
+            Publisher p = publisherService.getByName(params.get("publisher").get(0));
+            b.setBookName(params.get("booktitle").get(0));
+            b.setBrief(params.get("brief").get(0));
+            b.setPublishYear(Integer.parseInt(params.get("publishYear").get(0)));
+            if (b.getPublishYear() < 0 && b.getPublishYear() > Calendar.YEAR) {
+                throw new YearOutOfBoundsException();
+            }
+            b.setPublisher(p);
+            bookService.editBook(b);
+             for (Author author : b.getAuthors()) {
+                author.getBooks().remove(b);
+                authorService.editAuthor(author);
+            }
+            b.setAuthors(newAuthors);
+            
+            bookService.editBook(b);
+            for (int i = 0; i < newAuthors.size(); i++) {
+                newAuthors.get(i).getBooks().add(b);
+                authorService.editAuthor(newAuthors.get(i));
+            }
+    }
+    
     private String onWrongSubmitEditBook(MultiValueMap<String, String> params, Model model, byte status) {
         Book b = bookService.getByID(Integer.parseInt(params.get("id").get(0)));
+        System.out.println(b);
         model.addAttribute("book", b);
         model.addAttribute("bpublisher", b.getPublisher());
         model.addAttribute("bauthors", b.getAuthors());

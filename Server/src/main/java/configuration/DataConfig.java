@@ -17,11 +17,11 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@EnableTransactionManagement
 @ComponentScan("database")
 @ComponentScan("controller")
 @PropertySource("classpath:Application.properties")
 @EnableJpaRepositories("database.repository") 
+@EnableTransactionManagement
 public class DataConfig {
 
     private static final String PROP_DATABASE_DRIVER = "db.driver";
