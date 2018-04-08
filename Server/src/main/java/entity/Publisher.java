@@ -12,7 +12,7 @@ public class Publisher {
     @SequenceGenerator(name = "auto_increment_publisher", sequenceName = "\"auto_increment_publisher\"", allocationSize = 1)
     @Column (name = "\"publisherID\"")
     private int publisherID;
-    @Column (name = "\"publisherName\"")
+    @Column (name = "\"publisherName\"",nullable=false, unique = true, length = 30)
     private String publisherName;
 //    пока не понял, нужно ли объявлять @OneToMany в издателе, если объявлено ManyToOne в книгу с указанием publisher_id
 //    @OneToMany (fetch = FetchType.EAGER, mappedBy = "book")

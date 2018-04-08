@@ -13,11 +13,11 @@ public class Book {
     @SequenceGenerator(name = "auto_increment_book", sequenceName = "\"auto_increment_book\"", allocationSize = 1)
     @Column(name =  "\"bookID\"")
     private int bookID;
-    @Column(name =  "\"bookName\"")
+    @Column(name =  "\"bookName\"", nullable=false, unique = true, length = 50)
     private String bookName;
     @Column(name = "\"publishYear\"")
     private int publishYear;
-    @Column(name = "brief")
+    @Column(name = "brief", nullable=false, length = 2500)
     private String brief;
 
     @ManyToOne

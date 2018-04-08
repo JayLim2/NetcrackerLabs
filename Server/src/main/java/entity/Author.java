@@ -11,7 +11,7 @@ public class Author {
     @SequenceGenerator(name = "auto_increment_author", sequenceName = "\"auto_increment_author\"", allocationSize = 1)
     @Column (name = "\"authorID\"")
     private int authorID;
-    @Column (name = "\"authorName\"")
+    @Column (name = "\"authorName\"", nullable=false, unique = true, length = 60)
     private String authorName;
 
 
