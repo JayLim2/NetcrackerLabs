@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.springframework.util.MultiValueMap;
 
 @Controller
 public class GreetingController {
@@ -214,23 +215,27 @@ public class GreetingController {
     //КНИГИ
     @PostMapping("/add")
     public String add(Model model) {
+        List<Publisher> p = publisherService.getAll();
+        List<Author> a = authorService.getAll();
+        model.addAttribute("publishers", p);
+        model.addAttribute("authors", a);
         return "add";
     }
 
     @PostMapping("/submitAdd")
-    public String submitAdd(@RequestParam Map<String, String> params, Model model) {
+    public String submitAdd(@RequestParam MultiValueMap<String, String> params, Model model) {
         byte status = 0;
         try {
             Book b = new Book();
-            String[] aNames = params.get("authors").split(",");
+            List<String> aNames = params.get("author");
             List<Author> newAuthors = new LinkedList<>();
             for (String aname : aNames) {
                 newAuthors.add(authorService.getByName(aname));
             }
-            Publisher p = publisherService.getByName(params.get("publisher"));
-            b.setBookName(params.get("booktitle"));
-            b.setBrief(params.get("brief"));
-            b.setPublishYear(Integer.parseInt(params.get("publishYear")));
+            Publisher p = publisherService.getByName(params.get("publisher").get(0));
+            b.setBookName(params.get("booktitle").get(0));
+            b.setBrief(params.get("brief").get(0));
+            b.setPublishYear(Integer.parseInt(params.get("publishYear").get(0)));
             if (b.getPublishYear() < 0 && b.getPublishYear() > Calendar.YEAR) {
                 throw new YearOutOfBoundsException();
             }
@@ -262,33 +267,39 @@ public class GreetingController {
     public String edit(@RequestParam(name = "id", required = true) String id, Model model) {
         Book b = bookService.getByID(Integer.parseInt(id));
         model.addAttribute("book", b);
+        model.addAttribute("bpublisher", b.getPublisher());
+        model.addAttribute("bauthors", b.getAuthors());
+        List<Publisher> p = publisherService.getAll();
+        List<Author> a = authorService.getAll();
+        model.addAttribute("publishers", p);
+        model.addAttribute("authors", a);
         return "edit";
     }
 
     @PostMapping("/submitEdit")
-    public String submitEdit(@RequestParam Map<String, String> params, Model model) {
+    public String submitEdit(@RequestParam MultiValueMap<String, String> params, Model model) {
         byte status = 0;
         try {
-            Book b = bookService.getByID(Integer.parseInt(params.get("id")));
+            Book b = bookService.getByID(Integer.parseInt(params.get("id").get(0)));
             for (Author author : b.getAuthors()) {
                 author.getBooks().remove(b);
                 authorService.editAuthor(author);
             }
-            String[] aNames = params.get("authors").split(",");
+            List<String> aNames = params.get("author");
             List<Author> newAuthors = new LinkedList<>();
             for (String aname : aNames) {
                 newAuthors.add(authorService.getByName(aname));
             }
-            Publisher p = publisherService.getByName(params.get("publisher"));
-            b.setBookName(params.get("booktitle"));
-            b.setBrief(params.get("brief"));
-            b.setPublishYear(Integer.parseInt(params.get("publishYear")));
+            Publisher p = publisherService.getByName(params.get("publisher").get(0));
+            b.setBookName(params.get("booktitle").get(0));
+            b.setBrief(params.get("brief").get(0));
+            b.setPublishYear(Integer.parseInt(params.get("publishYear").get(0)));
             if (b.getPublishYear() < 0 && b.getPublishYear() > Calendar.YEAR) {
                 throw new YearOutOfBoundsException();
             }
             b.setPublisher(p);
             b.setAuthors(newAuthors);
-            model.addAttribute("books", b);
+            
             bookService.editBook(b);
             for (int i = 0; i < newAuthors.size(); i++) {
                 newAuthors.get(i).getBooks().add(b);
@@ -305,8 +316,9 @@ public class GreetingController {
             System.out.println("Год должен быть числом.");
             status = 3;
         }
+        model.addAttribute("books", bookService.getAll());
         model.addAttribute("submitEditStatus", status);
-        return "editBook";
+        return "books";
     }
 
     @PostMapping("/delete")

@@ -38,13 +38,17 @@
                 </div>
             </div>
 
-            <form id="editForm" action="edit" method="POST">
+            <form id="editForm" action="submitEdit" method="POST">
                 <input type="hidden" id = "id" name = "id" th:value = "${book.bookID}">
                 <input class = "inputField" type="text" id = "booktitle" name = "booktitle" th:value = "${book.bookName}"><br>
                 <input class = "inputField" type="text" id = "publishYear" name = "publishYear" th:value="${book.publishYear}"><br>
                 <input class = "inputField" type="text" id = "brief" name = "brief" th:value = "${book.brief}"><br>
-                <input class = "inputField" type="text" id = "publisher" name = "publisher" th:value="${book.publisher.publisherName}"><br>
-                <input class = "inputField" type="text" id = "authors" name ="authors" th:value="${#strings.listJoin(book.authors,',')}"> <br>
+                <select name = "publisher">
+                    <option th:each = "publisher : ${publishers}" th:value="${publisher.publisherName}" th:label ="${publisher.publisherName}" th:selected='${publisher.equals(bpublisher)}'></option>
+                </select><br>
+                <select name = "author" multiple>
+                    <option th:each = "author : ${authors}" th:value="${author.authorName}" th:label ="${author.authorName}" th:selected="${bauthors != null} ? ${#lists.contains(bauthors, author)}"></option>
+                </select><br>
                 <input type="submit" value="submit">
             </form>
         </div>
