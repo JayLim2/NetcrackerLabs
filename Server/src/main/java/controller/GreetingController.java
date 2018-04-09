@@ -11,10 +11,9 @@ import database.service.PublisherService;
 import entity.Author;
 import entity.Book;
 import entity.Publisher;
-import java.sql.SQLException;
-import java.sql.Savepoint;
 import models.YearOutOfBoundsException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,16 +22,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.*;
-import javax.annotation.Resource;
-import javax.persistence.PersistenceException;
 import javax.sql.DataSource;
-import org.hibernate.exception.ConstraintViolationException;
-import org.postgresql.util.PSQLException;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import java.sql.SQLException;
+import java.util.*;
 
 @Controller
 public class GreetingController {
@@ -87,7 +79,7 @@ public class GreetingController {
             Author a = new Author();
             a.setAuthorName(params.get("authorname"));
             authorService.addAuthor(a);
-        } catch (JpaSystemException ex) {
+        } catch (JpaSystemException | DataIntegrityViolationException ex) {
             System.out.println(ex.getCause());
             System.out.println("Нарушение целостности.");
             status = 1;
@@ -123,7 +115,7 @@ public class GreetingController {
             a.setAuthorName(params.get("authorname"));
             model.addAttribute("author", a);
             authorService.editAuthor(a);
-        } catch (JpaSystemException ex) {
+        } catch (JpaSystemException | DataIntegrityViolationException ex) {
             System.out.println(ex.getCause());
             System.out.println("Нарушение целостности.");
             status = 1;
@@ -159,7 +151,7 @@ public class GreetingController {
 //        authorService.editAuthor(author);
 //        author = authorService.getByID(Integer.parseInt(id));
             authorService.delete(author);
-        } catch (JpaSystemException ex) {
+        } catch (JpaSystemException | DataIntegrityViolationException ex) {
             System.out.println(ex.getCause());
             System.out.println("Невозможно удалить автора.");
             status = 1;
@@ -191,7 +183,7 @@ public class GreetingController {
             Publisher p = new Publisher();
             p.setPublisherName(params.get("publishername"));
             publisherService.addPublisher(p);
-        } catch (JpaSystemException ex) {
+        } catch (JpaSystemException | DataIntegrityViolationException ex) {
             System.out.println(ex.getCause());
             System.out.println("Нарушение ограничений при добавлении издателя.");
             status = 1;
@@ -225,7 +217,7 @@ public class GreetingController {
             Publisher p = publisherService.getByID(Integer.parseInt(params.get("id")));
             p.setPublisherName(params.get("publishername"));
             publisherService.editPublisher(p);
-        } catch (JpaSystemException ex) {
+        } catch (JpaSystemException | DataIntegrityViolationException ex) {
             System.out.println(ex.getCause());
             System.out.println("Такой издатель уже существует.");
             status = 1;
@@ -254,7 +246,7 @@ public class GreetingController {
         try {
             Publisher publisher = publisherService.getByID(Integer.parseInt(id));
             publisherService.delete(publisher);
-        } catch (JpaSystemException ex) {
+        } catch (JpaSystemException | DataIntegrityViolationException ex) {
             System.out.println(ex.getCause());
             System.out.println("Невозможно удалить издателя.");
             status = 1;
@@ -308,7 +300,7 @@ public class GreetingController {
                     newAuthors.get(i).getBooks().add(nb);
                     authorService.editAuthor(newAuthors.get(i));
                 }
-        } catch (JpaSystemException ex) {
+        } catch (JpaSystemException | DataIntegrityViolationException ex) {
             System.out.println(ex.getCause());
             System.out.println("Такая книга уже существует или иное нарушение ограничений.");
             status = 1;
@@ -380,7 +372,7 @@ public class GreetingController {
         byte status = 0;
         try {
             tstuff.bookEditTransaction(params,model);
-        } catch (JpaSystemException ex) {
+        } catch (JpaSystemException | DataIntegrityViolationException ex) {
             System.out.println(ex.getCause());
             System.out.println("Такая книга уже существует или иное нарушение ограничений.");
             status = 1;
@@ -445,7 +437,7 @@ public class GreetingController {
                 authorService.editAuthor(author);
             }
             bookService.delete(book);
-        } catch (JpaSystemException ex) {
+        } catch (JpaSystemException | DataIntegrityViolationException ex) {
             System.out.println(ex.getCause());
             System.out.println("Невозможно удалить книгу.");
             status = 1;
