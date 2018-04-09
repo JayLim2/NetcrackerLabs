@@ -49,15 +49,15 @@ public class TransactionalStuff {
                 }
             List<String> aNames = params.get("author");
             List<Author> newAuthors = new LinkedList<>();
-            if (aNames != null)
-                for (String aname : aNames) {
-                    newAuthors.add(authorService.getByName(aname));
+            if ((aNames != null)&&(aNames.size() > 0))
+                for (int i = 0; i < aNames.size(); i++) {
+                    newAuthors.add(authorService.getByName(aNames.get(i)));
                 }
             Publisher p = publisherService.getByName(params.get("publisher").get(0));
             b.setBookName(params.get("booktitle").get(0));
             b.setBrief(params.get("brief").get(0));
             b.setPublishYear(Integer.parseInt(params.get("publishYear").get(0)));
-            if (b.getPublishYear() < 0 && b.getPublishYear() > Calendar.YEAR) {
+            if (b.getPublishYear() < 0 || b.getPublishYear() > Calendar.getInstance().get(Calendar.YEAR)) {
                 throw new YearOutOfBoundsException();
             }
             b.setPublisher(p);

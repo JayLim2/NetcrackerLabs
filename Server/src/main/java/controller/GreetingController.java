@@ -166,8 +166,11 @@ public class GreetingController {
         } catch (NullPointerException ex) {
             System.out.println("Такого автора не существует. Удаление невозможно.");
             status = 2;
-        }
-
+        }catch (Exception ex) {
+            System.out.println(ex.getCause());
+            System.out.println("Невозможно удалить автора.");
+            status = 1;
+        } 
         List<Author> authors = authorService.getAll();
         model.addAttribute("authors", authors);
         model.addAttribute("submitDelStatus", status);
@@ -286,24 +289,25 @@ public class GreetingController {
             Book b = new Book();
             List<String> aNames = params.get("author");
             List<Author> newAuthors = new LinkedList<>();
-            if (aNames != null)
-                for (String aname : aNames) {
-                    newAuthors.add(authorService.getByName(aname));
+            if ((aNames != null)&&(aNames.size() > 0))
+                for (int i = 0; i < aNames.size(); i++) {
+                    newAuthors.add(authorService.getByName(aNames.get(i)));
                 }
             Publisher p = publisherService.getByName(params.get("publisher").get(0));
             b.setBookName(params.get("booktitle").get(0));
             b.setBrief(params.get("brief").get(0));
             b.setPublishYear(Integer.parseInt(params.get("publishYear").get(0)));
-            if (b.getPublishYear() < 0 && b.getPublishYear() > Calendar.YEAR) {
+            if (b.getPublishYear() < 0 || b.getPublishYear() > Calendar.getInstance().get(Calendar.YEAR)) {
                 throw new YearOutOfBoundsException();
             }
             b.setPublisher(p);
             b.setAuthors(newAuthors);
             Book nb = bookService.addBook(b);
-            for (int i = 0; i < newAuthors.size(); i++) {
-                newAuthors.get(i).getBooks().add(nb);
-                authorService.editAuthor(newAuthors.get(i));
-            }
+            if (newAuthors.size() > 0)
+                for (int i = 0; i < newAuthors.size(); i++) {
+                    newAuthors.get(i).getBooks().add(nb);
+                    authorService.editAuthor(newAuthors.get(i));
+                }
         } catch (JpaSystemException ex) {
             System.out.println(ex.getCause());
             System.out.println("Такая книга уже существует или иное нарушение ограничений.");
@@ -318,6 +322,12 @@ public class GreetingController {
         } catch (NumberFormatException ex) {
             System.out.println("Год должен быть числом.");
             status = 3;
+
+            return onWrongSubmitAddBook(params, model, status);
+        } catch (Exception ex) {
+            System.out.println(ex.getCause());
+            System.out.println("Такая книга уже существует или иное нарушение ограничений.");
+            status = 1;
 
             return onWrongSubmitAddBook(params, model, status);
         }
@@ -338,11 +348,12 @@ public class GreetingController {
         model.addAttribute("authors", authorService.getAll());
         List<Author> bauthors = new ArrayList<>();
         List<String> bauthors_s = params.get("author");
-        for (String bauthor : bauthors_s) {
-            bauthors.add(authorService.getByName(bauthor));
-        }
+        if (bauthors_s != null && bauthors_s.size() > 0)
+            for (int i = 0; i < bauthors_s.size(); i++) {
+                bauthors.add(authorService.getByName(bauthors_s.get(i)));
+            }
         model.addAttribute("bauthors", bauthors);
-        model.addAttribute("author", authorService.getByName(params.get("author").get(0)));
+       // model.addAttribute("author", authorService.getByName(params.get("author").get(0)));
 
         model.addAttribute("submitAddStatus", status);
         return "add";
@@ -407,13 +418,14 @@ public class GreetingController {
         model.addAttribute("bpublisher", publisherService.getByName(params.get("publisher").get(0)));
         List<Author> bauthors = new ArrayList<>();
         List<String> bauthors_s = params.get("author");
-        for (String bauthor : bauthors_s) {
-            bauthors.add(authorService.getByName(bauthor));
-        }
+        if (bauthors_s != null && bauthors_s.size() > 0)
+            for (int i = 0; i < bauthors_s.size(); i++) {
+                bauthors.add(authorService.getByName(bauthors_s.get(i)));
+            }
         model.addAttribute("bauthors", bauthors);
-        for (Author author : b.getAuthors()) {
-            System.out.println(author);
-        }
+//        for (Author author : b.getAuthors()) {
+//            System.out.println(author);
+//        }
         List<Publisher> p = publisherService.getAll();
         List<Author> a = authorService.getAll();
         model.addAttribute("publishers", p);

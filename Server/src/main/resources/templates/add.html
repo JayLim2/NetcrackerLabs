@@ -41,13 +41,11 @@
             <input class="inputField" type="text" id="publishYear" name="publishYear" placeholder="publishYear"
                    th:value="${publishYear}"><br>
             <input class="inputField" type="text" id="brief" name="brief" placeholder="brief" th:value="${brief}"><br>
-            <div th:text="${bpublisher}"></div>
             <select class = "inputField" name="publisher">
                 <option th:each="publisher : ${publishers}" th:value="${publisher.publisherName}"
                         th:label="${publisher.publisherName}" th:selected='${publisher.equals(bpublisher)}'></option>
             </select><br>
-            <div class = "inputField" th:text="${bauthors}"></div>
-            <select name="author" multiple>
+            <select  class = "inputField" name="author" multiple>
                 <option th:each="author : ${authors}" th:value="${author.authorName}" th:label="${author.authorName}"
                         th:selected="${bauthors != null} ? ${#lists.contains(bauthors, author)}"></option>
             </select><br>
