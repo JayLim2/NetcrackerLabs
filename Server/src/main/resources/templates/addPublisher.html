@@ -33,7 +33,7 @@
             </div>
 
             <form id ="editForm" action="submitAddPublisher" method="POST">
-                <input class = "inputField" type="text" id = "publishername" name = "publishername" placeholder="publisherName"><br>
+                <input class = "inputField" type="text" id = "publishername" name = "publishername" placeholder="publisherName" th:value = "${publisherName}"><br>
                 <input type="submit" value="submit">
             </form>
         </div>

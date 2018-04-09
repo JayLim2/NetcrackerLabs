@@ -22,13 +22,13 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication
-@ComponentScan("configuration")
-public class TestDB implements CommandLineRunner {
-//    public static void main(String[] args) {
-//        try {
-//            PostgreSQLDAOFactory daoFactory = PostgreSQLDAOFactory.getInstance();
-//            daoFactory.executeSqlStartScript("C:\\Users\\Алескандр\\Documents\\GitHub\\NetLabsStage2\\NetcrackerLabs\\Server\\src\\main\\java\\database\\cleanupScript.sql");
+
+
+public class TestDB {
+    public static void main(String[] args) {
+        try {
+            PostgreSQLDAOFactory daoFactory = PostgreSQLDAOFactory.getInstance();
+           // daoFactory.executeSqlStartScript("C:\\Users\\Алескандр\\Documents\\GitHub\\NetLabsStage2\\NetcrackerLabs\\Server\\src\\main\\java\\database\\cleanupScript.sql");
 ////            PostgreSQLAuthorDAO postgreSQLAuthorDAO = daoFactory.getAuthorDAO();
 ////            PostgreSQLBookDAO postgreSQLBookDAO = daoFactory.getBookDAO();
 ////            PostgreSQLPublisherDAO postgreSQLPublisherDAO = daoFactory.getPublisherDAO();
@@ -71,24 +71,24 @@ public class TestDB implements CommandLineRunner {
 ////        publisher.setPublisherName("OMAGAD");
 ////            PublisherServiceImpl publisherService = new PublisherServiceImpl();
 ////            publisherService.addPublisher(publisher);
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 //
 //
+    }
+
+
+//    @Autowired
+//    BookService bookRepository;
+//
+//    public static void main(String[] args) {
+//        SpringApplication.run(TestDB.class, args);
 //    }
-
-
-    @Autowired
-    BookService bookRepository;
-
-    public static void main(String[] args) {
-        SpringApplication.run(TestDB.class, args);
-    }
-
-    @Override
-    public void run(String... args) throws Exception {
-        List<Book> bookList = bookRepository.getAll();
-        System.out.println(bookList);
-    }
+//
+//    @Override
+//    public void run(String... args) throws Exception {
+//        List<Book> bookList = bookRepository.getAll();
+//        System.out.println(bookList);
+//    }
 }

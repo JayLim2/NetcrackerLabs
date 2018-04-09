@@ -35,9 +35,9 @@
                 </div>
             </div>
 
-            <form id="editForm" action="editPublisher" method="POST">
-                <input type="hidden" id = "id" name = "id" th:value = "${publisher.publisherID}">
-                <input class = "inputField" type="text" id = "publishername" name = "publishername" th:value = "${publisher.publisherName}"><br>
+            <form id="editForm" action="submitEditPublisher" method="POST">
+                <input type="hidden" id = "id" name = "id" th:value = "${publisherID}">
+                <input class = "inputField" type="text" id = "publishername" name = "publishername" th:value = "${publisherName}"><br>
                 <input type="submit" value="submit">
             </form>
         </div>

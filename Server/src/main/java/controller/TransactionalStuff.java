@@ -41,16 +41,18 @@ public class TransactionalStuff {
     
     @Transactional(propagation = Propagation.REQUIRED,rollbackFor = Exception.class)
     public void bookEditTransaction(MultiValueMap<String, String> params, Model model) throws YearOutOfBoundsException{
-        Book b = bookService.getByID(Integer.parseInt(params.get("id").get(0)));
-            for (Author author : b.getAuthors()) {
-                author.getBooks().remove(b);
-                authorService.editAuthor(author);
-            }
+            Book b = bookService.getByID(Integer.parseInt(params.get("id").get(0)));
+            if (b.getAuthors().size() > 0)
+                for (int i = 0; i < b.getAuthors().size(); i++) {
+                    b.getAuthors().get(i).getBooks().remove(b);
+                    authorService.editAuthor(b.getAuthors().get(i));
+                }
             List<String> aNames = params.get("author");
             List<Author> newAuthors = new LinkedList<>();
-            for (String aname : aNames) {
-                newAuthors.add(authorService.getByName(aname));
-            }
+            if (aNames != null)
+                for (String aname : aNames) {
+                    newAuthors.add(authorService.getByName(aname));
+                }
             Publisher p = publisherService.getByName(params.get("publisher").get(0));
             b.setBookName(params.get("booktitle").get(0));
             b.setBrief(params.get("brief").get(0));
@@ -64,9 +66,10 @@ public class TransactionalStuff {
             b.setAuthors(newAuthors);
             
             bookService.editBook(b);
-            for (int i = 0; i < newAuthors.size(); i++) {
-                newAuthors.get(i).getBooks().add(b);
-                authorService.editAuthor(newAuthors.get(i));
-            }
+            if (newAuthors.size() > 0)
+                for (int i = 0; i < newAuthors.size(); i++) {
+                    newAuthors.get(i).getBooks().add(b);
+                    authorService.editAuthor(newAuthors.get(i));
+                }
     }
 }

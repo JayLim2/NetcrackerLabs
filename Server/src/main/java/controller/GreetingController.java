@@ -28,6 +28,7 @@ import javax.annotation.Resource;
 import javax.persistence.PersistenceException;
 import javax.sql.DataSource;
 import org.hibernate.exception.ConstraintViolationException;
+import org.postgresql.util.PSQLException;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -90,17 +91,26 @@ public class GreetingController {
             System.out.println(ex.getCause());
             System.out.println("Нарушение целостности.");
             status = 1;
+        }catch (Exception ex) {
+            System.out.println(ex.getCause());
+            System.out.println("Нарушение целостности.");
+            status = 1;
+        }
+        model.addAttribute("submitAddStatus", status);
+        if (status != 0){
+            model.addAttribute("authorName", params.get("authorname"));
+            return "addAuthor";
         }
         List<Author> authors = authorService.getAll();
         model.addAttribute("authors", authors);
-        model.addAttribute("submitAddStatus", status);
-        return "addAuthor";
+        return "authors";
     }
 
     @PostMapping("/editAuthor")
     public String editAuthor(@RequestParam(name="id", required=true) String id, Model model) {
         Author a = authorService.getByID(Integer.parseInt(id));
-        model.addAttribute("author", a);
+        model.addAttribute("authorID", a.getAuthorID());
+        model.addAttribute("authorName", a.getAuthorName());
         return "editAuthor";
     }
 
@@ -112,7 +122,7 @@ public class GreetingController {
             a = authorService.getByID(Integer.parseInt(params.get("id")));
             a.setAuthorName(params.get("authorname"));
             model.addAttribute("author", a);
-            authorService.addAuthor(a);
+            authorService.editAuthor(a);
         } catch (JpaSystemException ex) {
             System.out.println(ex.getCause());
             System.out.println("Нарушение целостности.");
@@ -120,9 +130,20 @@ public class GreetingController {
         } catch (NullPointerException ex) {
             System.out.println("Null pointer exception.");
             status = 2;
+        }catch (Exception ex) {
+            System.out.println(ex.getCause());
+            System.out.println("Нарушение целостности.");
+            status = 1;
         }
-        model.addAttribute("submitEditStatus", status);
-        return "editAuthor";
+        if (status != 0){
+            model.addAttribute("submitEditStatus", status);
+            model.addAttribute("authorID",params.get("id"));
+            model.addAttribute("authorName",params.get("authorname"));
+            return "editAuthor";
+        }
+        List<Author> alist = authorService.getAll();
+        model.addAttribute("authors", alist);
+        return "authors";
     }
 
     @PostMapping("/deleteAuthor")
@@ -171,17 +192,26 @@ public class GreetingController {
             System.out.println(ex.getCause());
             System.out.println("Нарушение ограничений при добавлении издателя.");
             status = 1;
+        }catch (Exception ex){
+            System.out.println(ex.getCause());
+            System.out.println("Такой издатель уже существует.");
+            status = 1;
+        }
+        if(status != 0){
+            model.addAttribute("submitAddStatus", status);
+            model.addAttribute("publisherName", params.get("publishername"));
+            return "addPublisher";
         }
         List<Publisher> publishers = publisherService.getAll();
         model.addAttribute("publishers", publishers);
-        model.addAttribute("submitAddStatus", status);
-        return "addPublisher";
+        return "publishers";
     }
 
     @PostMapping("/editPublisher")
     public String editPublisher(@RequestParam(name = "id", required = true) String id, Model model) {
         Publisher p = publisherService.getByID(Integer.parseInt(id));
-        model.addAttribute("publisher", p);
+        model.addAttribute("publisherID", p.getPublisherID());
+        model.addAttribute("publisherName", p.getPublisherName());
         return "editPublisher";
     }
     
@@ -191,8 +221,7 @@ public class GreetingController {
         try {
             Publisher p = publisherService.getByID(Integer.parseInt(params.get("id")));
             p.setPublisherName(params.get("publishername"));
-            model.addAttribute("publisher", p);
-            publisherService.addPublisher(p);
+            publisherService.editPublisher(p);
         } catch (JpaSystemException ex) {
             System.out.println(ex.getCause());
             System.out.println("Такой издатель уже существует.");
@@ -200,9 +229,20 @@ public class GreetingController {
         } catch (NullPointerException ex) {
             System.out.println("Такого издателя не существует.");
             status = 2;
+        } catch (Exception ex){
+            System.out.println(ex.getCause());
+            System.out.println("Такой издатель уже существует.");
+            status = 1;
         }
         model.addAttribute("submitEditStatus", status);
-        return "editPublisher";
+        if(status != 0){
+            model.addAttribute("publisherID",Integer.parseInt(params.get("id")));
+            model.addAttribute("publisherName", params.get("publishername"));
+            return "editPublisher";
+        }
+        List<Publisher> publishers = publisherService.getAll();
+        model.addAttribute("publishers", publishers);
+        return "publishers";
     }
 
     @PostMapping("/deletePublisher")
@@ -218,6 +258,10 @@ public class GreetingController {
         } catch (NullPointerException ex) {
             System.out.println("Такого издателя не существует.");
             status = 2;
+        }catch(Exception ex){
+            System.out.println(ex.getCause());
+            System.out.println("Невозможно удалить издателя.");
+            status = 1;
         }
         List<Publisher> publishers = publisherService.getAll();
         model.addAttribute("publishers", publishers);
@@ -242,9 +286,10 @@ public class GreetingController {
             Book b = new Book();
             List<String> aNames = params.get("author");
             List<Author> newAuthors = new LinkedList<>();
-            for (String aname : aNames) {
-                newAuthors.add(authorService.getByName(aname));
-            }
+            if (aNames != null)
+                for (String aname : aNames) {
+                    newAuthors.add(authorService.getByName(aname));
+                }
             Publisher p = publisherService.getByName(params.get("publisher").get(0));
             b.setBookName(params.get("booktitle").get(0));
             b.setBrief(params.get("brief").get(0));
@@ -306,7 +351,10 @@ public class GreetingController {
     @PostMapping("/edit")
     public String edit(@RequestParam(name = "id", required = true) String id, Model model) {
         Book b = bookService.getByID(Integer.parseInt(id));
-        model.addAttribute("book", b);
+        model.addAttribute("bookID", b.getBookID());
+        model.addAttribute("bookName", b.getBookName());
+        model.addAttribute("brief", b.getBrief());
+        model.addAttribute("publishYear", b.getPublishYear());
         model.addAttribute("bpublisher", b.getPublisher());
         model.addAttribute("bauthors", b.getAuthors());
         List<Publisher> p = publisherService.getAll();
@@ -352,9 +400,17 @@ public class GreetingController {
     private String onWrongSubmitEditBook(MultiValueMap<String, String> params, Model model, byte status) {
         Book b = bookService.getByID(Integer.parseInt(params.get("id").get(0)));
         System.out.println(b);
-        model.addAttribute("book", b);
-        model.addAttribute("bpublisher", b.getPublisher());
-        model.addAttribute("bauthors", b.getAuthors());
+        model.addAttribute("bookID", b.getBookID());
+        model.addAttribute("bookName", params.get("booktitle").get(0));
+        model.addAttribute("brief", params.get("brief").get(0));
+        model.addAttribute("publishYear", params.get("publishYear").get(0));
+        model.addAttribute("bpublisher", publisherService.getByName(params.get("publisher").get(0)));
+        List<Author> bauthors = new ArrayList<>();
+        List<String> bauthors_s = params.get("author");
+        for (String bauthor : bauthors_s) {
+            bauthors.add(authorService.getByName(bauthor));
+        }
+        model.addAttribute("bauthors", bauthors);
         for (Author author : b.getAuthors()) {
             System.out.println(author);
         }
