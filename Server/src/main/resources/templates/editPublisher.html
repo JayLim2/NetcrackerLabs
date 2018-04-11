@@ -24,14 +24,17 @@
             </div>
 
             <div th:switch="${submitEditStatus}">
-                <div th:case="'0'" class="success">
-                    Издатель изменен.
-                </div>
                 <div th:case="'1'" class="error">
-                    Такой издатель уже существует.
+                    Такой издатель уже существует, либо нарушены ограничения БД.
                 </div>
                 <div th:case="'2'" class="error">
                     Такого издателя не существует.
+                </div>
+                <div th:case="'3'" class="error">
+                    Название издателя не должно быть пустым.
+                </div>
+                <div th:case="'4'" class="error">
+                    Неизвестная ошибка сервера.
                 </div>
             </div>
 

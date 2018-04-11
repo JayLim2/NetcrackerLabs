@@ -11,6 +11,7 @@ import database.service.PublisherService;
 import entity.Author;
 import entity.Book;
 import entity.Publisher;
+import models.EmptyFieldException;
 import models.YearOutOfBoundsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -77,16 +78,22 @@ public class GreetingController {
         byte status = 0;
         try {
             Author a = new Author();
-            a.setAuthorName(params.get("authorname"));
+            String authorName = params.get("authorname");
+            if (authorName.isEmpty())
+                throw new EmptyFieldException();
+            a.setAuthorName(authorName);
             authorService.addAuthor(a);
         } catch (JpaSystemException | DataIntegrityViolationException ex) {
             System.out.println(ex.getCause());
             System.out.println("Нарушение целостности.");
             status = 1;
-        }catch (Exception ex) {
+        } catch (EmptyFieldException ex) {
+            System.out.println("Имя автора не заполнено.");
+            status = 2;
+        } catch (Exception ex) {
             System.out.println(ex.getCause());
-            System.out.println("Нарушение целостности.");
-            status = 1;
+            System.out.println("Внутренняя ошибка.");
+            status = 3;
         }
         model.addAttribute("submitAddStatus", status);
         if (status != 0){
@@ -112,7 +119,11 @@ public class GreetingController {
         Author a = null;
         try {
             a = authorService.getByID(Integer.parseInt(params.get("id")));
-            a.setAuthorName(params.get("authorname"));
+            String authorName = params.get("authorname");
+            a.setAuthorName(authorName);
+            if (authorName.isEmpty()) {
+                throw new EmptyFieldException();
+            }
             model.addAttribute("author", a);
             authorService.editAuthor(a);
         } catch (JpaSystemException | DataIntegrityViolationException ex) {
@@ -122,10 +133,13 @@ public class GreetingController {
         } catch (NullPointerException ex) {
             System.out.println("Null pointer exception.");
             status = 2;
-        }catch (Exception ex) {
+        } catch (EmptyFieldException ex) {
+            System.out.println("Имя автора не заполнено.");
+            status = 3;
+        } catch (Exception ex) {
             System.out.println(ex.getCause());
             System.out.println("Нарушение целостности.");
-            status = 1;
+            status = 4;
         }
         if (status != 0){
             model.addAttribute("submitEditStatus", status);
@@ -181,16 +195,23 @@ public class GreetingController {
         byte status = 0;
         try {
             Publisher p = new Publisher();
-            p.setPublisherName(params.get("publishername"));
+            String pubname = params.get("publishername");
+            if (pubname.isEmpty())
+                throw new EmptyFieldException();
+            p.setPublisherName(pubname);
             publisherService.addPublisher(p);
         } catch (JpaSystemException | DataIntegrityViolationException ex) {
             System.out.println(ex.getCause());
             System.out.println("Нарушение ограничений при добавлении издателя.");
             status = 1;
-        }catch (Exception ex){
+        } catch (EmptyFieldException ex) {
+            System.out.println(ex.getCause());
+            System.out.println("Название издателя не заполнено.");
+            status = 2;
+        } catch (Exception ex) {
             System.out.println(ex.getCause());
             System.out.println("Такой издатель уже существует.");
-            status = 1;
+            status = 3;
         }
         if(status != 0){
             model.addAttribute("submitAddStatus", status);
@@ -215,7 +236,10 @@ public class GreetingController {
         byte status = 0;
         try {
             Publisher p = publisherService.getByID(Integer.parseInt(params.get("id")));
-            p.setPublisherName(params.get("publishername"));
+            String pubname = params.get("publishername");
+            if (pubname.isEmpty())
+                throw new EmptyFieldException();
+            p.setPublisherName(pubname);
             publisherService.editPublisher(p);
         } catch (JpaSystemException | DataIntegrityViolationException ex) {
             System.out.println(ex.getCause());
@@ -224,10 +248,14 @@ public class GreetingController {
         } catch (NullPointerException ex) {
             System.out.println("Такого издателя не существует.");
             status = 2;
-        } catch (Exception ex){
+        } catch (EmptyFieldException ex) {
+            System.out.println(ex.getCause());
+            System.out.println("Название издателя не заполнено.");
+            status = 3;
+        } catch (Exception ex) {
             System.out.println(ex.getCause());
             System.out.println("Такой издатель уже существует.");
-            status = 1;
+            status = 4;
         }
         model.addAttribute("submitEditStatus", status);
         if(status != 0){
@@ -287,6 +315,9 @@ public class GreetingController {
                 }
             Publisher p = publisherService.getByName(params.get("publisher").get(0));
             b.setBookName(params.get("booktitle").get(0));
+            if (b.getBookName().isEmpty()) {
+                throw new EmptyFieldException();
+            }
             b.setBrief(params.get("brief").get(0));
             b.setPublishYear(Integer.parseInt(params.get("publishYear").get(0)));
             if (b.getPublishYear() < 0 || b.getPublishYear() > Calendar.getInstance().get(Calendar.YEAR)) {
@@ -304,23 +335,22 @@ public class GreetingController {
             System.out.println(ex.getCause());
             System.out.println("Такая книга уже существует или иное нарушение ограничений.");
             status = 1;
-
-            return onWrongSubmitAddBook(params, model, status);
         } catch (YearOutOfBoundsException ex) {
             System.out.println("Неверный год.");
             status = 2;
-
-            return onWrongSubmitAddBook(params, model, status);
         } catch (NumberFormatException ex) {
             System.out.println("Год должен быть числом.");
             status = 3;
-
-            return onWrongSubmitAddBook(params, model, status);
+        } catch (EmptyFieldException ex) {
+            System.out.println(ex.getCause());
+            System.out.println("Название книги не заполнено.");
+            status = 4;
         } catch (Exception ex) {
             System.out.println(ex.getCause());
-            System.out.println("Такая книга уже существует или иное нарушение ограничений.");
-            status = 1;
-
+            System.out.println("Иное нарушение ограничений.");
+            status = 5;
+        }
+        if (status != 0) {
             return onWrongSubmitAddBook(params, model, status);
         }
         List<Book> books = bookService.getAll();
@@ -371,28 +401,30 @@ public class GreetingController {
     public String submitEdit(@RequestParam MultiValueMap<String, String> params, Model model) throws SQLException {
         byte status = 0;
         try {
+            if (params.get("booktitle").isEmpty()) {
+                throw new EmptyFieldException();
+            }
             tstuff.bookEditTransaction(params,model);
         } catch (JpaSystemException | DataIntegrityViolationException ex) {
             System.out.println(ex.getCause());
             System.out.println("Такая книга уже существует или иное нарушение ограничений.");
             status = 1;
-
-            return onWrongSubmitEditBook(params, model, status);
         } catch (YearOutOfBoundsException ex) {
             System.out.println("Неверный год.");
             status = 2;
-
-            return onWrongSubmitEditBook(params, model, status);
         } catch (NumberFormatException ex) {
             System.out.println("Год должен быть числом.");
             status = 3;
-
-            return onWrongSubmitEditBook(params, model, status);
-        } catch(Exception ex){
+        } catch (EmptyFieldException ex) {
             System.out.println(ex.getCause());
-            System.out.println("Такая книга уже существует или иное нарушение ограничений.");
-            status = 1;
-
+            System.out.println("Название книги не заполнено.");
+            status = 4;
+        } catch (Exception ex) {
+            System.out.println(ex.getCause());
+            System.out.println("Иное нарушение ограничений.");
+            status = 5;
+        }
+        if (status != 0) {
             return onWrongSubmitEditBook(params, model, status);
         }
         model.addAttribute("books", bookService.getAll());

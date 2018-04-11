@@ -48,6 +48,16 @@
             </div>
             <h1>Список всех авторов</h1>
 
+            <div th:switch="${submitAddStatus}">
+                <div th:case="'0'" class="success">
+                    Автор добавлен.
+                </div>
+            </div>
+            <div th:switch="${submitEditStatus}">
+                <div th:case="'0'" class="success">
+                    Автор изменен.
+                </div>
+            </div>
             <div th:switch="${submitDelStatus}">
                 <div th:case="'0'" class="success">
                     Автор удален.

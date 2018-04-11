@@ -24,11 +24,14 @@
             </div>
 
             <div th:switch="${submitAddStatus}">
-                <div th:case="'0'" class="success">
-                    Автор добавлен.
-                </div>
                 <div th:case="'1'" class="error">
-                    Такой автор уже существует.
+                    Такой автор уже существует, либо нарушены ограничения БД.
+                </div>
+                <div th:case="'2'" class="error">
+                    Имя автора не может быть пустым.
+                </div>
+                <div th:case="'2'" class="error">
+                    Неизвестная ошибка сервера.
                 </div>
             </div>
 
