@@ -79,7 +79,7 @@ public class GreetingController {
         try {
             Author a = new Author();
             String authorName = params.get("authorname");
-            if (authorName.isEmpty())
+            if (authorName.trim().isEmpty())
                 throw new EmptyFieldException();
             a.setAuthorName(authorName);
             authorService.addAuthor(a);
@@ -121,7 +121,7 @@ public class GreetingController {
             a = authorService.getByID(Integer.parseInt(params.get("id")));
             String authorName = params.get("authorname");
             a.setAuthorName(authorName);
-            if (authorName.isEmpty()) {
+            if (authorName.trim().isEmpty()) {
                 throw new EmptyFieldException();
             }
             model.addAttribute("author", a);
@@ -196,7 +196,7 @@ public class GreetingController {
         try {
             Publisher p = new Publisher();
             String pubname = params.get("publishername");
-            if (pubname.isEmpty())
+            if (pubname.trim().isEmpty())
                 throw new EmptyFieldException();
             p.setPublisherName(pubname);
             publisherService.addPublisher(p);
@@ -237,7 +237,7 @@ public class GreetingController {
         try {
             Publisher p = publisherService.getByID(Integer.parseInt(params.get("id")));
             String pubname = params.get("publishername");
-            if (pubname.isEmpty())
+            if (pubname.trim().isEmpty())
                 throw new EmptyFieldException();
             p.setPublisherName(pubname);
             publisherService.editPublisher(p);
@@ -315,7 +315,7 @@ public class GreetingController {
                 }
             Publisher p = publisherService.getByName(params.get("publisher").get(0));
             b.setBookName(params.get("booktitle").get(0));
-            if (b.getBookName().isEmpty()) {
+            if (b.getBookName().trim().isEmpty()) {
                 throw new EmptyFieldException();
             }
             b.setBrief(params.get("brief").get(0));
@@ -401,7 +401,7 @@ public class GreetingController {
     public String submitEdit(@RequestParam MultiValueMap<String, String> params, Model model) throws SQLException {
         byte status = 0;
         try {
-            if (params.get("booktitle").isEmpty()) {
+            if (params.get("booktitle").get(0).trim().isEmpty()) {
                 throw new EmptyFieldException();
             }
             tstuff.bookEditTransaction(params,model);
