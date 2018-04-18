@@ -102,7 +102,7 @@ public class GreetingController {
         }
         List<Author> authors = authorService.getAll();
         model.addAttribute("authors", authors);
-        return "authors";
+        return "redirect:/authors";
     }
 
     @PostMapping("/editAuthor")
@@ -149,7 +149,7 @@ public class GreetingController {
         }
         List<Author> alist = authorService.getAll();
         model.addAttribute("authors", alist);
-        return "authors";
+        return "redirect:/authors";
     }
 
     @PostMapping("/deleteAuthor")
@@ -181,7 +181,7 @@ public class GreetingController {
         model.addAttribute("authors", authors);
         model.addAttribute("submitDelStatus", status);
 
-        return "authors";
+        return "redirect:/authors";
     }
 
     //ИЗДАТЕЛИ
@@ -217,10 +217,11 @@ public class GreetingController {
             model.addAttribute("submitAddStatus", status);
             model.addAttribute("publisherName", params.get("publishername"));
             return "addPublisher";
+
         }
         List<Publisher> publishers = publisherService.getAll();
         model.addAttribute("publishers", publishers);
-        return "publishers";
+        return "redirect:/publishers";
     }
 
     @PostMapping("/editPublisher")
@@ -265,7 +266,7 @@ public class GreetingController {
         }
         List<Publisher> publishers = publisherService.getAll();
         model.addAttribute("publishers", publishers);
-        return "publishers";
+        return "redirect:/publishers";
     }
 
     @PostMapping("/deletePublisher")
@@ -289,7 +290,7 @@ public class GreetingController {
         List<Publisher> publishers = publisherService.getAll();
         model.addAttribute("publishers", publishers);
         model.addAttribute("submitDelStatus", status);
-        return "publishers";
+        return "redirect:/publishers";
     }
 
     //КНИГИ
@@ -356,7 +357,7 @@ public class GreetingController {
         List<Book> books = bookService.getAll();
         model.addAttribute("books", books);
         model.addAttribute("submitAddStatus", status);
-        return "books";
+        return "redirect:/books";
     }
 
     private String onWrongSubmitAddBook(MultiValueMap<String, String> params, Model model, byte status) {
@@ -398,7 +399,7 @@ public class GreetingController {
     }
 
     @PostMapping("/submitEdit")
-    public String submitEdit(@RequestParam MultiValueMap<String, String> params, Model model) throws SQLException {
+    public String submitEdit(@RequestParam MultiValueMap<String, String> params, Model model) {
         byte status = 0;
         try {
             if (params.get("booktitle").get(0).trim().isEmpty()) {
@@ -429,7 +430,7 @@ public class GreetingController {
         }
         model.addAttribute("books", bookService.getAll());
         model.addAttribute("submitEditStatus", status);
-        return "books";
+        return "redirect:/books";
     }
     
     private String onWrongSubmitEditBook(MultiValueMap<String, String> params, Model model, byte status) {
@@ -477,6 +478,6 @@ public class GreetingController {
         List<Book> books = bookService.getAll();
         model.addAttribute("books", books);
         model.addAttribute("submitDelStatus", status);
-        return "books";
+        return "redirect:/books";
     }
 }
