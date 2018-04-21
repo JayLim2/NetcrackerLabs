@@ -15,13 +15,15 @@ import models.EmptyFieldException;
 import models.YearOutOfBoundsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -32,16 +34,12 @@ public class GreetingController {
 
     @Autowired
     DataSource dataSource;
-    
     @Autowired
     BookService bookService;
-    
     @Autowired
     AuthorService authorService;
-    
     @Autowired
     PublisherService publisherService;
-    
     @Autowired
     TransactionalStuff tstuff;
 
@@ -59,7 +57,6 @@ public class GreetingController {
         model.addAttribute("authors", authors);
         return "authors";
     }
-    
     @GetMapping("/publishers")
     public String publishers(Model model) {
         List<Publisher> publishers = publisherService.getAll();
@@ -102,7 +99,7 @@ public class GreetingController {
         }
         List<Author> authors = authorService.getAll();
         model.addAttribute("authors", authors);
-        return "redirect:/authors";
+        return "authors";
     }
 
     @PostMapping("/editAuthor")
@@ -149,7 +146,7 @@ public class GreetingController {
         }
         List<Author> alist = authorService.getAll();
         model.addAttribute("authors", alist);
-        return "redirect:/authors";
+        return "authors";
     }
 
     @PostMapping("/deleteAuthor")
@@ -176,12 +173,12 @@ public class GreetingController {
             System.out.println(ex.getCause());
             System.out.println("Невозможно удалить автора.");
             status = 1;
-        } 
+        }
         List<Author> authors = authorService.getAll();
         model.addAttribute("authors", authors);
         model.addAttribute("submitDelStatus", status);
 
-        return "redirect:/authors";
+        return "authors";
     }
 
     //ИЗДАТЕЛИ
@@ -191,7 +188,11 @@ public class GreetingController {
     }
 
     @PostMapping("/submitAddPublisher")
-    public String submitAddPublisher(@RequestParam Map<String, String> params, Model model) {
+    public ModelAndView submitAddPublisher(@RequestParam Map<String, String> params, Model model,
+                                           RedirectAttributes redirectAttributes) {
+        ModelAndView modelAndView = new ModelAndView();
+        RedirectView redirectView = new RedirectView("/publishers");
+        modelAndView.setView(redirectView);
         byte status = 0;
         try {
             Publisher p = new Publisher();
@@ -214,27 +215,38 @@ public class GreetingController {
             status = 3;
         }
         if(status != 0){
-            model.addAttribute("submitAddStatus", status);
-            model.addAttribute("publisherName", params.get("publishername"));
-            return "addPublisher";
+            redirectAttributes.addFlashAttribute("submitAddStatus", status);
+            redirectAttributes.addFlashAttribute("publisherName", params.get("publishername"));
+            return new ModelAndView(new RedirectView("/addPublisher"));
+//            model.addAttribute("submitAddStatus", status);
+//            model.addAttribute("publisherName", params.get("publishername"));
+//            return "addPublisher";
 
         }
         List<Publisher> publishers = publisherService.getAll();
-        model.addAttribute("publishers", publishers);
-        return "redirect:/publishers";
+//        model.addAttribute("publishers", publishers);
+        redirectAttributes.addFlashAttribute("publishers", publishers);
+        return modelAndView;
     }
 
-    @PostMapping("/editPublisher")
+//    @PostMapping("/editPublisher")
+    @RequestMapping(value = "/editPublisher", method = RequestMethod.POST)
     public String editPublisher(@RequestParam(name = "id", required = true) String id, Model model) {
         Publisher p = publisherService.getByID(Integer.parseInt(id));
         model.addAttribute("publisherID", p.getPublisherID());
         model.addAttribute("publisherName", p.getPublisherName());
+
         return "editPublisher";
     }
-    
     @PostMapping("/submitEditPublisher")
-    public String submitEditPublisher(@RequestParam Map<String,String> params, Model model) {
+
+    public ModelAndView submitEditPublisher(@RequestParam Map<String,String> params, Model model,
+                                      RedirectAttributes redirectAttributes) {
         byte status = 0;
+//        ModelAndView modelAndView = new ModelAndView();
+//        RedirectView redirectView = new RedirectView("/publishers");
+//        modelAndView.setView(redirectView);
+
         try {
             Publisher p = publisherService.getByID(Integer.parseInt(params.get("id")));
             String pubname = params.get("publishername");
@@ -258,19 +270,35 @@ public class GreetingController {
             System.out.println("Такой издатель уже существует.");
             status = 4;
         }
-        model.addAttribute("submitEditStatus", status);
+//        model.addAttribute("submitEditStatus", status);
+        redirectAttributes.addFlashAttribute("submitEditStatus", status);
         if(status != 0){
-            model.addAttribute("publisherID",Integer.parseInt(params.get("id")));
-            model.addAttribute("publisherName", params.get("publishername"));
-            return "editPublisher";
+            redirectAttributes.addAttribute("publisherID",Integer.parseInt(params.get("id")));
+            redirectAttributes.addAttribute("publisherName", params.get("publishername"));
+//            model.addAttribute("publisherID",Integer.parseInt(params.get("id")));
+//            model.addAttribute("publisherName", params.get("publishername"));
+            ModelAndView modelAndView = new ModelAndView();
+            RedirectView redirectView = new RedirectView("/editPublisher");
+            modelAndView.setView(redirectView);
+            return modelAndView;
+
+//            return "editPublisher";
+
         }
         List<Publisher> publishers = publisherService.getAll();
-        model.addAttribute("publishers", publishers);
-        return "redirect:/publishers";
+//        model.addAttribute("publishers", publishers);
+        redirectAttributes.addAttribute("publishers", publishers);
+
+        RedirectView redirectView = new RedirectView("/publishers");
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setView(redirectView);
+        return modelAndView;
+
     }
 
     @PostMapping("/deletePublisher")
-    public String deletePublisher(@RequestParam(name = "id", required = true) String id, Model model) {
+    public ModelAndView deletePublisher(@RequestParam(name = "id", required = true) String id, Model model,
+                                        RedirectAttributes redirectAttributes) {
         byte status = 0;
         try {
             Publisher publisher = publisherService.getByID(Integer.parseInt(id));
@@ -288,9 +316,16 @@ public class GreetingController {
             status = 1;
         }
         List<Publisher> publishers = publisherService.getAll();
-        model.addAttribute("publishers", publishers);
-        model.addAttribute("submitDelStatus", status);
-        return "redirect:/publishers";
+//        model.addAttribute("publishers", publishers);
+//        model.addAttribute("submitDelStatus", status);
+
+        ModelAndView modelAndView = new ModelAndView();
+        RedirectView redirectView = new RedirectView("/publishers");
+        modelAndView.setView(redirectView);
+        redirectAttributes.addFlashAttribute("publishers", publishers);
+        redirectAttributes.addFlashAttribute("submitDelStatus", status);
+        return modelAndView;
+
     }
 
     //КНИГИ
@@ -357,7 +392,7 @@ public class GreetingController {
         List<Book> books = bookService.getAll();
         model.addAttribute("books", books);
         model.addAttribute("submitAddStatus", status);
-        return "redirect:/books";
+        return "books";
     }
 
     private String onWrongSubmitAddBook(MultiValueMap<String, String> params, Model model, byte status) {
@@ -430,9 +465,8 @@ public class GreetingController {
         }
         model.addAttribute("books", bookService.getAll());
         model.addAttribute("submitEditStatus", status);
-        return "redirect:/books";
+        return "books";
     }
-    
     private String onWrongSubmitEditBook(MultiValueMap<String, String> params, Model model, byte status) {
         Book b = bookService.getByID(Integer.parseInt(params.get("id").get(0)));
         System.out.println(b);
@@ -478,6 +512,8 @@ public class GreetingController {
         List<Book> books = bookService.getAll();
         model.addAttribute("books", books);
         model.addAttribute("submitDelStatus", status);
-        return "redirect:/books";
+
+        return "books";
+
     }
 }
