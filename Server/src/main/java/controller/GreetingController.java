@@ -216,8 +216,8 @@ public class GreetingController {
             System.out.println("Такой издатель уже существует.");
             status = 3;
         }
-        if(status != 0){
-            redirectAttributes.addFlashAttribute("submitAddStatus", status);
+        redirectAttributes.addFlashAttribute("submitAddStatus", status);
+        if(status != 0){ 
             redirectAttributes.addFlashAttribute("publisherName", params.get("publishername"));
             return new ModelAndView(new RedirectView("/addPublisher"));
 //            model.addAttribute("submitAddStatus", status);
@@ -227,21 +227,25 @@ public class GreetingController {
         }
         List<Publisher> publishers = publisherService.getAll();
 //        model.addAttribute("publishers", publishers);
+        //redirectAttributes.addFlashAttribute("submitAddStatus", status);
         redirectAttributes.addFlashAttribute("publishers", publishers);
         return modelAndView;
     }
 
 //    @PostMapping("/editPublisher")
     @RequestMapping(value = "/editPublisher")
-    public String editPublisher(@RequestParam(name = "id", required = true) String id, Model model) {
-        Publisher p = publisherService.getByID(Integer.parseInt(id));
-        model.addAttribute("publisherID", p.getPublisherID());
-        model.addAttribute("publisherName", p.getPublisherName());
+    public String editPublisher(@RequestParam(name = "id", required = false) String id, Model model) {
+        try{
+            Publisher p = publisherService.getByID(Integer.parseInt(id));
+            model.addAttribute("publisherID", p.getPublisherID());
+            model.addAttribute("publisherName", p.getPublisherName());
+        }catch(Exception e){}
+        
 
         return "editPublisher";
     }
+    
     @PostMapping("/submitEditPublisher")
-
     public ModelAndView submitEditPublisher(@RequestParam Map<String,String> params, Model model,
                                       RedirectAttributes redirectAttributes) {
         byte status = 0;
@@ -275,8 +279,8 @@ public class GreetingController {
 //        model.addAttribute("submitEditStatus", status);
         redirectAttributes.addFlashAttribute("submitEditStatus", status);
         if(status != 0){
-            redirectAttributes.addAttribute("id",Integer.parseInt(params.get("id")));
-            redirectAttributes.addAttribute("publisherName", params.get("publishername"));
+            redirectAttributes.addFlashAttribute("publisherID",Integer.parseInt(params.get("id")));
+            redirectAttributes.addFlashAttribute("publisherName", params.get("publishername"));
 //            model.addAttribute("publisherID",Integer.parseInt(params.get("id")));
 //            model.addAttribute("publisherName", params.get("publishername"));
             ModelAndView modelAndView = new ModelAndView();
@@ -289,7 +293,7 @@ public class GreetingController {
         }
         List<Publisher> publishers = publisherService.getAll();
 //        model.addAttribute("publishers", publishers);
-        redirectAttributes.addAttribute("publishers", publishers);
+        redirectAttributes.addFlashAttribute("publishers", publishers);
 
         RedirectView redirectView = new RedirectView("/publishers");
         ModelAndView modelAndView = new ModelAndView();
