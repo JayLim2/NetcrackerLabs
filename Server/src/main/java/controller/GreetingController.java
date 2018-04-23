@@ -57,7 +57,9 @@ public class GreetingController {
         model.addAttribute("authors", authors);
         return "authors";
     }
+    
     @GetMapping("/publishers")
+    @PostMapping("/publishers")
     public String publishers(Model model) {
         List<Publisher> publishers = publisherService.getAll();
         model.addAttribute("publishers", publishers);
@@ -182,7 +184,7 @@ public class GreetingController {
     }
 
     //ИЗДАТЕЛИ
-    @PostMapping("/addPublisher")
+    @RequestMapping("/addPublisher")
     public String addPublisher(Model model) {
         return "addPublisher";
     }
@@ -230,7 +232,7 @@ public class GreetingController {
     }
 
 //    @PostMapping("/editPublisher")
-    @RequestMapping(value = "/editPublisher", method = RequestMethod.POST)
+    @RequestMapping(value = "/editPublisher")
     public String editPublisher(@RequestParam(name = "id", required = true) String id, Model model) {
         Publisher p = publisherService.getByID(Integer.parseInt(id));
         model.addAttribute("publisherID", p.getPublisherID());
@@ -273,7 +275,7 @@ public class GreetingController {
 //        model.addAttribute("submitEditStatus", status);
         redirectAttributes.addFlashAttribute("submitEditStatus", status);
         if(status != 0){
-            redirectAttributes.addAttribute("publisherID",Integer.parseInt(params.get("id")));
+            redirectAttributes.addAttribute("id",Integer.parseInt(params.get("id")));
             redirectAttributes.addAttribute("publisherName", params.get("publishername"));
 //            model.addAttribute("publisherID",Integer.parseInt(params.get("id")));
 //            model.addAttribute("publisherName", params.get("publishername"));
