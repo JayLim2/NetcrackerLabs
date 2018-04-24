@@ -118,6 +118,7 @@ public class GreetingController {
             model.addAttribute("authorID", a.getAuthorID());
             model.addAttribute("authorName", a.getAuthorName());
         } catch (Exception e) {
+            if (!model.containsAttribute("authorID")) return "redirect:/authors";
         }
         return "editAuthor";
 
@@ -239,6 +240,7 @@ public class GreetingController {
             model.addAttribute("publisherID", p.getPublisherID());
             model.addAttribute("publisherName", p.getPublisherName());
         } catch (Exception e) {
+            if (!model.containsAttribute("publisherID")) return "redirect:/publishers";
         }
 
         return "editPublisher";
@@ -419,6 +421,7 @@ public class GreetingController {
             model.addAttribute("bpublisher", b.getPublisher());
             model.addAttribute("bauthors", b.getAuthors());
         } catch (Exception e) {
+            if (!model.containsAttribute("bookID")) return "redirect:/books";
         }
         List<Publisher> p = publisherService.getAll();
         List<Author> a = authorService.getAll();
@@ -451,7 +454,11 @@ public class GreetingController {
             System.out.println(ex.getCause());
             System.out.println("Название книги не заполнено.");
             status = 4;
-        } catch (Exception ex) {
+        } catch (NullPointerException ex) {
+            System.out.println(ex.getCause());
+            System.out.println("Книги такой больше нет.");
+            status = 6;
+        }catch (Exception ex) {
             System.out.println(ex.getCause());
             System.out.println("Иное нарушение ограничений.");
             status = 5;
@@ -469,11 +476,11 @@ public class GreetingController {
 
     private ModelAndView onWrongSubmitEditBook(MultiValueMap<String, String> params, Model model, byte status,
                                                RedirectAttributes redirectAttributes) {
-        Book b = bookService.getByID(Integer.parseInt(params.get("id").get(0)));
-        System.out.println(b);
+        //Book b = bookService.getByID(Integer.parseInt(params.get("id").get(0)));
+        //System.out.println(b);
 
 
-        redirectAttributes.addFlashAttribute("bookID", b.getBookID());
+        redirectAttributes.addFlashAttribute("bookID", params.get("id").get(0));
         redirectAttributes.addFlashAttribute("bookName", params.get("booktitle").get(0));
         redirectAttributes.addFlashAttribute("brief", params.get("brief").get(0));
         redirectAttributes.addFlashAttribute("publishYear", params.get("publishYear").get(0));
