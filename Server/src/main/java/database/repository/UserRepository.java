@@ -9,9 +9,9 @@ import org.springframework.data.repository.query.Param;
 public interface UserRepository extends JpaRepository<User, Integer> {
 
     //поиск по имени, мб нужно будет поправить
-    @Query("select b from userlist b where b.userLogin = :name")
+    @Query("select b from User b where b.userLogin = :name")
     User findByName(@Param("name") String name);
 
-    @Query("select b from userlist b where b.userPass= :id")
+    @Query("select b from User b where b.userPass= :id")
     User findByID(@Param("id") int id);
 }

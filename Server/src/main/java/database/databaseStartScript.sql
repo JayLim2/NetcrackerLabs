@@ -8,6 +8,7 @@ SET check_function_bodies = FALSE;
 SET client_min_messages = WARNING;
 SET row_security = OFF;
 
+!--DROP TABLE userList;
 
 CREATE SEQUENCE IF NOT EXISTS auto_increment_publisher
   START WITH 0
@@ -63,10 +64,10 @@ CREATE TABLE IF NOT EXISTS publisher (
 );
 
 CREATE TABLE IF NOT EXISTS userList (
-  "userID"      INTEGER DEFAULT nextval('auto_increment_user' :: REGCLASS)         NOT NULL,
-  "userLogin"   INTEGER                                                           NOT NULL UNIQUE,
-  "userPass"    CHARACTER VARYING(30)                                             NOT NULL UNIQUE,
-  "cart"        CHARACTER VARYING(30)                                                              ,
+  "userID"      INTEGER DEFAULT nextval('auto_increment_user' :: REGCLASS)        NOT NULL,
+  "userLogin"   CHARACTER VARYING(30)                                             NOT NULL UNIQUE,
+  "userPass"    CHARACTER VARYING(230)                                            NOT NULL,
+  "cart"        INTEGER                                                              ,
   PRIMARY KEY ("userID")
 );
 
