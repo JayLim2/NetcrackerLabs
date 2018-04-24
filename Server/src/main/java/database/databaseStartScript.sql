@@ -30,6 +30,13 @@ CREATE SEQUENCE IF NOT EXISTS auto_increment_author
   MAXVALUE 9223372036854775801
   CACHE 1;
 
+CREATE SEQUENCE IF NOT EXISTS auto_increment_user
+  START WITH 0
+  INCREMENT BY 1
+  MINVALUE 0
+  MAXVALUE 9223372036854775801
+  CACHE 1;
+
 
 ALTER TABLE auto_increment_publisher
   OWNER TO postgres;
@@ -38,6 +45,9 @@ ALTER TABLE auto_increment_book
   OWNER TO postgres;
 
 ALTER TABLE auto_increment_author
+  OWNER TO postgres;
+
+ALTER TABLE auto_increment_user
   OWNER TO postgres;
 
 
@@ -50,6 +60,14 @@ CREATE TABLE IF NOT EXISTS publisher (
   "publisherID"   BIGINT DEFAULT nextval('auto_increment_publisher' :: REGCLASS) NOT NULL,
   "publisherName" CHARACTER VARYING(30)                                          NOT NULL UNIQUE,
   PRIMARY KEY ("publisherID")
+);
+
+CREATE TABLE IF NOT EXISTS userList (
+  "userID"      INTEGER DEFAULT nextval('auto_increment_user' :: REGCLASS)         NOT NULL,
+  "userLogin"   INTEGER                                                           NOT NULL UNIQUE,
+  "userPass"    CHARACTER VARYING(30)                                             NOT NULL UNIQUE,
+  "cart"        CHARACTER VARYING(30)                                                              ,
+  PRIMARY KEY ("userID")
 );
 
 CREATE TABLE IF NOT EXISTS book (
@@ -92,6 +110,9 @@ ALTER TABLE book
 
 
 ALTER TABLE publisher
+  OWNER TO postgres;
+
+ALTER TABLE userlist
   OWNER TO postgres;
 
 
