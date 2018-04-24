@@ -15,7 +15,6 @@ import models.EmptyFieldException;
 import models.YearOutOfBoundsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,7 +25,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.*;
 
 @Controller
@@ -78,9 +76,6 @@ public class GreetingController {
     @PostMapping("/submitAddAuthor")
     public ModelAndView submitAddAuthor(@RequestParam Map<String, String> params, Model model,
                                         RedirectAttributes redirectAttributes) {
-//        ModelAndView modelAndView = new ModelAndView();
-//        RedirectView redirectView = new RedirectView("/authors");
-//        modelAndView.setView(redirectView);
         byte status = 0;
         try {
             Author a = new Author();
@@ -101,18 +96,12 @@ public class GreetingController {
             System.out.println("Внутренняя ошибка.");
             status = 3;
         }
-//        model.addAttribute("submitAddStatus", status);
         redirectAttributes.addFlashAttribute("submitAddStatus", status);
         if (status != 0) {
             redirectAttributes.addFlashAttribute("authorName", params.get("authorname"));
             return new ModelAndView(new RedirectView("/addAuthor"));
-//            model.addAttribute("authorName", params.get("authorname"));
-//            return "addAuthor";
         }
-        List<Author> authors = authorService.getAll();
-//        model.addAttribute("authors", authors);
-//        return "authors";
-        redirectAttributes.addFlashAttribute("authors", authors);
+        redirectAttributes.addFlashAttribute("authors", authorService.getAll());
 
         return new ModelAndView(new RedirectView("/authors"));
     }
@@ -139,8 +128,6 @@ public class GreetingController {
             if (authorName.trim().isEmpty())
                 throw new EmptyFieldException();
             a.setAuthorName(authorName);
-//            model.addAttribute("author", a);
-//            redirectAttributes.addFlashAttribute("author", a);
             authorService.editAuthor(a);
         } catch (JpaSystemException | DataIntegrityViolationException ex) {
             System.out.println(ex.getCause());
@@ -161,27 +148,14 @@ public class GreetingController {
         if (status != 0) {
             redirectAttributes.addFlashAttribute("authorID", Integer.parseInt(params.get("id")));
             redirectAttributes.addFlashAttribute("authorName", params.get("authorname"));
-//            ModelAndView modelAndView = new ModelAndView();
-//            RedirectView redirectView = new RedirectView("/editAuthor");
-//            modelAndView.setView(redirectView);
             return new ModelAndView(new RedirectView("/editAuthor"));
-//            model.addAttribute("submitEditStatus", status);
-//            model.addAttribute("authorID",params.get("id"));
-//            model.addAttribute("authorName",params.get("authorname"));
-//            return "editAuthor";
         }
-        List<Author> alist = authorService.getAll();
-        redirectAttributes.addFlashAttribute("authors", alist);
-//        model.addAttribute("authors", alist);
-//        return "authors";
-//        RedirectView redirectView = new RedirectView("/authors");
-//        ModelAndView modelAndView = new ModelAndView();
-//        modelAndView.setView(redirectView);
+        redirectAttributes.addFlashAttribute("authors", authorService.getAll());
         return new ModelAndView(new RedirectView("/authors"));
     }
 
     @PostMapping("/deleteAuthor")
-    public ModelAndView deleteAuthor(@RequestParam(name = "id", required = true) String id, Model model,
+    public ModelAndView deleteAuthor(@RequestParam(name = "id", required = true) String id,
                                      RedirectAttributes redirectAttributes) {
         byte status = 0;
         try {
@@ -191,8 +165,6 @@ public class GreetingController {
                 books.get(i).getAuthors().remove(author);
                 bookService.editBook(books.get(i));
             }
-//        authorService.editAuthor(author);
-//        author = authorService.getByID(Integer.parseInt(id));
             authorService.delete(author);
         } catch (JpaSystemException | DataIntegrityViolationException ex) {
             System.out.println(ex.getCause());
@@ -206,17 +178,8 @@ public class GreetingController {
             System.out.println("Невозможно удалить автора.");
             status = 1;
         }
-        List<Author> authors = authorService.getAll();
-
-//        model.addAttribute("authors", authors);
-//        model.addAttribute("submitDelStatus", status);
-
-//        ModelAndView modelAndView = new ModelAndView();
-//        RedirectView redirectView = new RedirectView("/authors");
-//        modelAndView.setView(redirectView);
-        redirectAttributes.addFlashAttribute("authors", authors);
+        redirectAttributes.addFlashAttribute("authors", authorService.getAll());
         redirectAttributes.addFlashAttribute("submitDelStatus", status);
-
         return new ModelAndView(new RedirectView("/authors"));
     }
 
@@ -229,9 +192,7 @@ public class GreetingController {
     @PostMapping("/submitAddPublisher")
     public ModelAndView submitAddPublisher(@RequestParam Map<String, String> params, Model model,
                                            RedirectAttributes redirectAttributes) {
-//        ModelAndView modelAndView = new ModelAndView();
-//        RedirectView redirectView = new RedirectView("/publishers");
-//        modelAndView.setView(redirectView);
+
         byte status = 0;
         try {
             Publisher p = new Publisher();
@@ -257,19 +218,15 @@ public class GreetingController {
         if (status != 0) {
             redirectAttributes.addFlashAttribute("publisherName", params.get("publishername"));
             return new ModelAndView(new RedirectView("/addPublisher"));
-//            model.addAttribute("submitAddStatus", status);
-//            model.addAttribute("publisherName", params.get("publishername"));
-//            return "addPublisher";
+
 
         }
         List<Publisher> publishers = publisherService.getAll();
-//        model.addAttribute("publishers", publishers);
-        //redirectAttributes.addFlashAttribute("submitAddStatus", status);
+
         redirectAttributes.addFlashAttribute("publishers", publishers);
         return new ModelAndView(new RedirectView("/publishers"));
     }
 
-    //    @PostMapping("/editPublisher")
     @RequestMapping(value = "/editPublisher")
     public String editPublisher(@RequestParam(name = "id", required = false) String id, Model model) {
         try {
@@ -278,7 +235,6 @@ public class GreetingController {
             model.addAttribute("publisherName", p.getPublisherName());
         } catch (Exception e) {
         }
-
 
         return "editPublisher";
     }
@@ -310,28 +266,21 @@ public class GreetingController {
             System.out.println("Такой издатель уже существует.");
             status = 4;
         }
-//        model.addAttribute("submitEditStatus", status);
+
         redirectAttributes.addFlashAttribute("submitEditStatus", status);
         if (status != 0) {
             redirectAttributes.addFlashAttribute("publisherID", Integer.parseInt(params.get("id")));
             redirectAttributes.addFlashAttribute("publisherName", params.get("publishername"));
-//            model.addAttribute("publisherID",Integer.parseInt(params.get("id")));
-//            model.addAttribute("publisherName", params.get("publishername"));
-//            ModelAndView modelAndView = new ModelAndView();
-//            RedirectView redirectView = new RedirectView("/editPublisher");
-//            modelAndView.setView(redirectView);
+
             return new ModelAndView(new RedirectView("/editPublisher"));
 
-//            return "editPublisher";
 
         }
         List<Publisher> publishers = publisherService.getAll();
-//        model.addAttribute("publishers", publishers);
+
         redirectAttributes.addFlashAttribute("publishers", publishers);
 
-//        RedirectView redirectView = new RedirectView("/publishers");
-//        ModelAndView modelAndView = new ModelAndView();
-//        modelAndView.setView(redirectView);
+
         return new ModelAndView(new RedirectView("/publishers"));
 
     }
@@ -356,12 +305,6 @@ public class GreetingController {
             status = 1;
         }
         List<Publisher> publishers = publisherService.getAll();
-//        model.addAttribute("publishers", publishers);
-//        model.addAttribute("submitDelStatus", status);
-
-//        ModelAndView modelAndView = new ModelAndView();
-//        RedirectView redirectView = new RedirectView("/publishers");
-//        modelAndView.setView(redirectView);
         redirectAttributes.addFlashAttribute("publishers", publishers);
         redirectAttributes.addFlashAttribute("submitDelStatus", status);
         return new ModelAndView(new RedirectView("/publishers"));
@@ -381,9 +324,7 @@ public class GreetingController {
     @PostMapping("/submitAdd")
     public ModelAndView submitAdd(@RequestParam MultiValueMap<String, String> params, Model model,
                                   RedirectAttributes redirectAttributes) {
-//        ModelAndView modelAndView = new ModelAndView();
-//        RedirectView redirectView = new RedirectView("/books");
-//        modelAndView.setView(redirectView);
+
         byte status = 0;
         try {
             Book b = new Book();
@@ -434,9 +375,7 @@ public class GreetingController {
             return onWrongSubmitAddBook(params, model, status, redirectAttributes);
         }
         List<Book> books = bookService.getAll();
-//        model.addAttribute("books", books);
-//        model.addAttribute("submitAddStatus", status);
-//        return "books";
+
         redirectAttributes.addFlashAttribute("books", books);
         redirectAttributes.addFlashAttribute("submitAddStatus", status);
         return new ModelAndView(new RedirectView("/books"));
@@ -444,12 +383,6 @@ public class GreetingController {
 
     private ModelAndView onWrongSubmitAddBook(MultiValueMap<String, String> params, Model model, byte status,
                                               RedirectAttributes redirectAttributes) {
-//        model.addAttribute("bookTitle", params.get("booktitle").get(0));
-//        model.addAttribute("publishYear", params.get("publishYear").get(0));
-//        model.addAttribute("brief", params.get("brief").get(0));
-//        model.addAttribute("publishers", publisherService.getAll());
-//        model.addAttribute("bpublisher", publisherService.getByName(params.get("publisher").get(0)));
-//        model.addAttribute("authors", authorService.getAll());
 
         redirectAttributes.addFlashAttribute("bookTitle", params.get("booktitle").get(0));
         redirectAttributes.addFlashAttribute("publishYear", params.get("publishYear").get(0));
@@ -464,11 +397,8 @@ public class GreetingController {
             for (int i = 0; i < bauthors_s.size(); i++) {
                 bauthors.add(authorService.getByName(bauthors_s.get(i)));
             }
-//        model.addAttribute("bauthors", bauthors);
-        redirectAttributes.addFlashAttribute("bauthors", bauthors);
-        // model.addAttribute("author", authorService.getByName(params.get("author").get(0)));
 
-//        model.addAttribute("submitAddStatus", status);
+        redirectAttributes.addFlashAttribute("bauthors", bauthors);
         redirectAttributes.addFlashAttribute("submitAddStatus", status);
         return new ModelAndView(new RedirectView("/add"));
     }
@@ -495,9 +425,7 @@ public class GreetingController {
     @PostMapping("/submitEdit")
     public ModelAndView submitEdit(@RequestParam MultiValueMap<String, String> params, Model model,
                                    RedirectAttributes redirectAttributes) {
-//        RedirectView redirectView = new RedirectView("/books");
-//        ModelAndView modelAndView = new ModelAndView();
-//        modelAndView.setView(redirectView);
+
         byte status = 0;
         try {
             if (params.get("booktitle").get(0).trim().isEmpty()) {
@@ -527,9 +455,7 @@ public class GreetingController {
         if (status != 0) {
             return onWrongSubmitEditBook(params, model, status, redirectAttributes);
         }
-//        model.addAttribute("books", bookService.getAll());
-//        model.addAttribute("submitEditStatus", status);
-//        return "books";
+
         redirectAttributes.addFlashAttribute("books", bookService.getAll());
         redirectAttributes.addFlashAttribute("submitEditStatus", status);
         return new ModelAndView(new RedirectView("/books"));
@@ -540,18 +466,13 @@ public class GreetingController {
                                                RedirectAttributes redirectAttributes) {
         Book b = bookService.getByID(Integer.parseInt(params.get("id").get(0)));
         System.out.println(b);
-//        model.addAttribute("bookID", b.getBookID());
-//        model.addAttribute("bookName", params.get("booktitle").get(0));
-//        model.addAttribute("brief", params.get("brief").get(0));
-//        model.addAttribute("publishYear", params.get("publishYear").get(0));
-//        model.addAttribute("bpublisher", publisherService.getByName(params.get("publisher").get(0)));
+
 
         redirectAttributes.addFlashAttribute("bookID", b.getBookID());
         redirectAttributes.addFlashAttribute("bookName", params.get("booktitle").get(0));
         redirectAttributes.addFlashAttribute("brief", params.get("brief").get(0));
         redirectAttributes.addFlashAttribute("publishYear", params.get("publishYear").get(0));
         redirectAttributes.addFlashAttribute("bpublisher", publisherService.getByName(params.get("publisher").get(0)));
-//test
         redirectAttributes.addFlashAttribute("authors", authorService.getAll());
 
         List<Author> bauthors = new ArrayList<>();
@@ -560,18 +481,11 @@ public class GreetingController {
             for (int i = 0; i < bauthors_s.size(); i++) {
                 bauthors.add(authorService.getByName(bauthors_s.get(i)));
             }
-//        model.addAttribute("bauthors", bauthors);
+
         redirectAttributes.addFlashAttribute("bauthors", bauthors);
-//        for (Author author : b.getAuthors()) {
-//            System.out.println(author);
-//        }
+
         List<Publisher> p = publisherService.getAll();
         List<Author> a = authorService.getAll();
-
-//        model.addAttribute("publishers", p);
-//        model.addAttribute("authors", a);
-//        model.addAttribute("submitEditStatus", status);
-//        return "edit";
 
         redirectAttributes.addFlashAttribute("publishers", p);
         redirectAttributes.addFlashAttribute("authors", a);
@@ -598,13 +512,7 @@ public class GreetingController {
             status = 1;
         }
         List<Book> books = bookService.getAll();
-//        model.addAttribute("books", books);
-//        model.addAttribute("submitDelStatus", status);//
-//        return "books";
 
-//        ModelAndView modelAndView = new ModelAndView();
-//        RedirectView redirectView = new RedirectView("/books");
-//        modelAndView.setView(redirectView);
         redirectAttributes.addFlashAttribute("books", books);
         redirectAttributes.addFlashAttribute("submitDelStatus", status);
         return new ModelAndView(new RedirectView("/books"));
