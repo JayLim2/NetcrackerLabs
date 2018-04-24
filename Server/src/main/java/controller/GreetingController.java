@@ -41,6 +41,11 @@ public class GreetingController {
     @Autowired
     TransactionalStuff tstuff;
 
+    @RequestMapping("/login")
+    public String login(Model model){
+        return "login";
+    }
+    
     //ОСНОВНЫЕ СПИСКИ
     @GetMapping("/books")
     @PostMapping("/books")
