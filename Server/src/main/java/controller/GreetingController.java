@@ -19,7 +19,10 @@ import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
@@ -45,6 +48,12 @@ public class GreetingController {
     public String login(Model model){
         return "login";
     }
+
+    @GetMapping("/error")
+    @PostMapping("/error")
+    public String error(Model model) {
+        return "error";
+    }
     
     //ОСНОВНЫЕ СПИСКИ
     @GetMapping("/books")
@@ -54,7 +63,6 @@ public class GreetingController {
         model.addAttribute("books", books);
         return "books";
     }
-
 
     @GetMapping("/authors")
     @PostMapping("/authors")
@@ -433,7 +441,6 @@ public class GreetingController {
     @PostMapping("/submitEdit")
     public ModelAndView submitEdit(@RequestParam MultiValueMap<String, String> params, Model model,
                                    RedirectAttributes redirectAttributes) {
-
         byte status = 0;
         try {
             if (params.get("booktitle").get(0).trim().isEmpty()) {
