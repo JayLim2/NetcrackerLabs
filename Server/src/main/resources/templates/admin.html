@@ -10,14 +10,11 @@
         <div class = "leftSide">
             <p> А тут менюшка</p><br>
             <ul>
-                <li><a href="/userbooks">Тут книги</a></li>
-                <li><a href="/userauthors">А тут авторы</a></li>
-                <li><a href="/userpublishers">А тут издатели</a></li>
-                <li sec:authorize = "hasRole('ADMIN')">
-                <a href="/admin">А тут админ панель</a>
-                </li>
-                <li sec:authorize = "!isAuthenticated()">
-                <a href="/login">А тут можно залогиниться</a>    
+                <li><a href="/books">Тут книги</a></li>
+                <li><a href="/authors">А тут авторы</a></li>
+                <li><a href="/publishers">А тут издатели</a></li>
+                <li>
+                <a href="/index">А тут юзер часть</a>
                 </li>
                 <li sec:authorize = "isAuthenticated()">
                     logged as: <span sec:authentication = "name"></span> 
@@ -32,8 +29,7 @@
                 <p>Тут будет тобешь заголовок</p>
             </div>
             <p>Ну и тут менюшка. Но посимпатичнее</p>
-        </div> 
-        
+        </div>
     </div>
 </body>
 </html>

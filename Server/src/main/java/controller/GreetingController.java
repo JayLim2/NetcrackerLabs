@@ -19,13 +19,17 @@ import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.sql.DataSource;
 import java.util.*;
+import org.springframework.http.HttpStatus;
 
 @Controller
 public class GreetingController {
@@ -45,6 +49,23 @@ public class GreetingController {
     public String login(Model model){
         return "login";
     }
+
+    @GetMapping("/error")
+    @PostMapping("/error")
+    public String error(Model model) {
+        return "error";
+    }
+    
+    @RequestMapping("/admin")
+    public String admin(Model model){
+        return "admin";
+    }
+    
+//    @RequestMapping("/error")
+//    public String error(Model model){
+//        model.addAttribute("error", "у вас нет админских прав");
+//        return "error";
+//    }
     
     //ОСНОВНЫЕ СПИСКИ
     @GetMapping("/books")
@@ -54,7 +75,6 @@ public class GreetingController {
         model.addAttribute("books", books);
         return "books";
     }
-
 
     @GetMapping("/authors")
     @PostMapping("/authors")
@@ -71,6 +91,32 @@ public class GreetingController {
         model.addAttribute("publishers", publishers);
         return "publishers";
     }
+    
+    //для юзеров
+    @GetMapping("/userbooks")
+    @PostMapping("/userbooks")
+    public String ugreeting(Model model) {
+        List<Book> books = bookService.getAll();
+        model.addAttribute("books", books);
+        return "userbooks";
+    }
+
+
+    @GetMapping("/userauthors")
+    @PostMapping("/userauthors")
+    public String uauthors(Model model) {
+        List<Author> authors = authorService.getAll();
+        model.addAttribute("authors", authors);
+        return "userauthors";
+    }
+
+    @GetMapping("/userpublishers")
+    @PostMapping("/userpublishers")
+    public String upublishers(Model model) {
+        List<Publisher> publishers = publisherService.getAll();
+        model.addAttribute("publishers", publishers);
+        return "userpublishers";
+    }
 
     //АВТОРЫ
     @RequestMapping("/addAuthor")
@@ -78,7 +124,7 @@ public class GreetingController {
         return "addAuthor";
     }
 
-    @PostMapping("/submitAddAuthor")
+    @RequestMapping("/submitAddAuthor")
     public ModelAndView submitAddAuthor(@RequestParam Map<String, String> params, Model model,
                                         RedirectAttributes redirectAttributes) {
         byte status = 0;
@@ -124,7 +170,7 @@ public class GreetingController {
 
     }
 
-    @PostMapping("/submitEditAuthor")
+    @RequestMapping("/submitEditAuthor")
     public ModelAndView submitEditAuthor(@RequestParam Map<String, String> params, Model model,
                                          RedirectAttributes redirectAttributes) {
         byte status = 0;
@@ -160,7 +206,7 @@ public class GreetingController {
         return new ModelAndView(new RedirectView("/authors"));
     }
 
-    @PostMapping("/deleteAuthor")
+    @RequestMapping("/deleteAuthor")
     public ModelAndView deleteAuthor(@RequestParam(name = "id", required = true) String id,
                                      RedirectAttributes redirectAttributes) {
         byte status = 0;
@@ -246,7 +292,7 @@ public class GreetingController {
         return "editPublisher";
     }
 
-    @PostMapping("/submitEditPublisher")
+    @RequestMapping("/submitEditPublisher")
     public ModelAndView submitEditPublisher(@RequestParam Map<String, String> params, Model model,
                                             RedirectAttributes redirectAttributes) {
         byte status = 0;
@@ -292,7 +338,7 @@ public class GreetingController {
 
     }
 
-    @PostMapping("/deletePublisher")
+    @RequestMapping("/deletePublisher")
     public ModelAndView deletePublisher(@RequestParam(name = "id", required = true) String id, Model model,
                                         RedirectAttributes redirectAttributes) {
         byte status = 0;
@@ -328,7 +374,7 @@ public class GreetingController {
         return "add";
     }
 
-    @PostMapping("/submitAdd")
+    @RequestMapping("/submitAdd")
     public ModelAndView submitAdd(@RequestParam MultiValueMap<String, String> params, Model model,
                                   RedirectAttributes redirectAttributes) {
 
@@ -430,10 +476,9 @@ public class GreetingController {
         return "edit";
     }
 
-    @PostMapping("/submitEdit")
+    @RequestMapping("/submitEdit")
     public ModelAndView submitEdit(@RequestParam MultiValueMap<String, String> params, Model model,
                                    RedirectAttributes redirectAttributes) {
-
         byte status = 0;
         try {
             if (params.get("booktitle").get(0).trim().isEmpty()) {
@@ -507,7 +552,7 @@ public class GreetingController {
 
     }
 
-    @PostMapping("/delete")
+    @RequestMapping("/delete")
     public ModelAndView delete(@RequestParam(name = "id", required = true) String id, Model model,
                                RedirectAttributes redirectAttributes) {
         byte status = 0;

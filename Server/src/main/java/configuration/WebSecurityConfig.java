@@ -12,12 +12,8 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 /**
  *
@@ -29,8 +25,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     
     @Override
     protected void configure(HttpSecurity http) throws Exception{
-        http.csrf().disable().authorizeRequests().antMatchers("/delete*","/edit*","/add*").access("hasRole('ADMIN')").and().authorizeRequests()
-                .antMatchers("/authors", "/books", "/publishers", "/", "/css/**").permitAll().anyRequest().authenticated()
+        http.csrf().disable().authorizeRequests().antMatchers("/authors", "/books", "/publishers","/admin","/delete*","/edit*","/add*").access("hasRole('ADMIN')").and().authorizeRequests()
+                .antMatchers("/user**", "/", "/css/**").permitAll().anyRequest().authenticated()
                 .and().formLogin().loginPage("/login").permitAll().and().logout().permitAll();
                 
     }
@@ -44,6 +40,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception{
         String password = passwordEncoder().encode("1234");
         auth.inMemoryAuthentication().withUser("admin").password(password).roles("ADMIN");
+
+        auth.inMemoryAuthentication().withUser("user").password(password).roles("USER");
+
     }
     
 }

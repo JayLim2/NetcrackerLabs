@@ -29,9 +29,11 @@
         <div class = "leftSide">
             <p> А тут менюшка</p><br>
             <ul>
-                <li><a href="/books">Тут книги</a></li>
-                <li><a href="/authors">А тут авторы</a></li>
-                <li><a href="/publishers">А тут издатели</a></li>
+                <li><a href="/userbooks">Тут книги</a></li>
+                <li><a href="/userauthors">А тут авторы</a></li>
+                <li><a href="/userpublishers">А тут издатели</a></li>
+                <li sec:authorize = "hasRole('ADMIN')">
+                <a href="/admin">А тут админ панель</a>
                 <li sec:authorize = "!isAuthenticated()">
                 <a href="/login">А тут можно залогиниться</a>    
                 </li>
@@ -40,7 +42,8 @@
                 </li>
                 <li sec:authorize = "isAuthenticated()">
                     <a href="/logout">разлогиниться</a>
-                </li>   
+                </li>
+                </li>
             </ul>
         </div>
         <div class = "rightSide">
@@ -75,7 +78,6 @@
                     <th>Издатель</th>
                     <th>Год издания</th>
                     <th>Авторы</th>
-                    <th class="controlPanel" colspan = 2>Управление объектом</th>
                 </tr>
                 <tr th:each="book : ${books}">
 
@@ -84,15 +86,8 @@
                     <td th:text="${book.publisher.publisherName}"></td>
                     <td th:text="${book.publishYear}"></td>
                     <td th:text="${#strings.listJoin(book.authors,',')}"></td>
-                    <td class="controlPanel">
-                        <input type="button" th:id="${book.bookID}" onclick="deleteBook(this.id)" value="Удалить">
-                    </td>
-                    <td class="controlPanel">
-                        <input type="button" th:id="${book.bookID}" onclick="editBook(this.id)" value="Редактировать">
-                    </td>
                 </tr>
             </table>
-            <input type="button" onclick="addBook()" value="Добавить">
         </div>
     </div>
 </body>
