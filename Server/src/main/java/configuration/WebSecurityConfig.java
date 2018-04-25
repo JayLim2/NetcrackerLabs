@@ -1,4 +1,4 @@
-﻿/*
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -42,6 +42,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         auth.inMemoryAuthentication().withUser("admin").password(password).roles("ADMIN");
 
         auth.inMemoryAuthentication().withUser("user").password(password).roles("USER");
-
+    }
     
 }
