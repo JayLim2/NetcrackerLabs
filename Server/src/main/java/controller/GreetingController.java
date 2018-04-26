@@ -147,24 +147,31 @@ public class GreetingController {
             System.out.println("Внутренняя ошибка.");
             status = 3;
         }
-        redirectAttributes.addFlashAttribute("submitAddStatus", status);
+        
         if (status != 0) {
-            redirectAttributes.addFlashAttribute("authorName", params.get("authorname"));
-            return new ModelAndView(new RedirectView("/addAuthor"));
+            model.addAttribute("submitAddStatus", status);
+            model.addAttribute("authorName", params.get("authorname"));
+            return new ModelAndView("/addAuthor");
         }
+        redirectAttributes.addFlashAttribute("submitAddStatus", status);
         redirectAttributes.addFlashAttribute("authors", authorService.getAll());
 
         return new ModelAndView(new RedirectView("/authors"));
     }
 
     @RequestMapping("/editAuthor")
-    public String editAuthor(@RequestParam(name = "id", required = false) String id, Model model) {
+    public String editAuthor(@RequestParam(name = "id", required = false) String id, Model model,RedirectAttributes redirectAttributes) {
+        byte status = 0;
         try {
             Author a = authorService.getByID(Integer.parseInt(id));
             model.addAttribute("authorID", a.getAuthorID());
             model.addAttribute("authorName", a.getAuthorName());
-        } catch (Exception e) {
-            if (!model.containsAttribute("authorID")) return "redirect:/authors";
+        } 
+        catch (NullPointerException ex) {
+            System.out.println("Такого автора не существует.");
+            status = 2;
+            redirectAttributes.addFlashAttribute("submitDelStatus", status);
+            return "redirect:/authors";
         }
         return "editAuthor";
 
@@ -196,12 +203,14 @@ public class GreetingController {
             System.out.println("Нарушение целостности.");
             status = 4;
         }
-        redirectAttributes.addFlashAttribute("submitEditStatus", status);
+        
         if (status != 0) {
-            redirectAttributes.addFlashAttribute("authorID", Integer.parseInt(params.get("id")));
-            redirectAttributes.addFlashAttribute("authorName", params.get("authorname"));
-            return new ModelAndView(new RedirectView("/editAuthor"));
+            model.addAttribute("submitEditStatus", status);
+            model.addAttribute("authorID", Integer.parseInt(params.get("id")));
+            model.addAttribute("authorName", params.get("authorname"));
+            return new ModelAndView("/editAuthor");
         }
+        redirectAttributes.addFlashAttribute("submitEditStatus", status);
         redirectAttributes.addFlashAttribute("authors", authorService.getAll());
         return new ModelAndView(new RedirectView("/authors"));
     }
@@ -266,27 +275,29 @@ public class GreetingController {
             System.out.println("Такой издатель уже существует.");
             status = 3;
         }
-        redirectAttributes.addFlashAttribute("submitAddStatus", status);
+       
         if (status != 0) {
-            redirectAttributes.addFlashAttribute("publisherName", params.get("publishername"));
-            return new ModelAndView(new RedirectView("/addPublisher"));
+            model.addAttribute("submitAddStatus", status);
+            model.addAttribute("publisherName", params.get("publishername"));
+            return new ModelAndView("/addPublisher");
 
 
         }
         List<Publisher> publishers = publisherService.getAll();
-
+        redirectAttributes.addFlashAttribute("submitAddStatus", status);
         redirectAttributes.addFlashAttribute("publishers", publishers);
         return new ModelAndView(new RedirectView("/publishers"));
     }
 
     @RequestMapping(value = "/editPublisher")
-    public String editPublisher(@RequestParam(name = "id", required = false) String id, Model model) {
+    public String editPublisher(@RequestParam(name = "id", required = false) String id, Model model,RedirectAttributes redirectAttributes) {
         try {
             Publisher p = publisherService.getByID(Integer.parseInt(id));
             model.addAttribute("publisherID", p.getPublisherID());
             model.addAttribute("publisherName", p.getPublisherName());
-        } catch (Exception e) {
-            if (!model.containsAttribute("publisherID")) return "redirect:/publishers";
+        } catch (NullPointerException e) {
+            redirectAttributes.addFlashAttribute("submitDelStatus", 2);
+            return "redirect:/publishers";
         }
 
         return "editPublisher";
@@ -320,15 +331,17 @@ public class GreetingController {
             status = 4;
         }
 
-        redirectAttributes.addFlashAttribute("submitEditStatus", status);
+        
         if (status != 0) {
-            redirectAttributes.addFlashAttribute("publisherID", Integer.parseInt(params.get("id")));
-            redirectAttributes.addFlashAttribute("publisherName", params.get("publishername"));
+            model.addAttribute("submitEditStatus", status);
+            model.addAttribute("publisherID", Integer.parseInt(params.get("id")));
+            model.addAttribute("publisherName", params.get("publishername"));
 
-            return new ModelAndView(new RedirectView("/editPublisher"));
+            return new ModelAndView("/editPublisher");
 
 
         }
+        redirectAttributes.addFlashAttribute("submitEditStatus", status);
         List<Publisher> publishers = publisherService.getAll();
 
         redirectAttributes.addFlashAttribute("publishers", publishers);
@@ -367,10 +380,14 @@ public class GreetingController {
     //КНИГИ
     @RequestMapping("/add")
     public String add(Model model) {
-        List<Publisher> p = publisherService.getAll();
-        List<Author> a = authorService.getAll();
-        model.addAttribute("publishers", p);
-        model.addAttribute("authors", a);
+        if (!model.containsAttribute("publishers")){
+            List<Publisher> p = publisherService.getAll();
+            model.addAttribute("publishers", p);
+        }
+        if (!model.containsAttribute("authors")){
+            List<Author> a = authorService.getAll();
+            model.addAttribute("authors", a);
+        }
         return "add";
     }
 
@@ -381,13 +398,15 @@ public class GreetingController {
         byte status = 0;
         try {
             Book b = new Book();
-            List<String> aNames = params.get("author");
+            List<String> aIDs = params.get("author");
             List<Author> newAuthors = new LinkedList<>();
-            if ((aNames != null) && (aNames.size() > 0))
-                for (int i = 0; i < aNames.size(); i++) {
-                    newAuthors.add(authorService.getByName(aNames.get(i)));
+            if ((aIDs != null) && (aIDs.size() > 0))
+                for (int i = 0; i < aIDs.size(); i++) {
+                    if(authorService.getByID(Integer.parseInt(aIDs.get(i))) == null) throw new BDModifiedException();
+                    newAuthors.add(authorService.getByID(Integer.parseInt(aIDs.get(i))));
                 }
-            Publisher p = publisherService.getByName(params.get("publisher").get(0));
+            Publisher p = publisherService.getByID(Integer.parseInt(params.get("publisher").get(0)));
+            if (p == null) throw new BDModifiedException();
             b.setBookName(params.get("booktitle").get(0));
             if (b.getBookName().trim().isEmpty()) {
                 throw new EmptyFieldException();
@@ -419,9 +438,18 @@ public class GreetingController {
             System.out.println(ex.getCause());
             System.out.println("Название книги не заполнено.");
             status = 4;
-        } catch (Exception ex) {
+        }catch (NullPointerException ex) {
             System.out.println(ex.getCause());
-            System.out.println("Иное нарушение ограничений.");
+            System.out.println("Изменение бд");
+            status = 6;
+        }catch (BDModifiedException ex){
+            System.out.println(ex.getCause());
+            System.out.println("Изменение бд");
+            status = 7;
+        }
+        catch (Exception ex) {
+            System.out.println(ex.getCause());
+            System.out.println("Непредвиденная ошибка");
             status = 5;
         }
         if (status != 0) {
@@ -437,42 +465,43 @@ public class GreetingController {
     private ModelAndView onWrongSubmitAddBook(MultiValueMap<String, String> params, Model model, byte status,
                                               RedirectAttributes redirectAttributes) {
 
-        redirectAttributes.addFlashAttribute("bookTitle", params.get("booktitle").get(0));
-        redirectAttributes.addFlashAttribute("publishYear", params.get("publishYear").get(0));
-        redirectAttributes.addFlashAttribute("brief", params.get("brief").get(0));
-        redirectAttributes.addFlashAttribute("publishers", publisherService.getAll());
-        redirectAttributes.addFlashAttribute("bpublisher", publisherService.getByName(params.get("publisher").get(0)));
-        redirectAttributes.addFlashAttribute("authors", authorService.getAll());
+        model.addAttribute("bookTitle", params.get("booktitle").get(0));
+        model.addAttribute("publishYear", params.get("publishYear").get(0));
+        model.addAttribute("brief", params.get("brief").get(0));
+        model.addAttribute("publishers", publisherService.getAll());
+        model.addAttribute("bpublisher", publisherService.getByID(Integer.parseInt(params.get("publisher").get(0))));
+        model.addAttribute("authors", authorService.getAll());
 
         List<Author> bauthors = new ArrayList<>();
         List<String> bauthors_s = params.get("author");
         if (bauthors_s != null && bauthors_s.size() > 0)
             for (int i = 0; i < bauthors_s.size(); i++) {
-                bauthors.add(authorService.getByName(bauthors_s.get(i)));
+                bauthors.add(authorService.getByID(Integer.parseInt(bauthors_s.get(i))));
             }
 
-        redirectAttributes.addFlashAttribute("bauthors", bauthors);
-        redirectAttributes.addFlashAttribute("submitAddStatus", status);
-        return new ModelAndView(new RedirectView("/add"));
+        model.addAttribute("bauthors", bauthors);
+        model.addAttribute("submitAddStatus", status);
+        return new ModelAndView("/add");
     }
 
     @RequestMapping("/edit")
-    public String edit(@RequestParam(name = "id", required = false) String id, Model model) {
+    public String edit(@RequestParam MultiValueMap<String, String> params, Model model, RedirectAttributes redirectAttributes) {
         try {
-            Book b = bookService.getByID(Integer.parseInt(id));
-            model.addAttribute("bookID", b.getBookID());
-            model.addAttribute("bookName", b.getBookName());
-            model.addAttribute("brief", b.getBrief());
-            model.addAttribute("publishYear", b.getPublishYear());
-            model.addAttribute("bpublisher", b.getPublisher());
-            model.addAttribute("bauthors", b.getAuthors());
-        } catch (Exception e) {
-            if (!model.containsAttribute("bookID")) return "redirect:/books";
+            Book b = bookService.getByID(Integer.parseInt(params.get("id").get(0)));
+                model.addAttribute("bookID", b.getBookID());
+                model.addAttribute("bookName", b.getBookName());
+                model.addAttribute("brief", b.getBrief());
+                model.addAttribute("publishYear", b.getPublishYear());
+                model.addAttribute("bpublisher", b.getPublisher());
+                model.addAttribute("bauthors", b.getAuthors());
+            List<Publisher> p = publisherService.getAll();
+            List<Author> a = authorService.getAll();
+            model.addAttribute("publishers", p);
+            model.addAttribute("authors", a);
+        } catch (NullPointerException e) {
+            redirectAttributes.addFlashAttribute("submitDelStatus", 2);
+            return "redirect:/books";
         }
-        List<Publisher> p = publisherService.getAll();
-        List<Author> a = authorService.getAll();
-        model.addAttribute("publishers", p);
-        model.addAttribute("authors", a);
         return "edit";
     }
 
@@ -503,9 +532,12 @@ public class GreetingController {
             System.out.println(ex.getCause());
             System.out.println("Книги такой больше нет.");
             status = 6;
-        }catch (Exception ex) {
+        } catch (BDModifiedException ex){
+            status = 7;
+        }
+        catch (Exception ex) {
             System.out.println(ex.getCause());
-            System.out.println("Иное нарушение ограничений.");
+            System.out.println("Непредвиденная ошибка.");
             status = 5;
         }
 
@@ -525,29 +557,29 @@ public class GreetingController {
         //System.out.println(b);
 
 
-        redirectAttributes.addFlashAttribute("bookID", params.get("id").get(0));
-        redirectAttributes.addFlashAttribute("bookName", params.get("booktitle").get(0));
-        redirectAttributes.addFlashAttribute("brief", params.get("brief").get(0));
-        redirectAttributes.addFlashAttribute("publishYear", params.get("publishYear").get(0));
-        redirectAttributes.addFlashAttribute("bpublisher", publisherService.getByName(params.get("publisher").get(0)));
-        redirectAttributes.addFlashAttribute("authors", authorService.getAll());
+                model.addAttribute("bookID", params.get("id").get(0));
+                model.addAttribute("bookName", params.get("booktitle").get(0));
+                model.addAttribute("publishYear", params.get("publishYear").get(0));
+                model.addAttribute("brief", params.get("brief").get(0));
+                model.addAttribute("publishers", publisherService.getAll());
+                model.addAttribute("bpublisher", publisherService.getByID(Integer.parseInt(params.get("publisher").get(0))));
+                model.addAttribute("authors", authorService.getAll());
 
-        List<Author> bauthors = new ArrayList<>();
-        List<String> bauthors_s = params.get("author");
-        if (bauthors_s != null && bauthors_s.size() > 0)
-            for (int i = 0; i < bauthors_s.size(); i++) {
-                bauthors.add(authorService.getByName(bauthors_s.get(i)));
-            }
+                List<Author> bauthors = new ArrayList<>();
+                List<String> bauthors_s = params.get("author");
+                if (bauthors_s != null && bauthors_s.size() > 0)
+                    for (int i = 0; i < bauthors_s.size(); i++) {
+                        bauthors.add(authorService.getByID(Integer.parseInt(bauthors_s.get(i))));
+                    }
+                model.addAttribute("authors", authorService.getAll());
 
-        redirectAttributes.addFlashAttribute("bauthors", bauthors);
+        model.addAttribute("bauthors", bauthors);
 
         List<Publisher> p = publisherService.getAll();
         List<Author> a = authorService.getAll();
 
-        redirectAttributes.addFlashAttribute("publishers", p);
-        redirectAttributes.addFlashAttribute("authors", a);
-        redirectAttributes.addFlashAttribute("submitEditStatus", status);
-        return new ModelAndView(new RedirectView("/edit"));
+        model.addAttribute("submitEditStatus", status);
+        return new ModelAndView("/edit");
 
 
     }
@@ -567,6 +599,9 @@ public class GreetingController {
             System.out.println(ex.getCause());
             System.out.println("Невозможно удалить книгу.");
             status = 1;
+        }catch (NullPointerException ex) {
+            System.out.println("Такой книги не существует.");
+            status = 2;
         }
         List<Book> books = bookService.getAll();
 

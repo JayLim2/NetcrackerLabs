@@ -51,6 +51,9 @@
                 <div th:case="'6'" class="error">
                     Такой книги больше нет.
                 </div>
+                <div th:case="'7'" class="error">
+                    Списки авторов или идателей изменились.
+                </div>
             </div>
 
             <form id="editForm" action="submitEdit" method="POST">
@@ -59,10 +62,10 @@
                 <input class = "inputField" type="text" id = "publishYear" name = "publishYear" th:value="${publishYear}"><br>
                 <input class = "inputField" type="text" id = "brief" name = "brief" th:value = "${brief}"><br>
                 <select class = "inputField" name = "publisher">
-                    <option th:each = "publisher : ${publishers}" th:value="${publisher.publisherName}" th:label ="${publisher.publisherName}" th:selected='${publisher.equals(bpublisher)}'></option>
+                    <option th:each = "publisher : ${publishers}" th:value="${publisher.publisherID}" th:label ="${publisher.publisherName}" th:selected='${publisher.equals(bpublisher)}'></option>
                 </select><br>
                 <select class = "inputField" name = "author" multiple>
-                    <option th:each = "author : ${authors}" th:value="${author.authorName}" th:label ="${author.authorName}" th:selected="${bauthors != null} ? ${#lists.contains(bauthors, author)}"></option>
+                    <option th:each = "author : ${authors}" th:value="${author.authorID}" th:label ="${author.authorName}" th:selected="${bauthors != null} ? ${#lists.contains(bauthors, author)}"></option>
                 </select><br>
                 <input type="submit" value="submit">
             </form>

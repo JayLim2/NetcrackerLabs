@@ -40,20 +40,22 @@ public class TransactionalStuff {
     PublisherService publisherService;
     
     @Transactional(propagation = Propagation.REQUIRED,rollbackFor = Exception.class)
-    public void bookEditTransaction(MultiValueMap<String, String> params, Model model) throws YearOutOfBoundsException{
+    public void bookEditTransaction(MultiValueMap<String, String> params, Model model) throws YearOutOfBoundsException, BDModifiedException{
             Book b = bookService.getByID(Integer.parseInt(params.get("id").get(0)));
             if (b.getAuthors().size() > 0)
                 for (int i = 0; i < b.getAuthors().size(); i++) {
                     b.getAuthors().get(i).getBooks().remove(b);
                     authorService.editAuthor(b.getAuthors().get(i));
                 }
-            List<String> aNames = params.get("author");
+            List<String> aIDs = params.get("author");
             List<Author> newAuthors = new LinkedList<>();
-            if ((aNames != null)&&(aNames.size() > 0))
-                for (int i = 0; i < aNames.size(); i++) {
-                    newAuthors.add(authorService.getByName(aNames.get(i)));
+            if ((aIDs != null)&&(aIDs.size() > 0))
+                for (int i = 0; i < aIDs.size(); i++) {
+                    if (authorService.getByID(Integer.parseInt(aIDs.get(i))) == null) throw new BDModifiedException();
+                    newAuthors.add(authorService.getByID(Integer.parseInt(aIDs.get(i))));
                 }
-            Publisher p = publisherService.getByName(params.get("publisher").get(0));
+            Publisher p = publisherService.getByID(Integer.parseInt(params.get("publisher").get(0)));
+            if (p == null) throw new BDModifiedException();
             b.setBookName(params.get("booktitle").get(0));
             b.setBrief(params.get("brief").get(0));
             b.setPublishYear(Integer.parseInt(params.get("publishYear").get(0)));
