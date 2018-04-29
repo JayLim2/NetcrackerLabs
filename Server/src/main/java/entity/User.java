@@ -23,12 +23,16 @@ public class User {
     @Column (name = "\"cart\"")
     private int cart;
 
+    @Column (name = "\role\"")
+    private int role;
+
     public User() {}
 
-    public User(String userLogin, String userPass, int cart) {
+    public User(String userLogin, String userPass, int cart, int role) {
         this.userLogin = userLogin;
         this.userPass = userPass;
         this.cart = cart;
+        this.role = role;
     }
 
     public int getUserID() {
@@ -63,6 +67,14 @@ public class User {
         this.cart = cart;
     }
 
+    public int getRole() {
+        return role;
+    }
+
+    public void setRole(int role) {
+        this.role = role;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -70,6 +82,7 @@ public class User {
                 ", userLogin='" + userLogin + '\'' +
                 ", userPass='" + userPass + '\'' +
                 ", cart=" + cart +
+                ", role=" + role +
                 '}';
     }
 }

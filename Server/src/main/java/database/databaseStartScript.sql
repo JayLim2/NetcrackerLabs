@@ -68,6 +68,7 @@ CREATE TABLE IF NOT EXISTS userList (
   "userLogin"   CHARACTER VARYING(30)                                             NOT NULL UNIQUE,
   "userPass"    CHARACTER VARYING(230)                                            NOT NULL,
   "cart"        INTEGER                                                              ,
+  "role"        INTEGER                                                              ,
   PRIMARY KEY ("userID")
 );
 
