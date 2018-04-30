@@ -4,85 +4,111 @@ package entity;
 import javax.persistence.*;
 import java.util.List;
 
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.data.annotation.Transient;
+
 @Entity
-@Table(name = "\"userList\"", schema = "public", catalog = "postgres")
+@Table(name = "\"users\"", schema = "public", catalog = "postgres")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "auto_increment_user")
-    @SequenceGenerator(name = "auto_increment_user", sequenceName = "\"auto_increment_publisher\"", allocationSize = 1)
-    @Column (name = "\"userID\"")
-    private int userID;
+    @SequenceGenerator(name = "auto_increment_user", sequenceName = "\"auto_increment_user\"", allocationSize = 1)
+    @Column(name = "\"user_id\"")
+    private int id;
+    @Column(name = "\"email\"")
+    @Email(message = "*Please provide a valid Email")
+    @NotEmpty(message = "*Please provide an email")
+    private String email;
+    @Column(name = "\"password\"")
+    @Length(min = 5, message = "*Your password must have at least 5 characters")
+    @NotEmpty(message = "*Please provide your password")
+    @Transient
+    private String password;
+    @Column(name = "\"name\"")
+    @NotEmpty(message = "*Please provide your name")
+    private String name;
+    @Column(name = "\"last_name\"")
+    @NotEmpty(message = "*Please provide your last name")
+    private String lastName;
+    @Column(name = "\"active\"")
+    private int active;
 
-    @Column (name = "\"userLogin\"",nullable=false, unique = true, length = 30)
-    private String userLogin;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH}, fetch = FetchType.EAGER)
+    @JoinTable(name="\"user_role\"",
+            joinColumns = @JoinColumn(name= "\"user_id\""),
+            inverseJoinColumns = @JoinColumn(name="\"role_id\""))
+    private Set<Role> roles;
 
-    @Column (name = "\"userPass\"",nullable=false, unique = true, length = 30)
-    private String userPass;
-
-    @Column (name = "\"cart\"")
-    private int cart;
-
-    @Column (name = "\role\"")
-    private int role;
-
-    public User() {}
-
-    public User(String userLogin, String userPass, int cart, int role) {
-        this.userLogin = userLogin;
-        this.userPass = userPass;
-        this.cart = cart;
-        this.role = role;
+    public int getId() {
+        return id;
     }
 
-    public int getUserID() {
-        return userID;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void setUserID(int userID) {
-        this.userID = userID;
+    public String getPassword() {
+        return password;
     }
 
-    public String getUserLogin() {
-        return userLogin;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public void setUserLogin(String userLogin) {
-        this.userLogin = userLogin;
+    public String getName() {
+        return name;
     }
 
-    public String getUserPass() {
-        return userPass;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setUserPass(String userPass) {
-        this.userPass = userPass;
+    public String getLastName() {
+        return lastName;
     }
 
-    public int getCart() {
-        return cart;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public void setCart(int cart) {
-        this.cart = cart;
+    public String getEmail() {
+        return email;
     }
 
-    public int getRole() {
-        return role;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public void setRole(int role) {
-        this.role = role;
+    public int getActive() {
+        return active;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "userID=" + userID +
-                ", userLogin='" + userLogin + '\'' +
-                ", userPass='" + userPass + '\'' +
-                ", cart=" + cart +
-                ", role=" + role +
-                '}';
+    public void setActive(int active) {
+        this.active = active;
     }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
 }

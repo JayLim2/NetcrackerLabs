@@ -1,48 +1,47 @@
 package database.service.impl;
 
+
+import database.repository.RoleRepository;
 import database.repository.UserRepository;
 import database.service.UserService;
+import entity.Role;
 import entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-public class UserServiceImpl implements UserService {
+import java.util.Arrays;
+import java.util.HashSet;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+
+@Service("userService")
+public class UserServiceImpl implements UserService{
+
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
-    public User addUser(User user) {
-        User savedUser = userRepository.saveAndFlush(user);
-        return savedUser;
+    public User findUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     @Override
-    public void delete(User user) {
-        userRepository.delete(user);
-
+    public void saveUser(User user) {
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        user.setActive(1);
+        Role userRole = roleRepository.findByRole("ADMIN");
+        user.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
+        userRepository.save(user);
     }
 
-    @Override
-    public User getByName(String name) {
-        return userRepository.findByName(name);
-    }
-
-    @Override
-    public User getByID(int id) {
-        return userRepository.findByID(id);
-    }
-
-    @Override
-    public User editUser(User user) {
-        return userRepository.saveAndFlush(user);
-    }
-
-    @Override
-    public List<User> getAll() {
-        return userRepository.findAll();
-    }
 }
+
