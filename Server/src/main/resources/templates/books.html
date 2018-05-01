@@ -32,11 +32,11 @@
                 <li><a href="/books">Тут книги</a></li>
                 <li><a href="/authors">А тут авторы</a></li>
                 <li><a href="/publishers">А тут издатели</a></li>
-                <li sec:authorize = "!isAuthenticated()">
-                <a href="/login">А тут можно залогиниться</a>    
+                <li>
+                    <a href="/index">А тут юзер часть</a>
                 </li>
                 <li sec:authorize = "isAuthenticated()">
-                    logged as: <span sec:authentication = "name"></span> 
+                    logged as: <span sec:authentication = "name"></span>
                 </li>
                 <li sec:authorize = "isAuthenticated()">
                     <a href="/logout">разлогиниться</a>
