@@ -160,7 +160,7 @@ public class GreetingController {
     }
 
     @RequestMapping("/editAuthor")
-    public String editAuthor(@RequestParam(name = "id", required = false) String id, Model model,RedirectAttributes redirectAttributes) {
+    public String editAuthor(@RequestParam(name = "id", required = true) String id, Model model,RedirectAttributes redirectAttributes) {
         byte status = 0;
         try {
             Author a = authorService.getByID(Integer.parseInt(id));
@@ -290,7 +290,7 @@ public class GreetingController {
     }
 
     @RequestMapping(value = "/editPublisher")
-    public String editPublisher(@RequestParam(name = "id", required = false) String id, Model model,RedirectAttributes redirectAttributes) {
+    public String editPublisher(@RequestParam(name = "id", required = true) String id, Model model,RedirectAttributes redirectAttributes) {
         try {
             Publisher p = publisherService.getByID(Integer.parseInt(id));
             model.addAttribute("publisherID", p.getPublisherID());
@@ -485,9 +485,9 @@ public class GreetingController {
     }
 
     @RequestMapping("/edit")
-    public String edit(@RequestParam MultiValueMap<String, String> params, Model model, RedirectAttributes redirectAttributes) {
+    public String edit(@RequestParam(name = "id", required = true) String id, Model model, RedirectAttributes redirectAttributes) {
         try {
-            Book b = bookService.getByID(Integer.parseInt(params.get("id").get(0)));
+            Book b = bookService.getByID(Integer.parseInt(id));
                 model.addAttribute("bookID", b.getBookID());
                 model.addAttribute("bookName", b.getBookName());
                 model.addAttribute("brief", b.getBrief());
