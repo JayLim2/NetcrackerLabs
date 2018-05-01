@@ -73,7 +73,9 @@ li{
 }
 
 .inputField{
-    margin-top: 10px
+    margin-top: 10px;
+    padding: 15px;
+    font-size: 12pt;
 }
 
 a {
@@ -105,4 +107,44 @@ a:hover {
     color: #216200;
     text-align: left;
     margin:10px 5px;
+}
+
+.user_header {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 30px 100px 30px 100px;
+    font-size: 13pt;
+    border-bottom: 5px solid #00337A;
+}
+
+.user_body {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 30px 100px 30px 100px;
+    font-size: 13pt;
+}
+
+.submitBtn {
+    margin: 10px 0 10px 0;
+    font-size: 13pt;
+    font-weight: bold;
+    background: #003C7A;
+    border-radius: 7px;
+    padding: 15px;
+    color: white;
+    border: 0;
+}
+
+.submitBtn:hover {
+    background: #006CDB;
+    cursor: pointer;
+}
+
+.validation-message {
+    color: red;
+}
+
+.adminPanelLink {
+    color: red;
+    text-decoration: underline;
 }

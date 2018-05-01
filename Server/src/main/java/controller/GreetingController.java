@@ -18,8 +18,6 @@ import models.YearOutOfBoundsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
@@ -32,7 +30,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.sql.DataSource;
 import javax.validation.Valid;
 import java.util.*;
-import org.springframework.http.HttpStatus;
 
 @Controller
 public class GreetingController {
@@ -55,18 +52,18 @@ public class GreetingController {
     public String login(Model model){
         return "login";
     }
-
-    @GetMapping("/error")
-    @PostMapping("/error")
-    public String error(Model model) {
-        return "error";
-    }
     
     @RequestMapping("/admin")
     public String admin(Model model){
         return "admin";
     }
-    
+
+    @RequestMapping("/index")
+    public String index(Model model) {
+        return "index";
+    }
+
+
 //    @RequestMapping("/error")
 //    public String error(Model model){
 //        model.addAttribute("error", "у вас нет админских прав");

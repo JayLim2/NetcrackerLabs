@@ -8,7 +8,7 @@ SET check_function_bodies = FALSE;
 SET client_min_messages = WARNING;
 SET row_security = OFF;
 
-!--DROP TABLE userList;
+--DROP TABLE userList;
 
 CREATE SEQUENCE IF NOT EXISTS auto_increment_publisher
   START WITH 0
@@ -157,30 +157,31 @@ ALTER TABLE auto_increment_role
 CREATE TABLE IF NOT EXISTS "role" (
   "role_id"    INTEGER DEFAULT nextval('auto_increment_user' :: REGCLASS)  NOT NULL,
   "role" CHARACTER VARYING(255)                                         ,
-PRIMARY KEY ("role_id")
+  PRIMARY KEY ("role_id")
 );
 
-  CREATE TABLE IF NOT EXISTS "users" (
+CREATE TABLE IF NOT EXISTS "users" (
   "user_id"    INTEGER DEFAULT nextval('auto_increment_user' :: REGCLASS)  NOT NULL,
   "active" INTEGER                                         ,
   "email"  CHARACTER VARYING(255) NOT NULL,
   "last_name" CHARACTER VARYING(255) NOT NULL,
   "name"      CHARACTER VARYING(255) NOT NULL,
   "password"    CHARACTER VARYING(255) NOT NULL,
-PRIMARY KEY ("user_id")
+  PRIMARY KEY ("user_id")
 );
 
 INSERT INTO "role" VALUES (1,'ADMIN');
 INSERT INTO "role" VALUES (2,'ROLE_ADMIN');
 
-INSERT INTO "users" (active, email, last_name, name, password)VALUES ('1','admin@admin.ru',
-'admin','admin','$2a$10$9H1hL/JIUm.Jj4GNGKUTXehPSdFZD9vIu1axShVE8zJM6gOVRTVRO');
+INSERT INTO "users" (active, email, last_name, name, password) VALUES ('1', 'admin@admin.ru',
+                                                                       'admin', 'admin',
+                                                                       '$2a$10$9H1hL/JIUm.Jj4GNGKUTXehPSdFZD9vIu1axShVE8zJM6gOVRTVRO');
 
 CREATE TABLE IF NOT EXISTS "user_role" (
   "user_id"    INTEGER   NOT NULL,
   "role_id" INTEGER       NOT NULL,
   PRIMARY KEY ("user_id","role_id"),
---
+  --
   CONSTRAINT "FK859n2jvi8ivhui0rl0esws6o"
   FOREIGN KEY ("user_id") REFERENCES "users" ("user_id"),
   CONSTRAINT "FKa68196081fvovjhkek5m97n3y"
