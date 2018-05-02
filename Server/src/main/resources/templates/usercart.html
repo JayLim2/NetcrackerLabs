@@ -1,28 +1,9 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Список книг</title>
+    <title>Корзина товаров</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <script type="text/javascript">
-        function deleteBook(x) {
-            document.getElementById("hiddenDeleteField").value = x;
-            document.getElementById("deleteForm").submit();
-        }
-        function editBook(x) {
-            document.getElementById("hiddenDeleteField").value = x;
-            document.getElementById("deleteForm").action = "edit";
-            document.getElementById("deleteForm").submit();
-        }
-        function addBook() {
-            document.getElementById("deleteForm").action = "add";
-            document.getElementById("deleteForm").submit();
-        }
 
-        function sendToCart(bookId) {
-            document.getElementById("sentBookId").value = bookId;
-            document.forms["cartForm"].submit();
-        }
-    </script>
     <link type="text/css" rel="stylesheet" href="../static/css/main.css" th:href="@{/css/main.css}"/>
 
 </head>
@@ -59,36 +40,29 @@
 
 <!-- body -->
 <div class="user_body">
-    <h1>Список книг</h1>
-
-    <form name="cartForm" action="/addToCart" method="post">
-        <input type="hidden" id="sentBookId" name="sentBookId" value="0">
-    </form>
+    <h1>Корзина товаров</h1>
 
     <table style="width:100%;margin-top:10px;">
         <tr>
-            <th>ID</th>
+            <th>ID записи</th>
             <th>Название книги</th>
-            <th>Издатель</th>
-            <th>Год издания</th>
-            <th>Авторы</th>
+            <th>Количество</th>
             <th></th>
         </tr>
-        <tr th:each="book : ${books}">
 
-            <td th:text="${book.bookID}"></td>
-            <td th:text="${book.bookName}"></td>
-            <td th:text="${book.publisher.publisherName}"></td>
-            <td th:text="${book.publishYear}"></td>
-            <td th:text="${#strings.listJoin(book.authors,',')}"></td>
-            <td>
-                <input type="button" th:onclick="'sendToCart('+${book.bookID}+')'" value="В корзину">
-            </td>
+        <tr th:each="item : ${items}">
+            <td th:text="${item.cart.cartID}"></td>
+            <td th:text="${item.book.bookName}"></td>
+            <td th:text="${item.cart.count}"></td>
+            <td><input type="button" value="Delete"></td>
         </tr>
     </table>
+    <div align="right">
+        <input class="submitBtn" type="button" value="Оформить заказ">
+    </div>
 </div>
 <!--
-    <form id ="deleteForm" action="delete" method="POST">
+    <form id ="deleteForm" action="deleteAuthor" method="POST">
         <input type="hidden" id = "hiddenDeleteField" name = "id">
     </form>
 <div class="mainBox">
@@ -116,46 +90,45 @@
             <div class = "header">
                 <p>Тут будет тобешь заголовок</p>
             </div>
-            <h1>Список всех книг</h1>
+            <h1>Список всех авторов</h1>
 
             <div th:switch="${submitAddStatus}">
                 <div th:case="'0'" class="success">
-                    Книга добавлена.
+                    Автор добавлен.
                 </div>
             </div>
             <div th:switch="${submitEditStatus}">
                 <div th:case="'0'" class="success">
-                    Книга изменена.
+                    Автор изменен.
                 </div>
             </div>
             <div th:switch="${submitDelStatus}">
                 <div th:case="'0'" class="success">
-                    Книга удалена.
+                    Автор удален.
                 </div>
                 <div th:case="'1'" class="error">
-                    Невозможно удалить книгу.
+                    Невозможно удалить автора из БД.
+                </div>
+                <div th:case="'2'" class="error">
+                    Такой автор не существует.
                 </div>
             </div>
 
             <table style="width:99%;">
                 <tr>
                     <th>ID</th>
-                    <th>Название книги</th>
-                    <th>Издатель</th>
-                    <th>Год издания</th>
-                    <th>Авторы</th>
-                </tr>
-                <tr th:each="book : ${books}">
+                    <th>Имя автора</th>
 
-                    <td th:text="${book.bookID}"></td>
-                    <td th:text="${book.bookName}"></td>
-                    <td th:text="${book.publisher.publisherName}"></td>
-                    <td th:text="${book.publishYear}"></td>
-                    <td th:text="${#strings.listJoin(book.authors,',')}"></td>
+                </tr>
+                <tr th:each="author : ${authors}">
+
+                    <td th:text="${author.authorID}"></td>
+                    <td th:text="${author.authorName}"></td>
+
                 </tr>
             </table>
         </div>
     </div>
--->
+    -->
 </body>
 </html>

@@ -6,15 +6,13 @@
 package controller;
 
 import database.service.*;
-import entity.Author;
-import entity.Book;
-import entity.Publisher;
-import entity.User;
+import entity.*;
 import models.EmptyFieldException;
 import models.YearOutOfBoundsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
@@ -643,11 +641,61 @@ public class GreetingController {
         return modelAndView;
     }
 
+    //------------------ КОРЗИНА -----------------------
+
+    //для юзеров
+    @GetMapping("/usercart")
+    @PostMapping("/usercart")
+    public String ucart(Model model) {
+        List<Cart> carts = cartService.getCartByUserId(0);
+        List<Book> books = new ArrayList<>();
+        List<CartItem> cartItems = new ArrayList<>();
+        for (Cart cart : carts) {
+            cartItems.add(new CartItem(cart, bookService.getByID(cart.getBook().getBookID())));
+        }
+        model.addAttribute("items", cartItems);
+        return "usercart";
+    }
+
+    //Вспомогательный класс для вывода корзины
+    private class CartItem {
+        private Cart cart;
+        private Book book;
+
+        public CartItem(Cart cart, Book book) {
+            this.cart = cart;
+            this.book = book;
+        }
+
+        public Cart getCart() {
+            return cart;
+        }
+
+        public void setCart(Cart cart) {
+            this.cart = cart;
+        }
+
+        public Book getBook() {
+            return book;
+        }
+
+        public void setBook(Book book) {
+            this.book = book;
+        }
+    }
+
     @RequestMapping("/addToCart")
-    public ModelAndView addToCart(Model model) {
+    public ModelAndView addToCart(@RequestParam Map<String, String> params, Model model) {
+        Integer bookId = Integer.parseInt(params.get("sentBookId"));
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        Integer userId = userService.findUserByEmail(name).getId();
+
+        System.out.println("bookID: " + bookId + "\nuserId: " + userId);
+
         ModelAndView modelAndView = new ModelAndView();
-        cartService.addToCart(0, 0);
+        cartService.addToCart(userId, bookId);
         modelAndView.setViewName("addToCart");
+
         return modelAndView;
     }
 }

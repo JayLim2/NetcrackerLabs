@@ -4,22 +4,23 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@IdClass(Cart.CartKey.class)
+//@IdClass(Cart.CartKey.class)
 @Table(name = "\"cart\"", schema = "public", catalog = "postgres")
 public class Cart implements Serializable {
 
-    /*@EmbeddedId
-    private CartKey key;*/
-
     @Id
-    @ManyToOne
-    @JoinColumn(name = "\"userID\"", referencedColumnName = "\"user_id")
-    private int userID;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "auto_increment_cart")
+    @SequenceGenerator(name = "auto_increment_cart", sequenceName = "\"auto_increment_cart\"", allocationSize = 1)
+    @Column(name = "\"cartID\"")
+    private int cartID;
 
-    @Id
     @ManyToOne
-    @JoinColumn(name = "\"bookID\"")
-    private int bookID;
+    @JoinColumn(name = "\"userid\"", referencedColumnName = "\"user_id\"")
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "\"bookid\"")
+    private Book book;
 
     @Column(name = "\"count\"")
     private int count;
@@ -27,31 +28,39 @@ public class Cart implements Serializable {
     public Cart() {
     }
 
-    public Cart(int userID, int bookID) {
-        this.userID = userID;
-        this.bookID = bookID;
+    public Cart(User user, Book book) {
+        this.user = user;
+        this.book = book;
     }
 
-    public Cart(int userID, int bookID, int count) {
-        this.userID = userID;
-        this.bookID = bookID;
+    public Cart(User user, Book book, int count) {
+        this.user = user;
+        this.book = book;
         this.count = count;
     }
 
-    public int getUserID() {
-        return userID;
+    public int getCartID() {
+        return cartID;
     }
 
-    public void setUserID(int userID) {
-        this.userID = userID;
+    public void setCartID(int cartID) {
+        this.cartID = cartID;
     }
 
-    public int getBookID() {
-        return bookID;
+    public User getUser() {
+        return user;
     }
 
-    public void setBookID(int bookID) {
-        this.bookID = bookID;
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Book getBook() {
+        return book;
+    }
+
+    public void setBook(Book book) {
+        this.book = book;
     }
 
     public int getCount() {
@@ -62,7 +71,7 @@ public class Cart implements Serializable {
         this.count = count;
     }
 
-    public static class CartKey implements Serializable {
+    /*public static class CartKey implements Serializable {
         static final long serialVersionUID = 1L;
 
         private int userID;
@@ -104,5 +113,5 @@ public class Cart implements Serializable {
         public int hashCode() {
             return super.hashCode();
         }
-    }
+    }*/
 }

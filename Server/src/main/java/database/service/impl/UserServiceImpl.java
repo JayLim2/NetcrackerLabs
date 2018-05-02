@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.HashSet;
 
-@Service("userService")
+@Service
 public class UserServiceImpl implements UserService{
 
     @Autowired
@@ -25,6 +25,11 @@ public class UserServiceImpl implements UserService{
     @Override
     public User findUserByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public User findUserById(int id) {
+        return userRepository.findById(id);
     }
 
     @Override

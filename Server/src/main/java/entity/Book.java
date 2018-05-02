@@ -9,6 +9,7 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "auto_increment_book")
     @SequenceGenerator(name = "auto_increment_book", sequenceName = "\"auto_increment_book\"", allocationSize = 1)
+
     @Column(name = "\"bookID\"")
     private int bookID;
     @Column(name = "\"bookName\"", nullable = false, unique = true, length = 50)

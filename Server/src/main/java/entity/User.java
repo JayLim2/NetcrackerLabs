@@ -7,7 +7,6 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.Transient;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -36,9 +35,6 @@ public class User {
     private String lastName;
     @Column(name = "\"active\"")
     private int active;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "\"users\"")
-    private Set<Integer> usersId = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH}, fetch = FetchType.EAGER)
     @JoinTable(name="\"user_role\"",
