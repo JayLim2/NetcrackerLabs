@@ -1,9 +1,7 @@
 package entity;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "book")
@@ -11,24 +9,24 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "auto_increment_book")
     @SequenceGenerator(name = "auto_increment_book", sequenceName = "\"auto_increment_book\"", allocationSize = 1)
-    @Column(name =  "\"bookID\"")
+    @Column(name = "\"bookID\"")
     private int bookID;
-    @Column(name =  "\"bookName\"", nullable=false, unique = true, length = 50)
+    @Column(name = "\"bookName\"", nullable = false, unique = true, length = 50)
     private String bookName;
     @Column(name = "\"publishYear\"")
     private int publishYear;
-    @Column(name = "brief", nullable=false, length = 2500)
+    @Column(name = "brief", nullable = false, length = 2500)
     private String brief;
 
     @ManyToOne
     @JoinColumn(name = "\"publisherID\"")
     private Publisher publisher;
 
-    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH}, mappedBy="books")
-//    @JoinTable(name="\"authorBookConnector\"",
-//            inverseJoinColumns = @JoinColumn(name="\"authorID\""),
-//            joinColumns = @JoinColumn(name="\"bookID\"")
-//    )
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH}, mappedBy = "books")
+    /*@JoinTable(name="\"authorBookConnector\"",
+            inverseJoinColumns = @JoinColumn(name="\"authorID\""),
+            joinColumns = @JoinColumn(name="\"bookID\"")
+    )*/
     private List<Author> authors;
 
     public List<Author> getAuthors() {
@@ -101,9 +99,9 @@ public class Book {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(this.getClass().getSimpleName() + " (" + bookID
-                + ", " + bookName + ", " + publishYear + ", " + brief + publisher.toString() +"{");
-        for(Author author:authors){
-            stringBuilder.append(" "+author.toString()+" ");
+                + ", " + bookName + ", " + publishYear + ", " + brief + publisher.toString() + "{");
+        for (Author author : authors) {
+            stringBuilder.append(" " + author.toString() + " ");
         }
         stringBuilder.append("} )");
         return stringBuilder.toString();

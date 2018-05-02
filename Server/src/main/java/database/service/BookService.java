@@ -3,11 +3,9 @@ package database.service;
 import entity.Book;
 
 import java.util.List;
-import org.springframework.stereotype.Service;
 
 
 public interface BookService {
-
 
     Book addBook(Book book);
 

@@ -1,6 +1,5 @@
 package database.repository;
 
-
 import entity.Publisher;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

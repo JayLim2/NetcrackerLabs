@@ -1,26 +1,14 @@
 package entity;
 
 
-import javax.persistence.*;
-import java.util.List;
-
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.Transient;
+
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "\"users\"", schema = "public", catalog = "postgres")
@@ -48,6 +36,9 @@ public class User {
     private String lastName;
     @Column(name = "\"active\"")
     private int active;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "\"users\"")
+    private Set<Integer> usersId = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH}, fetch = FetchType.EAGER)
     @JoinTable(name="\"user_role\"",

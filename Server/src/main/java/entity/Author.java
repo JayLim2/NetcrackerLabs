@@ -1,7 +1,7 @@
 package entity;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.List;
 
 @Entity
 public class Author {
@@ -9,16 +9,15 @@ public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "auto_increment_author")
     @SequenceGenerator(name = "auto_increment_author", sequenceName = "\"auto_increment_author\"", allocationSize = 1)
-    @Column (name = "\"authorID\"")
+    @Column(name = "\"authorID\"")
     private int authorID;
-    @Column (name = "\"authorName\"", nullable=false, unique = true, length = 60)
+    @Column(name = "\"authorName\"", nullable = false, unique = true, length = 60)
     private String authorName;
 
-
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH}, fetch = FetchType.EAGER)
-    @JoinTable(name="\"authorBookConnector\"",
-            joinColumns = @JoinColumn(name="\"authorID\""),
-            inverseJoinColumns = @JoinColumn(name="\"bookID\"")
+    @JoinTable(name = "\"authorBookConnector\"",
+            joinColumns = @JoinColumn(name = "\"authorID\""),
+            inverseJoinColumns = @JoinColumn(name = "\"bookID\"")
     )
     private List<Book> books;
 
@@ -31,7 +30,7 @@ public class Author {
     }
 
     public Author() {
-//        this.books = new HashMap<>();
+        //this.books = new HashMap<>();
     }
 
     public Author(int authorID, String authorName) {
@@ -55,8 +54,6 @@ public class Author {
     public void setAuthorName(String authorName) {
         this.authorName = authorName;
     }
-
-
 
 //    public void addBook(Book book) {
 //        books.put(book.getBookID(), book);
