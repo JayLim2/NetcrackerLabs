@@ -56,14 +56,9 @@ public class GreetingController {
 
     @RequestMapping("/index")
     public String index(Model model) {
+        model.addAttribute("cartTotal", getCartTotalCount());
         return "index";
     }
-
-//    @RequestMapping("/error")
-//    public String error(Model model){
-//        model.addAttribute("error", "у вас нет админских прав");
-//        return "error";
-//    }
 
     //ОСНОВНЫЕ СПИСКИ
     @GetMapping("/books")
@@ -96,6 +91,7 @@ public class GreetingController {
     public String ugreeting(Model model) {
         List<Book> books = bookService.getAll();
         model.addAttribute("books", books);
+        model.addAttribute("cartTotal", getCartTotalCount());
         return "userbooks";
     }
 
@@ -105,6 +101,7 @@ public class GreetingController {
     public String uauthors(Model model) {
         List<Author> authors = authorService.getAll();
         model.addAttribute("authors", authors);
+        model.addAttribute("cartTotal", getCartTotalCount());
         return "userauthors";
     }
 
@@ -113,6 +110,7 @@ public class GreetingController {
     public String upublishers(Model model) {
         List<Publisher> publishers = publisherService.getAll();
         model.addAttribute("publishers", publishers);
+        model.addAttribute("cartTotal", getCartTotalCount());
         return "userpublishers";
     }
 
@@ -171,7 +169,6 @@ public class GreetingController {
             return "redirect:/authors";
         }
         return "editAuthor";
-
     }
 
     @RequestMapping("/submitEditAuthor")
@@ -543,15 +540,10 @@ public class GreetingController {
         redirectAttributes.addFlashAttribute("books", bookService.getAll());
         redirectAttributes.addFlashAttribute("submitEditStatus", status);
         return new ModelAndView(new RedirectView("/books"));
-
     }
 
     private ModelAndView onWrongSubmitEditBook(MultiValueMap<String, String> params, Model model, byte status,
                                                RedirectAttributes redirectAttributes) {
-        //Book b = bookService.getByID(Integer.parseInt(params.get("id").get(0)));
-        //System.out.println(b);
-
-
         model.addAttribute("bookID", params.get("id").get(0));
         model.addAttribute("bookName", params.get("booktitle").get(0));
         model.addAttribute("publishYear", params.get("publishYear").get(0));
@@ -603,13 +595,6 @@ public class GreetingController {
         return new ModelAndView(new RedirectView("/books"));
     }
 
-//    @RequestMapping("/login")
-//    public ModelAndView login(){
-//        ModelAndView modelAndView = new ModelAndView();
-//        modelAndView.setViewName("login");
-//        return modelAndView;
-//    }
-
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
     public ModelAndView registration() {
         ModelAndView modelAndView = new ModelAndView();
@@ -635,7 +620,6 @@ public class GreetingController {
             modelAndView.addObject("successMessage", "User has been registered successfully");
             modelAndView.addObject("user", new User());
             modelAndView.setViewName("registration");
-
         }
         return modelAndView;
     }
@@ -652,6 +636,7 @@ public class GreetingController {
             cartItems.add(new CartItem(cart, bookService.getByID(cart.getBook().getBookID())));
         }
         model.addAttribute("items", cartItems);
+        model.addAttribute("cartTotal", getCartTotalCount());
         return "usercart";
     }
 
@@ -687,11 +672,28 @@ public class GreetingController {
         int bookId = Integer.parseInt(params.get("sentBookId"));
         int userId = getCurrentUserId();
 
+        System.out.println("ADD");
         System.out.println("bookID: " + bookId + "\nuserId: " + userId);
 
         ModelAndView modelAndView = new ModelAndView();
         cartService.addToCart(userId, bookId);
         modelAndView.setViewName("addToCart");
+        model.addAttribute("cartTotal", getCartTotalCount());
+
+        return modelAndView;
+    }
+
+    @RequestMapping("/deleteFromCart")
+    public ModelAndView deleteFromCart(@RequestParam Map<String, String> params, Model model) {
+        int cartId = Integer.parseInt(params.get("sentCartId"));
+
+        System.out.println("DELETE");
+        System.out.println("cartID: " + cartId);
+
+        ModelAndView modelAndView = new ModelAndView();
+        cartService.deleteFromCart(cartId);
+        modelAndView.setViewName("deleteFromCart");
+        model.addAttribute("cartTotal", getCartTotalCount());
 
         return modelAndView;
     }
@@ -703,6 +705,21 @@ public class GreetingController {
      */
     private int getCurrentUserId() {
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println("username = " + name);
         return userService.findUserByEmail(name).getId();
+    }
+
+    /**
+     * Подсчет общего числа товаров в корзине
+     *
+     * @return
+     */
+    private int getCartTotalCount() {
+        int count = 0;
+        List<Cart> carts = cartService.getCartByUserId(getCurrentUserId());
+        for (Cart cart : carts) {
+            count += cart.getCount();
+        }
+        return count;
     }
 }

@@ -29,7 +29,7 @@
         <div style="display:inline;" sec:authorize="isAuthenticated()">
             logged as: <span sec:authentication="name"></span>
             <br>
-            <a href="/usercart">Моя корзина <b>(0)</b></a>
+            <a href="/usercart">Моя корзина <b th:text="'('+${cartTotal}+')'"></b></a>
             <br>
         </div>
         <div style="display:inline;" sec:authorize="isAuthenticated()">
@@ -54,7 +54,12 @@
             <td th:text="${item.cart.cartID}"></td>
             <td th:text="${item.book.bookName}"></td>
             <td th:text="${item.cart.count}"></td>
-            <td><input type="button" value="Delete"></td>
+            <td>
+                <form action="/deleteFromCart" method="post">
+                    <input type="hidden" name="sentCartId" th:value="${item.cart.cartID}">
+                    <input type="submit" class="delBtn" value="Delete">
+                </form>
+            </td>
         </tr>
     </table>
     <div align="right">

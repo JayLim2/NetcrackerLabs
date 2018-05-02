@@ -39,8 +39,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void deleteFromCart(int userId, int bookId) {
-        Cart cart = new Cart(userService.findUserById(userId), bookService.getByID(bookId));
-        cartRepository.delete(cart);
+    public void deleteFromCart(int cartId) {
+        cartRepository.deleteCartById(cartId);
     }
 }
