@@ -44,11 +44,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http.csrf().disable().
-                authorizeRequests().antMatchers("/authors", "/books", "/publishers","/admin","/delete*","/edit*","/add*").access("hasRole('ADMIN')").and().authorizeRequests()
+                authorizeRequests()
+                .antMatchers("/addToCart").access("hasAnyRole('USER', 'ADMIN')")
+                .antMatchers("/authors", "/books", "/publishers", "/admin", "/delete*", "/edit*", "/add*").access("hasRole('ADMIN')").and().authorizeRequests()
                 .antMatchers("/").permitAll()
                 .antMatchers("/login").permitAll()
                 .antMatchers("/registration").permitAll()
-                .antMatchers("/addToCart").access("hasRole('USER')")
                 .antMatchers("/admin/**").hasAuthority("ADMIN").anyRequest()
                 .authenticated().and().csrf().disable().formLogin()
                 .loginPage("/login").failureUrl("/login?error=true")

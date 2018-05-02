@@ -59,7 +59,6 @@ public class GreetingController {
         return "index";
     }
 
-
 //    @RequestMapping("/error")
 //    public String error(Model model){
 //        model.addAttribute("error", "у вас нет админских прав");
@@ -643,11 +642,10 @@ public class GreetingController {
 
     //------------------ КОРЗИНА -----------------------
 
-    //для юзеров
     @GetMapping("/usercart")
     @PostMapping("/usercart")
     public String ucart(Model model) {
-        List<Cart> carts = cartService.getCartByUserId(0);
+        List<Cart> carts = cartService.getCartByUserId(getCurrentUserId());
         List<Book> books = new ArrayList<>();
         List<CartItem> cartItems = new ArrayList<>();
         for (Cart cart : carts) {
@@ -686,9 +684,8 @@ public class GreetingController {
 
     @RequestMapping("/addToCart")
     public ModelAndView addToCart(@RequestParam Map<String, String> params, Model model) {
-        Integer bookId = Integer.parseInt(params.get("sentBookId"));
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        Integer userId = userService.findUserByEmail(name).getId();
+        int bookId = Integer.parseInt(params.get("sentBookId"));
+        int userId = getCurrentUserId();
 
         System.out.println("bookID: " + bookId + "\nuserId: " + userId);
 
@@ -697,5 +694,15 @@ public class GreetingController {
         modelAndView.setViewName("addToCart");
 
         return modelAndView;
+    }
+
+    /**
+     * Получить UserID текущего пользователя
+     *
+     * @return
+     */
+    private int getCurrentUserId() {
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userService.findUserByEmail(name).getId();
     }
 }
