@@ -668,50 +668,65 @@ public class GreetingController {
     }
 
     @RequestMapping("/addToCart")
-    public ModelAndView addToCart(@RequestParam Map<String, String> params, Model model) {
-        int bookId = Integer.parseInt(params.get("sentBookId"));
-        int userId = getCurrentUserId();
+    public ModelAndView addToCart(@RequestParam Map<String, String> params, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            int bookId = Integer.parseInt(params.get("sentBookId"));
+            int userId = getCurrentUserId();
 
-        System.out.println("ADD");
-        System.out.println("bookID: " + bookId + "\nuserId: " + userId);
+            System.out.println("ADD");
+            System.out.println("bookID: " + bookId + "\nuserId: " + userId);
 
-        ModelAndView modelAndView = new ModelAndView();
-        cartService.addToCart(userId, bookId);
-        modelAndView.setViewName("addToCart");
-        model.addAttribute("cartTotal", getCartTotalCount());
+            ModelAndView modelAndView = new ModelAndView();
+            cartService.addToCart(userId, bookId);
+            modelAndView.setViewName("addToCart");
+            model.addAttribute("cartTotal", getCartTotalCount());
 
-        return modelAndView;
+            return modelAndView;
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("cartTotal", getCartTotalCount());
+            return new ModelAndView(new RedirectView("/index"));
+        }
     }
 
     @RequestMapping("/deleteFromCart")
-    public ModelAndView deleteFromCart(@RequestParam Map<String, String> params, Model model) {
-        int cartId = Integer.parseInt(params.get("sentCartId"));
+    public ModelAndView deleteFromCart(@RequestParam Map<String, String> params, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            int cartId = Integer.parseInt(params.get("sentCartId"));
 
-        System.out.println("DELETE");
-        System.out.println("cartID: " + cartId);
+            System.out.println("DELETE");
+            System.out.println("cartID: " + cartId);
 
-        ModelAndView modelAndView = new ModelAndView();
-        cartService.deleteFromCart(cartId);
-        modelAndView.setViewName("deleteFromCart");
-        model.addAttribute("cartTotal", getCartTotalCount());
+            ModelAndView modelAndView = new ModelAndView();
+            cartService.deleteFromCart(cartId);
+            modelAndView.setViewName("deleteFromCart");
+            model.addAttribute("cartTotal", getCartTotalCount());
 
-        return modelAndView;
+            return modelAndView;
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("cartTotal", getCartTotalCount());
+            return new ModelAndView(new RedirectView("/index"));
+        }
     }
 
-    @RequestMapping(value = "/updateCart", method = RequestMethod.POST)
-    public ModelAndView updateCart(@RequestParam Map<String, String> params, Model model) {
-        int cartId = Integer.parseInt(params.get("cartId"));
-        int count = Integer.parseInt(params.get("count"));
+    @RequestMapping("/updateCart")
+    public ModelAndView updateCart(@RequestParam Map<String, String> params, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            int cartId = Integer.parseInt(params.get("cartId"));
+            int count = Integer.parseInt(params.get("count"));
 
-        System.out.println("UPDATE");
-        System.out.println("cartID: " + cartId);
+            System.out.println("UPDATE");
+            System.out.println("cartID: " + cartId);
 
-        ModelAndView modelAndView = new ModelAndView();
-        cartService.updateCart(cartId, count);
-        modelAndView.setViewName("updateCart");
-        model.addAttribute("cartTotal", getCartTotalCount());
+            ModelAndView modelAndView = new ModelAndView();
+            cartService.updateCart(cartId, count);
+            modelAndView.setViewName("updateCart");
+            model.addAttribute("cartTotal", getCartTotalCount());
 
-        return modelAndView;
+            return modelAndView;
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("cartTotal", getCartTotalCount());
+            return new ModelAndView(new RedirectView("/index"));
+        }
     }
 
     /**
