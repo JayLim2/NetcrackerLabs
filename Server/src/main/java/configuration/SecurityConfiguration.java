@@ -44,10 +44,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http.csrf().disable().
-                authorizeRequests().antMatchers("/authors", "/books", "/publishers","/admin","/delete*","/edit*","/add*").access("hasRole('ADMIN')").and().authorizeRequests()
-                .antMatchers("/user**", "/addToCart").access("hasRole('USER')").and().authorizeRequests()
+                authorizeRequests()
+                .antMatchers("/addToCart").access("hasAnyRole('USER', 'ADMIN')")
+                .antMatchers("/deleteFromCart").access("hasAnyRole('USER', 'ADMIN')")
+                .antMatchers("/updateCart").access("hasAnyRole('USER', 'ADMIN')")
+                .antMatchers("/authors", "/books", "/publishers", "/admin", "/delete*", "/edit*", "/add*").access("hasRole('ADMIN')").and().authorizeRequests()
+                .antMatchers("/").permitAll()
                 .antMatchers("/login").permitAll()
-                .antMatchers("/registration").permitAll().and().authorizeRequests()
+                .antMatchers("/registration").permitAll()
                 .antMatchers("/admin/**").hasAuthority("ADMIN").anyRequest()
                 .authenticated().and().csrf().disable().formLogin()
                 .loginPage("/login").failureUrl("/login?error=true")
@@ -63,7 +67,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) {
         web
                 .ignoring()
-                .antMatchers("/css/**");
+                .antMatchers("/css/**", "/js/**");
     }
 
 }

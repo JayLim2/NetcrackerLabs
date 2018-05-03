@@ -22,7 +22,7 @@ public class Cart implements Serializable {
     @JoinColumn(name = "\"bookid\"")
     private Book book;
 
-    @Column(name = "\"count\"")
+    @Column(name = "\"counter\"")
     private int count;
 
     public Cart() {
