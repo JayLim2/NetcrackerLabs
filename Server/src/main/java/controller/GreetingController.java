@@ -698,6 +698,22 @@ public class GreetingController {
         return modelAndView;
     }
 
+    @RequestMapping(value = "/updateCart", method = RequestMethod.POST)
+    public ModelAndView updateCart(@RequestParam Map<String, String> params, Model model) {
+        int cartId = Integer.parseInt(params.get("cartId"));
+        int count = Integer.parseInt(params.get("count"));
+
+        System.out.println("UPDATE");
+        System.out.println("cartID: " + cartId);
+
+        ModelAndView modelAndView = new ModelAndView();
+        cartService.updateCart(cartId, count);
+        modelAndView.setViewName("updateCart");
+        model.addAttribute("cartTotal", getCartTotalCount());
+
+        return modelAndView;
+    }
+
     /**
      * Получить UserID текущего пользователя
      *

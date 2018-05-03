@@ -6,6 +6,26 @@
 
     <link type="text/css" rel="stylesheet" href="../static/css/main.css" th:href="@{/css/main.css}"/>
 
+    <script type="text/javascript" th:src="@{/css/jquery-3.3.1.min.js}"></script>
+    <script type="text/javascript">
+        function sendPost(cartId) {
+            //отправляю POST запрос и получаю ответ
+            /*$.post(
+                '/updateCart',
+                    {
+                        cartId: cartIdVal,
+                        count: countVal
+                    },
+                function (data) {
+                    alert('Количество изменено.');
+                }
+            );*/
+            $.post(
+                "/updateCart",
+                $("#changeCount" + cartId).serialize()
+            );
+        }
+    </script>
 </head>
 <body>
 <!-- head -->
@@ -53,7 +73,13 @@
         <tr th:each="item : ${items}">
             <td th:text="${item.cart.cartID}"></td>
             <td th:text="${item.book.bookName}"></td>
-            <td th:text="${item.cart.count}"></td>
+            <td>
+                <form th:id="'changeCount'+${item.cart.cartID}">
+                    <input type="hidden" name="cartId" th:value="${item.cart.cartID}">
+                    <input type="number" name="count" th:value="${item.cart.count}"
+                           th:onchange="'sendPost('+${item.cart.cartID}+')'" min="0" pattern="\d*">
+                </form>
+            </td>
             <td>
                 <form action="/deleteFromCart" method="post">
                     <input type="hidden" name="sentCartId" th:value="${item.cart.cartID}">

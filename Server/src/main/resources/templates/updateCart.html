@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <link type="text/css" rel="stylesheet" href="../static/css/main.css" th:href="@{/css/main.css}"/>
+</head>
+<body>
+
+<!-- head -->
+<div class="user_header">
+    <div style="width:75%;display:inline-block;">
+        <a href="/userbooks">Книги</a> |
+        <a href="/userauthors">Авторы</a> |
+        <a href="/userpublishers">Издатели</a>
+
+        <div style="display:inline;" sec:authorize="hasRole('ADMIN')">
+            | <a class="adminPanelLink" href="/admin">Админ панель</a>
+        </div>
+
+        <div style="display:inline;" sec:authorize="!isAuthenticated()">
+            | <a href="/login">Войти в систему</a> |
+            <a href="/registration">Регистрация</a>
+        </div>
+    </div>
+
+    <div style="display:inline-block;vertical-align: middle;">
+        <div style="display:inline;" sec:authorize="isAuthenticated()">
+            logged as: <span sec:authentication="name"></span>
+            <br>
+            <a href="/usercart">Моя корзина <b th:text="'('+${cartTotal}+')'"></b></a>
+            <br>
+        </div>
+        <div style="display:inline;" sec:authorize="isAuthenticated()">
+            <a href="/logout">Выйти</a>
+        </div>
+    </div>
+</div>
+
+<!-- body -->
+<div class="user_body">
+    <h1>Обновить корзину (тест)</h1>
+
+    Что-то произошло.
+</div>
+
+<!--<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <form autocomplete="off" action="#" th:action="@{/registration}"
+                  th:object="${user}" method="post" class="form-horizontal"
+                  role="form">
+                <h2>Registration Form</h2>
+                <div class="form-group">
+                    <div class="col-sm-9">
+                        <label th:if="${#fields.hasErrors('name')}" th:errors="*{name}"
+                               class="validation-message"></label>
+                        <input type="text" th:field="*{name}" placeholder="Name"
+                               class="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-9">
+                        <label	th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"
+                                  class="validation-message"></label>
+                        <input type="text" th:field="*{lastName}"
+                               placeholder="Last Name" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-9">
+                        <input type="text" th:field="*{email}" placeholder="Email"
+                               class="form-control" /> <label
+                            th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
+                            class="validation-message"></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-9">
+                        <input type="password" th:field="*{password}"
+                               placeholder="Password" class="form-control" /> <label
+                            th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
+                            class="validation-message"></label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-9">
+                        <button type="submit" class="btn btn-primary btn-block">Register User</button>
+                    </div>
+                </div>
+
+                <span th:utext="${successMessage}"></span>
+
+
+            </form>
+        </div>
+    </div>
+</div>-->
+
+</body>
+</html>

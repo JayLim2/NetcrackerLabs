@@ -42,4 +42,11 @@ public class CartServiceImpl implements CartService {
     public void deleteFromCart(int cartId) {
         cartRepository.deleteCartById(cartId);
     }
+
+    @Override
+    public void updateCart(int cartId, int count) {
+        cartRepository.updateCartCountById(cartId, count);
+    }
+
+
 }

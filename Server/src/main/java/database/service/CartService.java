@@ -10,4 +10,6 @@ public interface CartService {
     void addToCart(int userId, int bookId);
 
     void deleteFromCart(int cartId);
+
+    void updateCart(int cartId, int count);
 }

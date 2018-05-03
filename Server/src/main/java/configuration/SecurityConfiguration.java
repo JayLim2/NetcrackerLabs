@@ -47,6 +47,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 authorizeRequests()
                 .antMatchers("/addToCart").access("hasAnyRole('USER', 'ADMIN')")
                 .antMatchers("/deleteFromCart").access("hasAnyRole('USER', 'ADMIN')")
+                .antMatchers("/updateCart").access("hasAnyRole('USER', 'ADMIN')")
                 .antMatchers("/authors", "/books", "/publishers", "/admin", "/delete*", "/edit*", "/add*").access("hasRole('ADMIN')").and().authorizeRequests()
                 .antMatchers("/").permitAll()
                 .antMatchers("/login").permitAll()

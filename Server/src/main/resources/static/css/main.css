@@ -76,6 +76,16 @@ li{
     margin-top: 10px;
     padding: 15px;
     font-size: 12pt;
+    border: 2px solid #003C7A;
+}
+
+input[type=number] {
+    width: 65px;
+    padding: 7px;
+    border: 2px solid #003C7A;
+    color: #003C7A;
+    font-size: 11pt;
+    border-radius: 4px;
 }
 
 a {
@@ -87,6 +97,11 @@ a {
 
 a:hover {
     color:#ED2D0C;
+}
+
+.adminPanelLink {
+    color: red;
+    text-decoration: underline;
 }
 
 .error {
@@ -107,6 +122,10 @@ a:hover {
     color: #216200;
     text-align: left;
     margin:10px 5px;
+}
+
+.validation-message {
+    color: red;
 }
 
 .user_header {
@@ -138,13 +157,4 @@ a:hover {
 .submitBtn:hover {
     background: #006CDB;
     cursor: pointer;
-}
-
-.validation-message {
-    color: red;
-}
-
-.adminPanelLink {
-    color: red;
-    text-decoration: underline;
 }
