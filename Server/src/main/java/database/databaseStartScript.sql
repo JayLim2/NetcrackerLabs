@@ -64,11 +64,11 @@ CREATE TABLE IF NOT EXISTS publisher (
 );
 
 CREATE TABLE IF NOT EXISTS userList (
-  "userID"      INTEGER DEFAULT nextval('auto_increment_user' :: REGCLASS)        NOT NULL,
-  "userLogin"   CHARACTER VARYING(30)                                             NOT NULL UNIQUE,
-  "userPass"    CHARACTER VARYING(230)                                            NOT NULL,
-  "cart"        INTEGER                                                              ,
-  "role"        CHARACTER VARYING(30)                                                 ,
+  "userID"    INTEGER DEFAULT nextval('auto_increment_user' :: REGCLASS)        NOT NULL,
+  "userLogin" CHARACTER VARYING(30)                                             NOT NULL UNIQUE,
+  "userPass"  CHARACTER VARYING(230)                                            NOT NULL,
+  "cart"      INTEGER,
+  "role"      CHARACTER VARYING(30),
   PRIMARY KEY ("userID")
 );
 
@@ -99,6 +99,41 @@ CREATE TABLE IF NOT EXISTS "authorBookConnector" (
   PRIMARY KEY ("authorID", "bookID")
 );
 
+-- CART
+
+-- DROP TABLE public.cart;
+
+CREATE TABLE IF NOT EXISTS cart (
+  userid   integer NOT NULL,
+  bookid   integer NOT NULL,
+  counter  integer          DEFAULT 1,
+  "cartID" integer NOT NULL DEFAULT nextval('auto_increment_cart' :: regclass),
+  CONSTRAINT "cart_PK" PRIMARY KEY ("cartID"),
+  CONSTRAINT "bookID_FK" FOREIGN KEY (bookid)
+  REFERENCES book ("bookID") MATCH SIMPLE
+  ON UPDATE NO ACTION
+  ON DELETE NO ACTION,
+  CONSTRAINT "userID_FK" FOREIGN KEY (userid)
+  REFERENCES users (user_id) MATCH SIMPLE
+  ON UPDATE NO ACTION
+  ON DELETE NO ACTION
+);
+
+ALTER TABLE cart
+  OWNER to postgres;
+
+CREATE SEQUENCE IF NOT EXISTS auto_increment_cart
+  START WITH 0
+  INCREMENT BY 1
+  MINVALUE 0
+  MAXVALUE 999999
+  CACHE 100;
+
+ALTER SEQUENCE auto_increment_cart
+OWNER TO postgres;
+
+--------------------------------
+
 ALTER TABLE author
   OWNER TO postgres;
 
@@ -115,21 +150,19 @@ ALTER TABLE publisher
   OWNER TO postgres;
 
 
-
 CREATE INDEX IF NOT EXISTS "fki_authorID"
-  ON "authorBookConnector" USING BTREE ("authorID");
+  ON "authorBookConnector"
+  USING BTREE ("authorID");
 
 
 CREATE INDEX IF NOT EXISTS "fki_bookID"
-  ON "authorBookConnector" USING BTREE ("bookID");
+  ON "authorBookConnector"
+  USING BTREE ("bookID");
 
 
 CREATE INDEX IF NOT EXISTS "fki_publisherID"
-  ON book USING BTREE ("publisherID");
-
-
-
-
+  ON book
+  USING BTREE ("publisherID");
 
 -- USERS
 
@@ -152,35 +185,33 @@ ALTER TABLE auto_increment_user
 ALTER TABLE auto_increment_role
   OWNER TO postgres;
 
-
-
 CREATE TABLE IF NOT EXISTS "role" (
-  "role_id"    INTEGER DEFAULT nextval('auto_increment_user' :: REGCLASS)  NOT NULL,
-  "role" CHARACTER VARYING(255)                                         ,
+  "role_id" INTEGER DEFAULT nextval('auto_increment_user' :: REGCLASS)  NOT NULL,
+  "role"    CHARACTER VARYING(255),
   PRIMARY KEY ("role_id")
 );
 
 CREATE TABLE IF NOT EXISTS "users" (
-  "user_id"    INTEGER DEFAULT nextval('auto_increment_user' :: REGCLASS)  NOT NULL,
-  "active" INTEGER                                         ,
-  "email"  CHARACTER VARYING(255) NOT NULL,
-  "last_name" CHARACTER VARYING(255) NOT NULL,
-  "name"      CHARACTER VARYING(255) NOT NULL,
-  "password"    CHARACTER VARYING(255) NOT NULL,
+  "user_id"   INTEGER DEFAULT nextval('auto_increment_user' :: REGCLASS)  NOT NULL,
+  "active"    INTEGER,
+  "email"     CHARACTER VARYING(255)                                      NOT NULL,
+  "last_name" CHARACTER VARYING(255)                                      NOT NULL,
+  "name"      CHARACTER VARYING(255)                                      NOT NULL,
+  "password"  CHARACTER VARYING(255)                                      NOT NULL,
   PRIMARY KEY ("user_id")
 );
 
-INSERT INTO "role" VALUES (1,'ADMIN');
-INSERT INTO "role" VALUES (2,'ROLE_ADMIN');
+INSERT INTO "role" VALUES (1, 'ADMIN');
+INSERT INTO "role" VALUES (2, 'ROLE_ADMIN');
 
 INSERT INTO "users" (active, email, last_name, name, password) VALUES ('1', 'admin@admin.ru',
                                                                        'admin', 'admin',
                                                                        '$2a$10$9H1hL/JIUm.Jj4GNGKUTXehPSdFZD9vIu1axShVE8zJM6gOVRTVRO');
 
 CREATE TABLE IF NOT EXISTS "user_role" (
-  "user_id"    INTEGER   NOT NULL,
-  "role_id" INTEGER       NOT NULL,
-  PRIMARY KEY ("user_id","role_id"),
+  "user_id" INTEGER NOT NULL,
+  "role_id" INTEGER NOT NULL,
+  PRIMARY KEY ("user_id", "role_id"),
   --
   CONSTRAINT "FK859n2jvi8ivhui0rl0esws6o"
   FOREIGN KEY ("user_id") REFERENCES "users" ("user_id"),
@@ -188,7 +219,7 @@ CREATE TABLE IF NOT EXISTS "user_role" (
   FOREIGN KEY ("role_id") REFERENCES "role" ("role_id")
 );
 
-INSERT INTO "user_role" VALUES (0,2);
+INSERT INTO "user_role" VALUES (0, 2);
 
 
 
