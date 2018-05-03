@@ -687,13 +687,13 @@ public class GreetingController {
     @RequestMapping("/addToCart")
     public ModelAndView addToCart(@RequestParam Map<String, String> params, Model model) {
         Integer bookId = Integer.parseInt(params.get("sentBookId"));
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        Integer userId = userService.findUserByEmail(name).getId();
+       // String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        //Integer userId = userService.findUserByEmail(name).getId();
 
-        System.out.println("bookID: " + bookId + "\nuserId: " + userId);
+        //System.out.println("bookID: " + bookId + "\nuserId: " + userId);
 
         ModelAndView modelAndView = new ModelAndView();
-        cartService.addToCart(userId, bookId);
+        //cartService.addToCart(userId, bookId);
         modelAndView.setViewName("addToCart");
 
         return modelAndView;
