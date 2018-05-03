@@ -102,7 +102,6 @@ CREATE TABLE IF NOT EXISTS "authorBookConnector" (
 -- CART
 
 -- DROP TABLE public.cart;
-
 CREATE TABLE IF NOT EXISTS cart (
   userid   integer NOT NULL,
   bookid   integer NOT NULL,
