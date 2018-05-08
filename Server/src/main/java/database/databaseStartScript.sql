@@ -100,8 +100,18 @@ CREATE TABLE IF NOT EXISTS "authorBookConnector" (
 );
 
 -- CART
+CREATE SEQUENCE IF NOT EXISTS auto_increment_cart
+  START WITH 0
+  INCREMENT BY 1
+  MINVALUE 0
+  MAXVALUE 999999
+  CACHE 100;
 
--- DROP TABLE public.cart;
+ALTER SEQUENCE auto_increment_cart
+OWNER TO postgres;
+
+
+--DROP TABLE public.cart;
 CREATE TABLE IF NOT EXISTS cart (
   userid   integer NOT NULL,
   bookid   integer NOT NULL,
@@ -120,16 +130,6 @@ CREATE TABLE IF NOT EXISTS cart (
 
 ALTER TABLE cart
   OWNER to postgres;
-
-CREATE SEQUENCE IF NOT EXISTS auto_increment_cart
-  START WITH 0
-  INCREMENT BY 1
-  MINVALUE 0
-  MAXVALUE 999999
-  CACHE 100;
-
-ALTER SEQUENCE auto_increment_cart
-OWNER TO postgres;
 
 --------------------------------
 
