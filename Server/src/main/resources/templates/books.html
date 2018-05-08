@@ -71,8 +71,8 @@
                 </div>
             </div>
 
-            <form name="filterBooks" action="/books" method="get">
-                 <input class = "inputField" type="text" id="filter" name="filter" style="width:88%;margin-top:10px;" >
+            <form name="filterBooks" action="/books" method="post">
+                 <input class = "inputField" type="text" id="filter" name="filter" style="width:88%;margin-top:10px;" th:value="${filter}">
                  <input class="submitBtn" type = "submit" id="searchbtn" value="Поиск" >
             </form>
             <table th:each="book : ${books}" style="width:99%;margin-top: 10px;">

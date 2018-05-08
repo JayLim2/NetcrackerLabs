@@ -61,8 +61,8 @@
 <div class="user_body">
     <h1>Список книг</h1>
     
-    <form name="filterBooks" action="/userbooks" method="get">
-        <input class = "inputField" type="text" id="filter" name="filter" style="width:88%;margin-top:10px;" >
+    <form name="filterBooks" action="/userbooks" method="post">
+        <input class = "inputField" type="text" id="filter" name="filter" style="width:88%;margin-top:10px;" th:value="${filter}">
         <input class="submitBtn" type = "submit" id="searchbtn" value="Поиск" >
     </form>
     
