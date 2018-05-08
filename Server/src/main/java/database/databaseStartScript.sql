@@ -99,38 +99,6 @@ CREATE TABLE IF NOT EXISTS "authorBookConnector" (
   PRIMARY KEY ("authorID", "bookID")
 );
 
--- CART
-
--- DROP TABLE public.cart;
-
-CREATE SEQUENCE IF NOT EXISTS auto_increment_cart
-  START WITH 0
-  INCREMENT BY 1
-  MINVALUE 0
-  MAXVALUE 999999
-  CACHE 100;
-
-ALTER SEQUENCE auto_increment_cart
-OWNER TO postgres;
-
-CREATE TABLE IF NOT EXISTS cart (
-  userid   integer NOT NULL,
-  bookid   integer NOT NULL,
-  counter  integer          DEFAULT 1,
-  "cartID" integer NOT NULL DEFAULT nextval('auto_increment_cart' :: regclass),
-  CONSTRAINT "cart_PK" PRIMARY KEY ("cartID"),
-  CONSTRAINT "bookID_FK" FOREIGN KEY (bookid)
-  REFERENCES book ("bookID") MATCH SIMPLE
-  ON UPDATE NO ACTION
-  ON DELETE NO ACTION,
-  CONSTRAINT "userID_FK" FOREIGN KEY (userid)
-  REFERENCES users (user_id) MATCH SIMPLE
-  ON UPDATE NO ACTION
-  ON DELETE NO ACTION
-);
-
-ALTER TABLE cart
-  OWNER to postgres;
 
 --------------------------------
 
@@ -201,7 +169,7 @@ CREATE TABLE IF NOT EXISTS "users" (
   PRIMARY KEY ("user_id")
 );
 
-INSERT INTO "role" VALUES (1, 'ADMIN');
+INSERT INTO "role" VALUES (1, 'ROLE_USER');
 INSERT INTO "role" VALUES (2, 'ROLE_ADMIN');
 
 INSERT INTO "users" (active, email, last_name, name, password) VALUES ('1', 'admin@admin.ru',
@@ -223,7 +191,40 @@ INSERT INTO "user_role" VALUES (0, 2);
 
 
 
+-- CART
+
+-- DROP TABLE public.cart;
+
+CREATE SEQUENCE IF NOT EXISTS auto_increment_cart
+  START WITH 0
+  INCREMENT BY 1
+  MINVALUE 0
+  MAXVALUE 999999
+  CACHE 100;
+
+ALTER SEQUENCE auto_increment_cart
+OWNER TO postgres;
+
+CREATE TABLE IF NOT EXISTS cart (
+  userid   integer NOT NULL,
+  bookid   integer NOT NULL,
+  counter  integer          DEFAULT 1,
+  "cartID" integer NOT NULL DEFAULT nextval('auto_increment_cart' :: regclass),
+  CONSTRAINT "cart_PK" PRIMARY KEY ("cartID"),
+  CONSTRAINT "bookID_FK" FOREIGN KEY (bookid)
+  REFERENCES book ("bookID") MATCH SIMPLE
+  ON UPDATE NO ACTION
+  ON DELETE NO ACTION,
+  CONSTRAINT "userID_FK" FOREIGN KEY (userid)
+  REFERENCES users (user_id) MATCH SIMPLE
+  ON UPDATE NO ACTION
+  ON DELETE NO ACTION
+);
+
+ALTER TABLE cart
+  OWNER to postgres;
 
 
 
 
+е
