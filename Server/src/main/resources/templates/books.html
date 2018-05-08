@@ -25,7 +25,7 @@
     <form id ="deleteForm" action="delete" method="POST">
         <input type="hidden" id = "hiddenDeleteField" name = "id">
     </form>
-<div class="mainBox">
+    <div class="mainBox" >
         <div class = "leftSide">
             <p> А тут менюшка</p><br>
             <ul>
@@ -71,16 +71,20 @@
                 </div>
             </div>
 
-            <table style="width:99%;">
+            <form name="filterBooks" action="/books" method="get">
+                 <input class = "inputField" type="text" id="filter" name="filter" style="width:88%;margin-top:10px;" >
+                 <input class="submitBtn" type = "submit" id="searchbtn" value="Поиск" >
+            </form>
+            <table th:each="book : ${books}" style="width:99%;margin-top: 10px;">
                 <tr>
-                    <th>ID</th>
-                    <th>Название книги</th>
-                    <th>Издатель</th>
-                    <th>Год издания</th>
-                    <th>Авторы</th>
+                    <th style = "width:5%">ID</th>
+                    <th style = "width:15%">Название книги</th>
+                    <th style = "width:15%">Издатель</th>
+                    <th style = "width:10%">Год издания</th>
+                    <th style = "width:45%">Авторы</th>
                     <th class="controlPanel" colspan = 2>Управление объектом</th>
                 </tr>
-                <tr th:each="book : ${books}">
+                <tr>
 
                     <td th:text="${book.bookID}"></td>
                     <td th:text="${book.bookName}"></td>
@@ -94,9 +98,17 @@
                         <input type="button" th:id="${book.bookID}" onclick="editBook(this.id)" value="Редактировать">
                     </td>
                 </tr>
+                <tr>
+                    <td colspan="2">Описание</td>
+                    <td colspan="5" th:text="${book.brief}"></td>
+                </tr>
             </table>
-            <input type="button" onclick="addBook()" value="Добавить">
+            <input type="button" class="submitBtn" onclick="addBook()" value="Добавить">
+            <div style="height:100px;">
+            
+            </div>
         </div>
+        
     </div>
 </body>
 </html>

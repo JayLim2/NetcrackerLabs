@@ -63,8 +63,14 @@ public class GreetingController {
     //ОСНОВНЫЕ СПИСКИ
     @GetMapping("/books")
     @PostMapping("/books")
-    public String greeting(Model model) {
-        List<Book> books = bookService.getAll();
+    public String greeting(@RequestParam(name="filter", required = false)String filter,Model model) {
+        List<Book> books = null;
+        if (filter != null){
+            books = bookService.filterBooks('%' + filter + '%');
+        }
+        else{
+            books = bookService.getAll();
+        }
         model.addAttribute("books", books);
         return "books";
     }
@@ -88,8 +94,14 @@ public class GreetingController {
     //для юзеров
     @GetMapping("/userbooks")
     @PostMapping("/userbooks")
-    public String ugreeting(Model model) {
-        List<Book> books = bookService.getAll();
+    public String ugreeting(@RequestParam(name="filter", required = false)String filter, Model model) {
+        List<Book> books = null;
+        if (filter != null){
+            books = bookService.filterBooks('%' + filter + '%');
+        }
+        else{
+            books = bookService.getAll();
+        }
         model.addAttribute("books", books);
         model.addAttribute("cartTotal", getCartTotalCount());
         return "userbooks";

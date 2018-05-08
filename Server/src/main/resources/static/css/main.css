@@ -43,6 +43,7 @@ td, th {
 .mainBox{
     height: 100%;
     margin:0;
+    overflow-y: hidden;
 }
 
 .leftSide{
@@ -70,6 +71,7 @@ li{
     padding-top: 20px;
     height: 100%;
     overflow: hidden;
+    overflow-y: auto;
 }
 
 .inputField{

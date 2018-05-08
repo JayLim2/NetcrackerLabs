@@ -19,5 +19,5 @@ public interface BookService {
 
     List<Book> getAll();
 
-
+    List<Book> filterBooks(String author);
 }

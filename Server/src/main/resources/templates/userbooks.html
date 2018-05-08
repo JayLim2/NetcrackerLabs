@@ -60,21 +60,26 @@
 <!-- body -->
 <div class="user_body">
     <h1>Список книг</h1>
-
+    
+    <form name="filterBooks" action="/userbooks" method="get">
+        <input class = "inputField" type="text" id="filter" name="filter" style="width:88%;margin-top:10px;" >
+        <input class="submitBtn" type = "submit" id="searchbtn" value="Поиск" >
+    </form>
+    
     <form name="cartForm" action="/addToCart" method="post">
         <input type="hidden" id="sentBookId" name="sentBookId" value="0">
     </form>
 
-    <table style="width:100%;margin-top:10px;">
+    <table th:each="book : ${books}" style="width:100%;margin-top:10px;">
         <tr>
-            <th>ID</th>
-            <th>Название книги</th>
-            <th>Издатель</th>
-            <th>Год издания</th>
-            <th>Авторы</th>
+            <th style = "width:5%">ID</th>
+            <th style = "width:15%">Название книги</th>
+            <th style = "width:15%">Издатель</th>
+            <th style = "width:10%">Год издания</th>
+            <th style = "width:45%">Авторы</th>
             <th></th>
         </tr>
-        <tr th:each="book : ${books}">
+        <tr >
 
             <td th:text="${book.bookID}"></td>
             <td th:text="${book.bookName}"></td>
@@ -84,6 +89,10 @@
             <td>
                 <input type="button" th:onclick="'sendToCart('+${book.bookID}+')'" value="В корзину">
             </td>
+        </tr>
+        <tr>
+            <td colspan="2">Описание</td>
+            <td colspan="4" th:text="${book.brief}"></td>
         </tr>
     </table>
 </div>
