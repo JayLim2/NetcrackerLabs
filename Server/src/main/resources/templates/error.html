@@ -2,52 +2,59 @@
 
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
-    <title>Главная страница</title>
+    <title>Ошибка сервера</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link type="text/css" rel="stylesheet" href="../static/css/main.css" th:href="@{/css/main.css}"/>
 </head>
 <body>
-    <div class="mainBox">
-        <div class = "leftSide">
-            <p> А тут менюшка</p><br>
-            <ul>
-                <li><a href="/userbooks">Тут книги</a></li>
-                <li><a href="/userauthors">А тут авторы</a></li>
-                <li><a href="/userpublishers">А тут издатели</a></li>
-                <li sec:authorize = "hasRole('ADMIN')">
-                <a href="/admin">А тут админ панель</a>
-                </li>
-                <li sec:authorize = "!isAuthenticated()">
-                <a href="/login">А тут можно залогиниться</a>    
-                </li>
-                <li sec:authorize = "isAuthenticated()">
-                    logged as: <span sec:authentication = "name"></span> 
-                </li>
-                <li sec:authorize = "isAuthenticated()">
-                    <a href="/logout">разлогиниться</a>
-                </li>
-            </ul>
-        </div>
-        <div class = "rightSide">
-            <div class = "header">
-                <p>Тут будет тобешь заголовок</p>
-            </div>
-            <div th:switch="${status}">
-                <div th:case="'403'" class="error">
-                    У вас нет прав на доступ к этому контенту
-                </div>
-                <div th:case="'400'" class="error">
-                    Ошибка передачи параметров
-                </div>
-                <div th:case="'404'" class="error">
-                    Такой страницы нет
-                </div>
-                <div th:case="'500'" class="error">
-                    Необработанное исключение сервера
-                </div>
-            </div>
+<!-- head -->
+<div class="user_header">
+    <div style="width:75%;display:inline-block;">
+        <a href="/userbooks">Книги</a> |
+        <a href="/userauthors">Авторы</a> |
+        <a href="/userpublishers">Издатели</a>
+
+        <div style="display:inline;" sec:authorize="hasRole('ADMIN')">
+            | <a class="adminPanelLink" href="/admin">Админ панель</a>
         </div>
 
+        <div style="display:inline;" sec:authorize="!isAuthenticated()">
+            | <a href="/login">Войти в систему</a> |
+            <a href="/registration">Регистрация</a>
+        </div>
     </div>
+
+    <div style="display:inline-block;vertical-align: middle;">
+        <div style="display:inline;" sec:authorize="isAuthenticated()">
+            logged as: <span sec:authentication="name"></span>
+            <br>
+            <a href="/usercart">Моя корзина <b th:text="'('+${cartTotal}+')'"></b></a>
+            <br>
+        </div>
+        <div style="display:inline;" sec:authorize="isAuthenticated()">
+            <a href="/logout">Выйти</a>
+        </div>
+    </div>
+</div>
+
+<!-- body -->
+<div class="user_body">
+    <h1>Произошла ошибка</h1>
+
+    <div th:switch="${status}">
+        <div th:case="'403'" class="error">
+            У вас нет прав на доступ к этому контенту
+        </div>
+        <div th:case="'400'" class="error">
+            Ошибка передачи параметров
+        </div>
+        <div th:case="'404'" class="error">
+            Такой страницы нет
+        </div>
+        <div th:case="'500'" class="error">
+            Необработанное исключение сервера
+        </div>
+    </div>
+</div>
 </body>
 </html>
