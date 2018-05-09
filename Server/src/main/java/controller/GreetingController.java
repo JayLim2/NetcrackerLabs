@@ -688,16 +688,18 @@ public class GreetingController {
             System.out.println("ADD");
             System.out.println("bookID: " + bookId + "\nuserId: " + userId);
 
-            ModelAndView modelAndView = new ModelAndView();
+            //ModelAndView modelAndView = new ModelAndView();
             cartService.addToCart(userId, bookId);
-            modelAndView.setViewName("addToCart");
-            model.addAttribute("cartTotal", getCartTotalCount());
+            //modelAndView.setViewName("addToCart");
+            //model.addAttribute("cartTotal", getCartTotalCount());
 
-            return modelAndView;
+            //return modelAndView;
         } catch (Exception ex) {
-            redirectAttributes.addFlashAttribute("cartTotal", getCartTotalCount());
-            return new ModelAndView(new RedirectView("/index"));
+            //redirectAttributes.addFlashAttribute("cartTotal", getCartTotalCount());
+            //return new ModelAndView(new RedirectView("/index"));
         }
+        model.addAttribute("cartTotal", getCartTotalCount());
+        return new ModelAndView(new RedirectView("/userbooks"));
     }
 
     @RequestMapping("/deleteFromCart")
@@ -708,16 +710,18 @@ public class GreetingController {
             System.out.println("DELETE");
             System.out.println("cartID: " + cartId);
 
-            ModelAndView modelAndView = new ModelAndView();
+            //ModelAndView modelAndView = new ModelAndView();
             cartService.deleteFromCart(cartId);
-            modelAndView.setViewName("deleteFromCart");
-            model.addAttribute("cartTotal", getCartTotalCount());
+            //modelAndView.setViewName("deleteFromCart");
+            //model.addAttribute("cartTotal", getCartTotalCount());
 
-            return modelAndView;
+            //return modelAndView;
         } catch (Exception ex) {
-            redirectAttributes.addFlashAttribute("cartTotal", getCartTotalCount());
-            return new ModelAndView(new RedirectView("/index"));
+            //redirectAttributes.addFlashAttribute("cartTotal", getCartTotalCount());
+            //return new ModelAndView(new RedirectView("/index"));
         }
+        model.addAttribute("cartTotal", getCartTotalCount());
+        return new ModelAndView(new RedirectView("/usercart"));
     }
 
     @RequestMapping("/updateCart")
@@ -737,7 +741,7 @@ public class GreetingController {
             return modelAndView;
         } catch (Exception ex) {
             redirectAttributes.addFlashAttribute("cartTotal", getCartTotalCount());
-            return new ModelAndView(new RedirectView("/index"));
+            return new ModelAndView(new RedirectView("/usercart"));
         }
     }
 
