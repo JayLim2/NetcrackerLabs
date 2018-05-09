@@ -24,7 +24,7 @@ public class User {
     @NotEmpty(message = "* Email не может быть пустым")
     private String email;
     @Column(name = "\"password\"")
-    @Length(min = 5, max = 20, message = "* Ваш пароль должен быть длиной не менее 5 символов и не более 20")
+    @Length(min = 5, message = "* Ваш пароль должен быть длиной не менее 5 символов и не более 20")
     @NotEmpty(message = "* Пароль не может быть пустым")
     @Transient
     private String password;

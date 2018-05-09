@@ -625,6 +625,11 @@ public class GreetingController {
                     .rejectValue("email", "error.user",
                             "* Пользователь с таким Email уже существует.");
         }
+        if (user.getPassword().length() > 20){
+            bindingResult
+                    .rejectValue("password", "error.user",
+                            "* Ваш пароль должен быть длиной не менее 5 символов и не более 20");
+        }
         if (bindingResult.hasErrors()) {
             modelAndView.setViewName("registration");
         } else {
