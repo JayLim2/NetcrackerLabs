@@ -60,16 +60,22 @@
                 <input type="hidden" id = "id" name = "id" th:value = "${bookID}">
                 <input class = "inputField" type="text" id = "booktitle" name = "booktitle" th:value = "${bookName}"><br>
                 <input class = "inputField" type="text" id = "publishYear" name = "publishYear" th:value="${publishYear}"><br>
-                <input class = "inputField" type="text" id = "brief" name = "brief" th:value = "${brief}"><br>
+                
                 <select class = "inputField" name = "publisher">
                     <option th:each = "publisher : ${publishers}" th:value="${publisher.publisherID}" th:label ="${publisher.publisherName}" th:selected='${publisher.equals(bpublisher)}'></option>
                 </select><br>
                 <select class = "inputField" name = "author" multiple>
                     <option th:each = "author : ${authors}" th:value="${author.authorID}" th:label ="${author.authorName}" th:selected="${bauthors != null} ? ${#lists.contains(bauthors, author)}"></option>
                 </select><br>
-                <input type="submit" value="submit">
+                <textarea class = "inputField" form="editForm" id = "brief" name = "brief" th:text = "${brief}" cols="50" rows="6">
+                </textarea><br>
+                <input class="submitBtn" type="submit" value="submit"><br>
             </form>
+            <div style="height:100px;">
+            
+            </div>
         </div>
+        
     </div>
     
 </body>
