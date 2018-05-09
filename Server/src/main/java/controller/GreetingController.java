@@ -623,13 +623,13 @@ public class GreetingController {
         if (userExists != null) {
             bindingResult
                     .rejectValue("email", "error.user",
-                            "There is already a user registered with the email provided");
+                            "* Пользователь с таким Email уже существует.");
         }
         if (bindingResult.hasErrors()) {
             modelAndView.setViewName("registration");
         } else {
             userService.saveUser(user);
-            modelAndView.addObject("successMessage", "User has been registered successfully");
+            modelAndView.addObject("successMessage", "Вы успешно зарегистрированы.");
             modelAndView.addObject("user", new User());
             modelAndView.setViewName("registration");
         }

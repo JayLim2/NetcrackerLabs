@@ -19,19 +19,22 @@ public class User {
     @Column(name = "\"user_id\"")
     private int id;
     @Column(name = "\"email\"")
-    @Email(message = "*Please provide a valid Email")
-    @NotEmpty(message = "*Please provide an email")
+    @Length(max = 50, message = "* Ваш Email не должен быть длиннее 50 символов")
+    @Email(message = "* Введите корректный Email")
+    @NotEmpty(message = "* Email не может быть пустым")
     private String email;
     @Column(name = "\"password\"")
-    @Length(min = 5, message = "*Your password must have at least 5 characters")
-    @NotEmpty(message = "*Please provide your password")
+    @Length(min = 5, max = 20, message = "* Ваш пароль должен быть длиной не менее 5 символов и не более 20")
+    @NotEmpty(message = "* Пароль не может быть пустым")
     @Transient
     private String password;
     @Column(name = "\"name\"")
-    @NotEmpty(message = "*Please provide your name")
+    @Length(max = 50, message = "*Имя не должно быть длиннее 50 символов")
+    @NotEmpty(message = "* Введите имя")
     private String name;
     @Column(name = "\"last_name\"")
-    @NotEmpty(message = "*Please provide your last name")
+    @Length(max = 50, message = "* Фамилия не должна быть длиннее 50 символов")
+    @NotEmpty(message = "* Введите фамилию")
     private String lastName;
     @Column(name = "\"active\"")
     private int active;
