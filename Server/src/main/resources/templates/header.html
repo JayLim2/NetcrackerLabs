@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Header</title>
+</head>
+<body>
+<!-- head -->
+<div class="user_header" th:fragment="header_block">
+    <div style="width:75%;display:inline-block;">
+        <a href="/books">Книги</a> |
+        <a href="/authors">Авторы</a> |
+        <a href="/publishers">Издатели</a>
+
+        <!--<div style="display:inline;" sec:authorize="hasRole('ADMIN')">
+            | <a class="adminPanelLink" href="/admin">Админ панель</a>
+        </div>-->
+
+        <div style="display:inline;" sec:authorize="!isAuthenticated()">
+            | <a href="/login">Войти в систему</a> |
+            <a href="/registration">Регистрация</a>
+        </div>
+    </div>
+
+    <div style="display:inline-block;vertical-align: middle;">
+        <div style="display:inline;" sec:authorize="isAuthenticated()">
+            logged as: <span sec:authentication="name"></span>
+            <br>
+            <a href="/cart">Моя корзина <b th:text="'('+${cartTotal}+')'"></b></a>
+            <br>
+        </div>
+        <div style="display:inline;" sec:authorize="isAuthenticated()">
+            <a href="/logout">Выйти</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

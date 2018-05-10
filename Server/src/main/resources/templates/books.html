@@ -8,107 +8,103 @@
             document.getElementById("hiddenDeleteField").value = x;
             document.getElementById("deleteForm").submit();
         }
+
         function editBook(x) {
             document.getElementById("hiddenDeleteField").value = x;
             document.getElementById("deleteForm").action = "edit";
             document.getElementById("deleteForm").submit();
         }
+
         function addBook() {
             document.getElementById("deleteForm").action = "add";
             document.getElementById("deleteForm").submit();
+        }
+
+        function sendToCart(bookId) {
+            document.getElementById("sentBookId").value = bookId;
+            document.forms["cartForm"].submit();
         }
     </script>
     <link type="text/css" rel="stylesheet" href="../static/css/main.css" th:href="@{/css/main.css}"/>
 
 </head>
 <body>
-    <form id ="deleteForm" action="delete" method="POST">
-        <input type="hidden" id = "hiddenDeleteField" name = "id">
+<!-- head -->
+<div th:replace="header :: header_block"></div>
+
+<!-- body -->
+<form id="deleteForm" action="delete" method="POST">
+    <input type="hidden" id="hiddenDeleteField" name="id">
+</form>
+
+<div class="user_body">
+    <h1>Список книг</h1>
+
+    <form name="cartForm" action="/addToCart" method="post">
+        <input type="hidden" id="sentBookId" name="sentBookId" value="0">
     </form>
-    <div class="mainBox" >
-        <div class = "leftSide">
-            <p> А тут менюшка</p><br>
-            <ul>
-                <li><a href="/books">Тут книги</a></li>
-                <li><a href="/authors">А тут авторы</a></li>
-                <li><a href="/publishers">А тут издатели</a></li>
-                <li>
-                    <a href="/index">А тут юзер часть</a>
-                </li>
-                <li sec:authorize = "isAuthenticated()">
-                    logged as: <span sec:authentication = "name"></span>
-                </li>
-                <li sec:authorize = "isAuthenticated()">
-                    <a href="/logout">разлогиниться</a>
-                </li>   
-            </ul>
+
+    <form name="filterBooks" action="/books" method="post">
+        <input class="inputField" type="text" id="filter" name="filter" style="width:88%;margin-top:10px;"
+               th:value="${filter}">
+        <input class="submitBtn" type="submit" id="searchbtn" value="Поиск">
+    </form>
+
+    <div th:switch="${submitAddStatus}">
+        <div th:case="'0'" class="success">
+            Книга добавлена.
         </div>
-        <div class = "rightSide">
-            <div class = "header">
-                <p>Тут будет тобешь заголовок</p>
-            </div>
-            <h1>Список всех книг</h1>
-
-            <div th:switch="${submitAddStatus}">
-                <div th:case="'0'" class="success">
-                    Книга добавлена.
-                </div>
-            </div>
-            <div th:switch="${submitEditStatus}">
-                <div th:case="'0'" class="success">
-                    Книга изменена.
-                </div>
-            </div>
-            <div th:switch="${submitDelStatus}">
-                <div th:case="'0'" class="success">
-                    Книга удалена.
-                </div>
-                <div th:case="'1'" class="error">
-                    Невозможно удалить книгу.
-                </div>
-                <div th:case="'2'" class="error">
-                    Такой книги не существует.
-                </div>
-            </div>
-
-            <form name="filterBooks" action="/books" method="post">
-                 <input class = "inputField" type="text" id="filter" name="filter" style="width:88%;margin-top:10px;" th:value="${filter}">
-                 <input class="submitBtn" type = "submit" id="searchbtn" value="Поиск" >
-            </form>
-            <table th:each="book : ${books}" style="width:99%;margin-top: 10px;">
-                <tr>
-                    <th style = "width:5%">ID</th>
-                    <th style = "width:15%">Название книги</th>
-                    <th style = "width:15%">Издатель</th>
-                    <th style = "width:10%">Год издания</th>
-                    <th style = "width:45%">Авторы</th>
-                    <th class="controlPanel" colspan = 2>Управление объектом</th>
-                </tr>
-                <tr>
-
-                    <td th:text="${book.bookID}"></td>
-                    <td th:text="${book.bookName}"></td>
-                    <td th:text="${book.publisher.publisherName}"></td>
-                    <td th:text="${book.publishYear}"></td>
-                    <td th:text="${#strings.listJoin(book.authors,',')}"></td>
-                    <td class="controlPanel">
-                        <input type="button" th:id="${book.bookID}" onclick="deleteBook(this.id)" value="Удалить">
-                    </td>
-                    <td class="controlPanel">
-                        <input type="button" th:id="${book.bookID}" onclick="editBook(this.id)" value="Редактировать">
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">Описание</td>
-                    <td colspan="5" th:text="${book.brief}"></td>
-                </tr>
-            </table>
-            <input type="button" class="submitBtn" onclick="addBook()" value="Добавить">
-            <div style="height:100px;">
-            
-            </div>
-        </div>
-        
     </div>
+    <div th:switch="${submitEditStatus}">
+        <div th:case="'0'" class="success">
+            Книга изменена.
+        </div>
+    </div>
+    <div th:switch="${submitDelStatus}">
+        <div th:case="'0'" class="success">
+            Книга удалена.
+        </div>
+        <div th:case="'1'" class="error">
+            Невозможно удалить книгу.
+        </div>
+        <div th:case="'2'" class="error">
+            Такой книги не существует.
+        </div>
+    </div>
+
+    <input type="button" class="submitBtn" onclick="addBook()" value="Добавить книгу" sec:authorize="hasRole('ADMIN')">
+    <table th:each="book : ${books}" style="width:99%;margin-top: 10px;">
+        <tr>
+            <th style="width:5%">ID</th>
+            <th style="width:15%">Название книги</th>
+            <th style="width:15%">Издатель</th>
+            <th style="width:10%">Год издания</th>
+            <th style="width:45%">Авторы</th>
+            <th></th>
+            <th class="controlPanel" colspan="2" sec:authorize="hasRole('ADMIN')">Управление объектом</th>
+        </tr>
+        <tr>
+            <td th:text="${book.bookID}"></td>
+            <td th:text="${book.bookName}"></td>
+            <td th:text="${book.publisher.publisherName}"></td>
+            <td th:text="${book.publishYear}"></td>
+            <td th:text="${#strings.listJoin(book.authors,',')}"></td>
+            <td>
+                <input type="button" th:onclick="'sendToCart('+${book.bookID}+')'" value="В корзину">
+            </td>
+            <td class="controlPanel" sec:authorize="hasRole('ADMIN')">
+                <input type="button" th:id="${book.bookID}" onclick="deleteBook(this.id)" value="Удалить">
+            </td>
+            <td class="controlPanel" sec:authorize="hasRole('ADMIN')">
+                <input type="button" th:id="${book.bookID}" onclick="editBook(this.id)" value="Редактировать">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">Описание</td>
+            <td colspan="6" th:text="${book.brief}"></td>
+        </tr>
+    </table>
+</div>
+
 </body>
 </html>

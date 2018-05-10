@@ -62,17 +62,17 @@ public class GreetingController {
 
     //ОСНОВНЫЕ СПИСКИ
     @RequestMapping("/books")
-    public String greeting(@RequestParam(name="filter", required = false)String filter,Model model) {
+    public String greeting(@RequestParam(name = "filter", required = false) String filter, Model model) {
         List<Book> books = null;
-        if (filter != null){
+        if (filter != null) {
             String filter1 = filter.trim();
             books = bookService.filterBooks('%' + filter1 + '%');
             model.addAttribute("filter", filter1);
-        }
-        else{
+        } else {
             books = bookService.getAll();
         }
         model.addAttribute("books", books);
+        model.addAttribute("cartTotal", getCartTotalCount());
         return "books";
     }
 
@@ -81,6 +81,7 @@ public class GreetingController {
     public String authors(Model model) {
         List<Author> authors = authorService.getAll();
         model.addAttribute("authors", authors);
+        model.addAttribute("cartTotal", getCartTotalCount());
         return "authors";
     }
 
@@ -89,11 +90,12 @@ public class GreetingController {
     public String publishers(Model model) {
         List<Publisher> publishers = publisherService.getAll();
         model.addAttribute("publishers", publishers);
+        model.addAttribute("cartTotal", getCartTotalCount());
         return "publishers";
     }
 
     //для юзеров
-    @RequestMapping("/userbooks")
+   /* @RequestMapping("/userbooks")
     public String ugreeting(@RequestParam(name="filter", required = false)String filter, Model model) {
         List<Book> books = null;
         if (filter != null){
@@ -108,7 +110,6 @@ public class GreetingController {
         model.addAttribute("cartTotal", getCartTotalCount());
         return "userbooks";
     }
-
 
     @GetMapping("/userauthors")
     @PostMapping("/userauthors")
@@ -126,11 +127,12 @@ public class GreetingController {
         model.addAttribute("publishers", publishers);
         model.addAttribute("cartTotal", getCartTotalCount());
         return "userpublishers";
-    }
+    }*/
 
     //АВТОРЫ
     @RequestMapping("/addAuthor")
     public String addAuthor(Model model) {
+        model.addAttribute("cartTotal", getCartTotalCount());
         return "addAuthor";
     }
 
@@ -166,6 +168,8 @@ public class GreetingController {
         redirectAttributes.addFlashAttribute("submitAddStatus", status);
         redirectAttributes.addFlashAttribute("authors", authorService.getAll());
 
+        model.addAttribute("cartTotal", getCartTotalCount());
+
         return new ModelAndView(new RedirectView("/authors"));
     }
 
@@ -176,10 +180,12 @@ public class GreetingController {
             Author a = authorService.getByID(Integer.parseInt(id));
             model.addAttribute("authorID", a.getAuthorID());
             model.addAttribute("authorName", a.getAuthorName());
+            model.addAttribute("cartTotal", getCartTotalCount());
         } catch (NullPointerException ex) {
             System.out.println("Такого автора не существует.");
             status = 2;
             redirectAttributes.addFlashAttribute("submitDelStatus", status);
+            redirectAttributes.addFlashAttribute("cartTotal", getCartTotalCount());
             return "redirect:/authors";
         }
         return "editAuthor";
@@ -216,10 +222,12 @@ public class GreetingController {
             model.addAttribute("submitEditStatus", status);
             model.addAttribute("authorID", Integer.parseInt(params.get("id")));
             model.addAttribute("authorName", params.get("authorname"));
+            model.addAttribute("cartTotal", getCartTotalCount());
             return new ModelAndView("/editAuthor");
         }
         redirectAttributes.addFlashAttribute("submitEditStatus", status);
         redirectAttributes.addFlashAttribute("authors", authorService.getAll());
+        redirectAttributes.addFlashAttribute("cartTotal", getCartTotalCount());
         return new ModelAndView(new RedirectView("/authors"));
     }
 
@@ -249,19 +257,20 @@ public class GreetingController {
         }
         redirectAttributes.addFlashAttribute("authors", authorService.getAll());
         redirectAttributes.addFlashAttribute("submitDelStatus", status);
+        redirectAttributes.addFlashAttribute("cartTotal", getCartTotalCount());
         return new ModelAndView(new RedirectView("/authors"));
     }
 
     //ИЗДАТЕЛИ
     @RequestMapping("/addPublisher")
     public String addPublisher(Model model) {
+        model.addAttribute("cartTotal", getCartTotalCount());
         return "addPublisher";
     }
 
     @PostMapping("/submitAddPublisher")
     public ModelAndView submitAddPublisher(@RequestParam Map<String, String> params, Model model,
                                            RedirectAttributes redirectAttributes) {
-
         byte status = 0;
         try {
             Publisher p = new Publisher();
@@ -287,13 +296,13 @@ public class GreetingController {
         if (status != 0) {
             model.addAttribute("submitAddStatus", status);
             model.addAttribute("publisherName", params.get("publishername"));
+            model.addAttribute("cartTotal", getCartTotalCount());
             return new ModelAndView("/addPublisher");
-
-
         }
         List<Publisher> publishers = publisherService.getAll();
         redirectAttributes.addFlashAttribute("submitAddStatus", status);
         redirectAttributes.addFlashAttribute("publishers", publishers);
+        redirectAttributes.addFlashAttribute("cartTotal", getCartTotalCount());
         return new ModelAndView(new RedirectView("/publishers"));
     }
 
@@ -303,8 +312,10 @@ public class GreetingController {
             Publisher p = publisherService.getByID(Integer.parseInt(id));
             model.addAttribute("publisherID", p.getPublisherID());
             model.addAttribute("publisherName", p.getPublisherName());
+            model.addAttribute("cartTotal", getCartTotalCount());
         } catch (NullPointerException e) {
             redirectAttributes.addFlashAttribute("submitDelStatus", 2);
+            redirectAttributes.addFlashAttribute("cartTotal", getCartTotalCount());
             return "redirect:/publishers";
         }
 
@@ -339,24 +350,18 @@ public class GreetingController {
             status = 4;
         }
 
-
         if (status != 0) {
             model.addAttribute("submitEditStatus", status);
             model.addAttribute("publisherID", Integer.parseInt(params.get("id")));
             model.addAttribute("publisherName", params.get("publishername"));
-
+            model.addAttribute("cartTotal", getCartTotalCount());
             return new ModelAndView("/editPublisher");
-
-
         }
         redirectAttributes.addFlashAttribute("submitEditStatus", status);
         List<Publisher> publishers = publisherService.getAll();
-
         redirectAttributes.addFlashAttribute("publishers", publishers);
-
-
+        redirectAttributes.addFlashAttribute("cartTotal", getCartTotalCount());
         return new ModelAndView(new RedirectView("/publishers"));
-
     }
 
     @RequestMapping("/deletePublisher")
@@ -381,6 +386,7 @@ public class GreetingController {
         List<Publisher> publishers = publisherService.getAll();
         redirectAttributes.addFlashAttribute("publishers", publishers);
         redirectAttributes.addFlashAttribute("submitDelStatus", status);
+        redirectAttributes.addFlashAttribute("cartTotal", getCartTotalCount());
         return new ModelAndView(new RedirectView("/publishers"));
 
     }
@@ -396,6 +402,7 @@ public class GreetingController {
             List<Author> a = authorService.getAll();
             model.addAttribute("authors", a);
         }
+        model.addAttribute("cartTotal", getCartTotalCount());
         return "add";
     }
 
@@ -463,9 +470,9 @@ public class GreetingController {
             return onWrongSubmitAddBook(params, model, status, redirectAttributes);
         }
         List<Book> books = bookService.getAll();
-
         redirectAttributes.addFlashAttribute("books", books);
         redirectAttributes.addFlashAttribute("submitAddStatus", status);
+        redirectAttributes.addFlashAttribute("cartTotal", getCartTotalCount());
         return new ModelAndView(new RedirectView("/books"));
     }
 
@@ -488,6 +495,8 @@ public class GreetingController {
 
         model.addAttribute("bauthors", bauthors);
         model.addAttribute("submitAddStatus", status);
+
+        model.addAttribute("cartTotal", getCartTotalCount());
         return new ModelAndView("/add");
     }
 
@@ -505,8 +514,10 @@ public class GreetingController {
             List<Author> a = authorService.getAll();
             model.addAttribute("publishers", p);
             model.addAttribute("authors", a);
+            model.addAttribute("cartTotal", getCartTotalCount());
         } catch (NullPointerException e) {
             redirectAttributes.addFlashAttribute("submitDelStatus", 2);
+            redirectAttributes.addFlashAttribute("cartTotal", getCartTotalCount());
             return "redirect:/books";
         }
         return "edit";
@@ -550,9 +561,9 @@ public class GreetingController {
         if (status != 0) {
             return onWrongSubmitEditBook(params, model, status, redirectAttributes);
         }
-
         redirectAttributes.addFlashAttribute("books", bookService.getAll());
         redirectAttributes.addFlashAttribute("submitEditStatus", status);
+        redirectAttributes.addFlashAttribute("cartTotal", getCartTotalCount());
         return new ModelAndView(new RedirectView("/books"));
     }
 
@@ -573,13 +584,11 @@ public class GreetingController {
                 bauthors.add(authorService.getByID(Integer.parseInt(bauthors_s.get(i))));
             }
         model.addAttribute("authors", authorService.getAll());
-
         model.addAttribute("bauthors", bauthors);
-
-        List<Publisher> p = publisherService.getAll();
-        List<Author> a = authorService.getAll();
-
+        //List<Publisher> p = publisherService.getAll();
+        //List<Author> a = authorService.getAll();
         model.addAttribute("submitEditStatus", status);
+        model.addAttribute("cartTotal", getCartTotalCount());
         return new ModelAndView("/edit");
     }
 
@@ -603,9 +612,9 @@ public class GreetingController {
             status = 2;
         }
         List<Book> books = bookService.getAll();
-
         redirectAttributes.addFlashAttribute("books", books);
         redirectAttributes.addFlashAttribute("submitDelStatus", status);
+        redirectAttributes.addFlashAttribute("cartTotal", getCartTotalCount());
         return new ModelAndView(new RedirectView("/books"));
     }
 
@@ -627,7 +636,7 @@ public class GreetingController {
                     .rejectValue("email", "error.user",
                             "* Пользователь с таким Email уже существует.");
         }
-        if (user.getPassword().length() > 20){
+        if (user.getPassword().length() > 20) {
             bindingResult
                     .rejectValue("password", "error.user",
                             "* Ваш пароль должен быть длиной не менее 5 символов и не более 20");
@@ -645,18 +654,18 @@ public class GreetingController {
 
     //------------------ КОРЗИНА -----------------------
 
-    @GetMapping("/usercart")
-    @PostMapping("/usercart")
+    @GetMapping("/cart")
+    @PostMapping("/cart")
     public String ucart(Model model) {
         List<Cart> carts = cartService.getCartByUserId(getCurrentUserId());
-        List<Book> books = new ArrayList<>();
+        //List<Book> books = new ArrayList<>();
         List<CartItem> cartItems = new ArrayList<>();
         for (Cart cart : carts) {
             cartItems.add(new CartItem(cart, bookService.getByID(cart.getBook().getBookID())));
         }
         model.addAttribute("items", cartItems);
         model.addAttribute("cartTotal", getCartTotalCount());
-        return "usercart";
+        return "cart";
     }
 
     //Вспомогательный класс для вывода корзины
@@ -706,7 +715,7 @@ public class GreetingController {
             //return new ModelAndView(new RedirectView("/index"));
         }
         model.addAttribute("cartTotal", getCartTotalCount());
-        return new ModelAndView(new RedirectView("/userbooks"));
+        return new ModelAndView(new RedirectView("/books"));
     }
 
     @RequestMapping("/deleteFromCart")
@@ -728,7 +737,7 @@ public class GreetingController {
             //return new ModelAndView(new RedirectView("/index"));
         }
         model.addAttribute("cartTotal", getCartTotalCount());
-        return new ModelAndView(new RedirectView("/usercart"));
+        return new ModelAndView(new RedirectView("/cart"));
     }
 
     @RequestMapping("/updateCart")
@@ -748,7 +757,7 @@ public class GreetingController {
             return modelAndView;
         } catch (Exception ex) {
             redirectAttributes.addFlashAttribute("cartTotal", getCartTotalCount());
-            return new ModelAndView(new RedirectView("/usercart"));
+            return new ModelAndView(new RedirectView("/cart"));
         }
     }
 

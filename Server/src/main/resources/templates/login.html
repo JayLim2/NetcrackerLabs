@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Список книг</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -9,34 +9,7 @@
 </head>
 <body>
 <!-- head -->
-<div class="user_header">
-    <div style="width:75%;display:inline-block;">
-        <a href="/userbooks">Книги</a> |
-        <a href="/userauthors">Авторы</a> |
-        <a href="/userpublishers">Издатели</a>
-
-        <div style="display:inline;" sec:authorize="hasRole('ADMIN')">
-            | <a class="adminPanelLink" href="/admin">Админ панель</a>
-        </div>
-
-        <div style="display:inline;" sec:authorize="!isAuthenticated()">
-            | <a href="/login">Войти в систему</a> |
-            <a href="/registration">Регистрация</a>
-        </div>
-    </div>
-
-    <div style="display:inline-block;vertical-align: middle;">
-        <div style="display:inline;" sec:authorize="isAuthenticated()">
-            logged as: <span sec:authentication="name"></span>
-            <br>
-            <a href="/usercart">Моя корзина <b th:text="'('+${cartTotal}+')'"></b></a>
-            <br>
-        </div>
-        <div style="display:inline;" sec:authorize="isAuthenticated()">
-            <a href="/logout">Выйти</a>
-        </div>
-    </div>
-</div>
+<div th:replace="header :: header_block"></div>
 
 <!-- body -->
 <div class="user_body">

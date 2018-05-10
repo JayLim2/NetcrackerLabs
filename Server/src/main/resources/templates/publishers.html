@@ -22,6 +22,64 @@
 
 </head>
 <body>
+<!-- head -->
+<div th:replace="header :: header_block"></div>
+
+<!-- body -->
+<form id="deleteForm" action="deletePublisher" method="POST">
+    <input type="hidden" id="hiddenDeleteField" name="id">
+</form>
+
+<div class="user_body">
+    <h1>Список издателей</h1>
+
+    <div th:switch="${submitAddStatus}">
+        <div th:case="'0'" class="success">
+            Издатель добавлен
+        </div>
+    </div>
+    <div th:switch="${submitEditStatus}">
+        <div th:case="'0'" class="success">
+            Издатель изменен.
+        </div>
+    </div>
+    <div th:switch="${submitDelStatus}">
+        <div th:case="'0'" class="success">
+            Издатель удален.
+        </div>
+        <div th:case="'1'" class="error">
+            Невозможно удалить издателя.
+        </div>
+        <div th:case="'2'" class="error">
+            Такого издателя не существует больше.
+        </div>
+    </div>
+
+    <input type="button" class="submitBtn" onclick="addPublisher()" value="Добавить издателя"
+           sec:authorize="hasRole('ADMIN')">
+    <table style="width:99%;">
+        <tr>
+            <th>ID</th>
+            <th>Издатель</th>
+            <th class="controlPanel" colspan="2" sec:authorize="hasRole('ADMIN')">Управление объектом</th>
+        </tr>
+        <tr th:each="publisher : ${publishers}">
+
+            <td th:text="${publisher.publisherID}"></td>
+            <td th:text="${publisher.publisherName}"></td>
+            <td class="controlPanel" sec:authorize="hasRole('ADMIN')">
+                <input type="button" th:id="${publisher.publisherID}" onclick="deletePublisher(this.id)"
+                       value="Удалить">
+            </td>
+            <td class="controlPanel" sec:authorize="hasRole('ADMIN')">
+                <input type="button" th:id="${publisher.publisherID}" onclick="editPublisher(this.id)"
+                       value="Редактировать">
+            </td>
+        </tr>
+    </table>
+</div>
+
+<!--
     <form id ="deleteForm" action="deletePublisher" method="POST">
         <input type="hidden" id = "hiddenDeleteField" name = "id">
     </form>
@@ -94,6 +152,6 @@
             
             </div>
         </div>
-    </div>
+    </div>-->
 </body>
 </html>

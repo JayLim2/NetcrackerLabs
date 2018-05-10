@@ -9,6 +9,33 @@
 
 </head>
 <body>
+<!-- head -->
+<div th:replace="header :: header_block"></div>
+
+<!-- body -->
+<div class="user_body">
+    <div th:switch="${submitEditStatus}">
+        <div th:case="'1'" class="error">
+            Такой автор уже существует, либо нарушены ограничения БД.
+        </div>
+        <div th:case="'2'" class="error">
+            Такого автора не существует больше.
+        </div>
+        <div th:case="'3'" class="error">
+            Имя автора не может быть пустым.
+        </div>
+        <div th:case="'4'" class="error">
+            Неизвестная ошибка сервера.
+        </div>
+    </div>
+
+    <form id="editForm" action="submitEditAuthor" method="POST">
+        <input type="hidden" id="id" name="id" th:value="${authorID}">
+        <input class="inputField" type="text" id="authorname" name="authorname" th:value="${authorName}"><br>
+        <input class="submitBtn" type="submit" value="Изменить">
+    </form>
+</div>
+<!--
 <div class="mainBox">
     <div class="leftSide">
         <p> А тут менюшка</p><br>
@@ -57,6 +84,6 @@
             </div>
     </div>
 </div>
-
+-->
 </body>
 </html>

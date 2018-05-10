@@ -9,6 +9,53 @@
 
 </head>
 <body>
+<!-- head -->
+<div th:replace="header :: header_block"></div>
+
+<!-- body -->
+<div class="user_body">
+    <div th:switch="${submitAddStatus}">
+        <div th:case="'1'" class="error">
+            Такая книга уже существует, либо нарушены ограничения БД.
+        </div>
+        <div th:case="'2'" class="error">
+            Год должен быть не менее 0 и не более текущего.
+        </div>
+        <div th:case="'3'" class="error">
+            Год должен быть числом.
+        </div>
+        <div th:case="'4'" class="error">
+            Название книги не может быть пустым.
+        </div>
+        <div th:case="'5'" class="error">
+            Неизвестная ошибка сервера.
+        </div>
+        <div th:case="'7'" class="error">
+            Списки авторов или идателей изменились.
+        </div>
+    </div>
+
+    <form id="editForm" action="submitAdd" method="POST">
+        <input class="inputField" type="text" id="booktitle" name="booktitle" placeholder="booktitle"
+               th:value="${bookTitle}"><br>
+        <input class="inputField" type="text" id="publishYear" name="publishYear" placeholder="publishYear"
+               th:value="${publishYear}"><br>
+        <select class="inputField" name="publisher">
+            <option th:each="publisher : ${publishers}" th:value="${publisher.publisherID}"
+                    th:label="${publisher.publisherName}" th:selected='${publisher.equals(bpublisher)}'></option>
+        </select><br>
+        <select class="inputField" name="author" multiple>
+            <option th:each="author : ${authors}" th:value="${author.authorID}" th:label="${author.authorName}"
+                    th:selected="${bauthors != null} ? ${#lists.contains(bauthors, author)}"></option>
+        </select><br>
+        <textarea class="inputField" form="editForm" id="brief" placeholder="brief" name="brief" th:text="${brief}"
+                  cols="50" rows="6">
+                </textarea><br>
+        <input class="submitBtn" type="submit" value="submit"><br>
+    </form>
+</div>
+
+<!--
 <div class="mainBox">
     <div class="leftSide">
         <p> А тут менюшка</p><br>
@@ -74,6 +121,6 @@
             
             </div>
     </div>
-</div>
+</div>-->
 </body>
 </html>
