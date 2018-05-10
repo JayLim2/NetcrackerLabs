@@ -65,8 +65,9 @@ public class GreetingController {
     public String greeting(@RequestParam(name="filter", required = false)String filter,Model model) {
         List<Book> books = null;
         if (filter != null){
-            books = bookService.filterBooks('%' + filter + '%');
-            model.addAttribute("filter", filter);
+            String filter1 = filter.trim();
+            books = bookService.filterBooks('%' + filter1 + '%');
+            model.addAttribute("filter", filter1);
         }
         else{
             books = bookService.getAll();
@@ -96,8 +97,9 @@ public class GreetingController {
     public String ugreeting(@RequestParam(name="filter", required = false)String filter, Model model) {
         List<Book> books = null;
         if (filter != null){
-            books = bookService.filterBooks('%' + filter + '%');
-            model.addAttribute("filter", filter);
+            String filter1 = filter.trim();
+            books = bookService.filterBooks('%' + filter1 + '%');
+            model.addAttribute("filter", filter1);
         }
         else{
             books = bookService.getAll();

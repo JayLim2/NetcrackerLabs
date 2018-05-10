@@ -17,6 +17,6 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     @Query("select b from Book b where b.bookID= :id")
     Book findByID(@Param("id") int id);
     
-    @Query("select DISTINCT b from Book b join b.authors a where a.authorName like :filter or b.bookName like :filter or b.brief like :filter")
+    @Query("select DISTINCT b from Book b join b.authors a where upper(a.authorName) like upper(:filter) or upper(b.bookName) like upper(:filter) or upper(b.brief) like upper(:filter)")
     List<Book> filterBooks(@Param("filter") String filter);
 }
