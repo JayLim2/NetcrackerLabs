@@ -49,12 +49,12 @@ public class GreetingController {
         return "login";
     }
 
-    @RequestMapping("/admin")
+    /*@RequestMapping("/admin")
     public String admin(Model model) {
         return "admin";
-    }
+    }*/
 
-    @RequestMapping("/index")
+    @RequestMapping(value = {"/", "/index"})
     public String index(Model model) {
         model.addAttribute("cartTotal", getCartTotalCount());
         return "index";
@@ -768,8 +768,8 @@ public class GreetingController {
      */
     private int getCurrentUserId() {
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println("username = " + name);
-        return userService.findUserByEmail(name).getId();
+        User currentUser = userService.findUserByEmail(name);
+        return currentUser != null ? currentUser.getId() : -1;
     }
 
     /**
@@ -779,9 +779,12 @@ public class GreetingController {
      */
     private int getCartTotalCount() {
         int count = 0;
-        List<Cart> carts = cartService.getCartByUserId(getCurrentUserId());
-        for (Cart cart : carts) {
-            count += cart.getCount();
+        int userId = getCurrentUserId();
+        if (userId != -1) {
+            List<Cart> carts = cartService.getCartByUserId(userId);
+            for (Cart cart : carts) {
+                count += cart.getCount();
+            }
         }
         return count;
     }
