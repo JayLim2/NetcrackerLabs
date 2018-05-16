@@ -172,9 +172,9 @@ CREATE TABLE IF NOT EXISTS "users" (
 INSERT INTO "role" VALUES (1, 'ROLE_USER');
 INSERT INTO "role" VALUES (2, 'ROLE_ADMIN');
 
-INSERT INTO "users" (active, email, last_name, name, password) VALUES ('1', 'admin@admin.ru',
-                                                                       'admin', 'admin',
-                                                                       '$2a$10$9H1hL/JIUm.Jj4GNGKUTXehPSdFZD9vIu1axShVE8zJM6gOVRTVRO');
+--INSERT INTO "users" (active, email, last_name, name, password) VALUES ('1', 'admin@admin.ru',
+                                                                      --'admin', 'admin',
+                                                                       --'$2a$10$9H1hL/JIUm.Jj4GNGKUTXehPSdFZD9vIu1axShVE8zJM6gOVRTVRO');
 
 CREATE TABLE IF NOT EXISTS "user_role" (
   "user_id" INTEGER NOT NULL,
@@ -223,6 +223,15 @@ CREATE TABLE IF NOT EXISTS cart (
 
 ALTER TABLE cart
   OWNER to postgres;
+
+ALTER TABLE cart
+    DROP CONSTRAINT "bookID_FK";
+
+ALTER TABLE cart
+  ADD CONSTRAINT "bookID_FK" FOREIGN KEY (bookid)
+  REFERENCES book ("bookID") MATCH SIMPLE
+  ON UPDATE CASCADE
+  ON DELETE CASCADE;
 
 
 
